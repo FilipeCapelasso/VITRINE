@@ -1778,12 +1778,12 @@ const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['playbook',
 let AC=null,PSS=null,PSAVED={},PSLIVE=false;
 async function acessoCarrega(){try{const r=await sb.rpc('meu_acesso');AC=(r&&r.data)||{}}catch(e){AC={}}}
 const ehPrem=()=>!!(AC&&AC.limites&&AC.limites.personalizar);
-const LIMV=()=>(AC&&AC.limites&&AC.limites.videos)||3,LIMF=()=>(AC&&AC.limites&&AC.limites.fotos)||5;
+const LIMV=()=>(AC&&AC.limites&&AC.limites.videos)||4,LIMF=()=>(AC&&AC.limites&&AC.limites.fotos)||5;
 const vTot=()=>((CF().videos||[]).filter(x=>x&&x.u&&mp4Ok(x.u)).length)+((CF().entregas||[]).filter(x=>x&&x.u&&!x.f&&mp4Ok(x.u)).length);
 const planoNome=()=>AC&&AC.plano==='premium'?'Premium':'Essencial';
-const limMsg=(w,n)=>`Limite do plano ${planoNome()}: até ${n} ${w}. ${(w==='vídeos'&&AC&&AC.plano!=='premium')?'Remova algum ou faça upgrade para o Premium (até 10 vídeos).':'Remova algum antes.'}`;
+const limMsg=(w,n)=>`Limite do plano ${planoNome()}: até ${n} ${w}. ${(AC&&AC.plano!=='premium')?(w==='vídeos'?'Remova algum ou faça upgrade para o Premium (até 10 vídeos).':'Remova alguma ou faça upgrade para o Premium (até 6 fotos).'):(w==='vídeos'?'Remova algum antes.':'Remova alguma antes.')}`;
 function persLock(){toast('Essa função é apenas para os planos Premium');if(document.querySelector('.lkm'))return;const o=document.createElement('div');o.className='lkm';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.onclick=e=>{if(e.target===o)o.remove()};
- o.innerHTML=`<div class="lkb"><div class="lki">🔒</div><h3>Essa função é apenas para os planos Premium</h3><p>Com o <b>Premium</b> você deixa o site com a sua cara: muda a <b>cor</b> (até rosa choque!), o formato dos <b>cantos</b>, as <b>letras</b>, o <b>topo</b>, cria uma <b>faixa de promoção</b>, escolhe quais seções aparecem e publica até <b>10 vídeos</b>.</p><div class="lkp"><span>Seu plano: ${planoNome()}</span><span>${LIMV()} vídeos · ${LIMF()} fotos</span><span class="pr">Premium: 10 vídeos · R$ 25/mês</span></div><button type="button" class="btn red" onclick="this.closest('.lkm').remove()">Entendi</button></div>`;document.body.appendChild(o)}
+ o.innerHTML=`<div class="lkb"><div class="lki">🔒</div><h3>Essa função é apenas para os planos Premium</h3><p>Com o <b>Premium</b> você deixa o site com a sua cara: muda a <b>cor</b>, o formato dos <b>cantos</b>, as <b>letras</b>, o <b>topo</b>, cria uma <b>faixa de promoção</b>, escolhe quais seções aparecem e publica até <b>10 vídeos</b> e <b>6 fotos</b>.</p><div class="lkp"><span>Seu plano: ${planoNome()}</span><span>${LIMV()} vídeos · ${LIMF()} fotos</span><span class="pr">Premium: 10 vídeos e 6 fotos · R$ 25/mês</span></div><button type="button" class="btn red" onclick="this.closest('.lkm').remove()">Entendi</button></div>`;document.body.appendChild(o)}
 const psRevert=()=>{if(!PSLIVE)return;PSLIVE=false;custReset();aplicaCustom(PSAVED)};
 function adm(t){ if(t)T=t; if(T!=='personalizar')psRevert(); if(T==='personalizar'&&AC&&AC.limites&&!ehPrem()){T='inicio';persLock()}
   if(T==='resumo')T='inicio';
