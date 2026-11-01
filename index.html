@@ -338,6 +338,14 @@ html.an-off *,html.an-off *:before,html.an-off *:after{animation:none!important;
 .hf-d button{position:relative}.hf-d button:before{content:"";position:absolute;inset:-14px -5px}
 .btn.wa{background:#0e7c58;border-color:#0e7c58}
 @media(max-width:700px){.foot2 a{display:inline-block;padding:10px 4px;margin:0 6px}a[href^="tel:"]{display:inline-block;padding:8px 0}}
+/*upgrade*/
+#upm .lkb{max-height:92vh;overflow:auto}
+.up-c{display:grid;gap:8px;margin:14px 0 6px}.up-c div{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:11px 13px;border-radius:12px;background:#f4f4f7;font-size:14px;text-align:left}
+.up-c b{font-size:15px;white-space:nowrap}.up-c .up-v{color:var(--r);font-size:20px}
+.up-n{font-size:13px;color:#666679;line-height:1.45;margin:10px 0}
+.up-qr{width:min(220px,68vw);height:auto;margin:8px auto;display:block;border-radius:12px;border:1px solid #0000001a}
+.up-cp{height:84px;width:100%;box-sizing:border-box;font:12px/1.35 ui-monospace,monospace;padding:9px;border-radius:10px;border:1.5px solid #00000022;resize:none;margin:8px 0 10px;color:#333}
+.plc-up{margin-top:12px;border:0;border-radius:99px;padding:11px 18px;font:700 14px Inter,system-ui,sans-serif;background:linear-gradient(135deg,#ffd75e,#f5a300);color:#3b2a00;cursor:pointer;box-shadow:0 8px 20px -8px #f5a300}
 </style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
@@ -1010,7 +1018,7 @@ function paintPlano(){clearInterval(mpT);if(!document.getElementById('plc'))retu
     const now=Date.now(),vm=new Date(MP.vence).getTime(),fim=now>=vm,s=fim?0:expRestante(vm,now),cong=!fim&&expCongelado(now);
     const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sg=s%60,pd=n=>String(n).padStart(2,'0');
     el.className='plc'+(fim?' fim':d<3?' alerta':'')+(cong?' cong':'');
-    el.innerHTML=`<div class="plc-i"><b>${esc(String(MP.plano||'Plano').replace(/^./,c=>c.toUpperCase()))} · ${MP.periodo==='anual'?'anual':'mensal'}</b><small>Comprado em ${fdhv(MP.inicio)} · suspensão automática prevista em ${fdhv(MP.vence)}</small></div><div class="plc-t">${fim?'<b>Prazo encerrado</b>':`<span><b>${d}</b>dias</span><span><b>${pd(h)}</b>h</span><span><b>${pd(m)}</b>min</span><span><b>${pd(sg)}</b>seg</span>`}<span class="plc-x">${cong?`<em class="plc-c">⏸ Pausada · volta às ${EXPD.ini}h</em>`:''}${expInfo()}</span></div>`};
+    el.innerHTML=`<div class="plc-i"><b>${esc(String(MP.plano||'Plano').replace(/^./,c=>c.toUpperCase()))} · ${MP.periodo==='anual'?'anual':MP.periodo==='semestral'?'6 meses':'mensal'}</b><small>Comprado em ${fdhv(MP.inicio)} · suspensão automática prevista em ${fdhv(MP.vence)}</small></div><div class="plc-t">${fim?'<b>Prazo encerrado</b>':`<span><b>${d}</b>dias</span><span><b>${pd(h)}</b>h</span><span><b>${pd(m)}</b>min</span><span><b>${pd(sg)}</b>seg</span>`}<span class="plc-x">${cong?`<em class="plc-c">⏸ Pausada · volta às ${EXPD.ini}h</em>`:''}${expInfo()}</span></div>${!fim&&String(MP.plano).toLowerCase()!=='premium'?'<button type="button" class="plc-up" onclick="upgradeAbre()">⭐ Fazer upgrade para Premium</button>':''}`};
   tick();mpT=setInterval(tick,1000)}
 
 /* ===== proteção contra conta errada no painel (vários logins no mesmo navegador) ===== */
@@ -1036,6 +1044,30 @@ if(sb){
 }
 
 /*final-v*/(function(){const f=()=>{document.querySelectorAll('input:not([type=hidden]),select,textarea').forEach(e=>{if(e.getAttribute('aria-label')||e.getAttribute('aria-labelledby')||(e.id&&document.querySelector('label[for="'+e.id+'"]'))||e.closest('label'))return;let t='',p=e.previousElementSibling;while(p&&!t){if(p.tagName==='LABEL')t=p.textContent.trim();p=p.previousElementSibling}if(!t)t=e.placeholder||e.title||'';if(t)e.setAttribute('aria-label',t.replace(/\s+/g,' ').slice(0,80))})};let tm;try{new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(f,250)}).observe(document.body,{childList:true,subtree:true})}catch(e){}f()})();
+/* ===== upgrade Essencial → Premium: valor proporcional ao que falta, vencimento mantido ===== */
+const upR=n=>'R$ '+Number(n).toFixed(2).replace('.',',');
+const upPer=p=>p==='anual'?'anual':p==='semestral'?'de 6 meses':'mensal';
+let UPT=null;
+function upModal(html){let o=document.getElementById('upm');if(!o){o=document.createElement('div');o.id='upm';o.className='lkm';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.onclick=e=>{if(e.target===o)upFecha()};document.body.appendChild(o)}o.innerHTML=`<div class="lkb">${html}</div>`}
+function upFecha(){clearInterval(UPT);UPT=null;const o=document.getElementById('upm');if(o)o.remove()}
+async function upgradeAbre(){document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">⭐</div><h3>Upgrade para Premium</h3><p>Calculando o valor…</p>');
+  try{const r=await sb.rpc('meu_upgrade_orcamento');if(r.error)throw r.error;const q=r.data||{};
+    if(!q.possivel){upModal(`<div class="lki">${q.motivo==='ja_premium'?'⭐':'ℹ️'}</div><h3>${q.motivo==='ja_premium'?'Você já é Premium':'Upgrade indisponível'}</h3><p>${esc(q.mensagem||'')}</p><button type="button" class="btn red" onclick="upFecha()">Entendi</button>`);return}
+    upModal(`<div class="lki">⭐</div><h3>Upgrade para Premium</h3><p>Sua assinatura ${upPer(q.periodo)} vence em <b>${esc(fdhv(q.vence))}</b>. Restam <b>${String(q.restante_dias).replace('.',',')} dias</b> de contagem, de ${q.total_dias}.</p><div class="up-c"><div><span>Diferença entre os planos (${upPer(q.periodo)})</span><b>${upR(q.diferenca)}</b></div><div><span>Proporcional ao que ainda falta</span><b class="up-v">${upR(q.valor)}</b></div></div><p class="up-n">Você paga só a diferença pelo tempo que ainda tem. O seu vencimento <b>não muda</b>.</p><button type="button" class="btn red" id="up_b" onclick="upgradePix()">Gerar Pix de ${upR(q.valor)}</button><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Agora não</button>`)}
+  catch(e){upModal(`<div class="lki">⚠️</div><h3>Não foi possível calcular</h3><p>${esc((e&&e.message)||e)}</p><button type="button" class="btn red" onclick="upFecha()">Fechar</button>`)}}
+async function upgradePix(){const b=document.getElementById('up_b');if(!b||b.disabled)return;b.disabled=true;b.textContent='Gerando o Pix…';
+  try{const r=await sb.rpc('meu_upgrade_criar');if(r.error)throw r.error;const d=r.data||{};
+    upModal(`<div class="lki">💸</div><h3>Pague o Pix de ${upR(d.valor)}</h3><p>Abra o app do seu banco, escolha <b>Pix</b> e leia o QR Code ou use o código Pix Copia e Cola.</p>${d.qr64?`<img class="up-qr" alt="QR Code do Pix" src="data:image/png;base64,${esc(d.qr64)}">`:''}<textarea class="up-cp" id="up_cp" readonly rows="3" aria-label="Pix Copia e Cola">${esc(d.qr||'')}</textarea><button type="button" class="btn red" onclick="upCopia()">Copiar código Pix</button><p class="up-n" id="up_st">⏳ Aguardando o pagamento… a liberação é automática.</p><button type="button" class="btn" onclick="upFecha()">Fechar (a liberação continua automática)</button>`);upEspera(d.token)}
+  catch(e){upModal(`<div class="lki">⚠️</div><h3>Não foi possível gerar o Pix</h3><p>${esc((e&&e.message)||e)}</p><button type="button" class="btn red" onclick="upgradeAbre()">Tentar de novo</button><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Fechar</button>`)}}
+function upCopia(){const t=document.getElementById('up_cp');if(!t)return;const ok=()=>toast('Código Pix copiado!'),fb=()=>{t.select();try{document.execCommand('copy')}catch(e){}ok()};try{navigator.clipboard.writeText(t.value).then(ok,fb)}catch(e){fb()}}
+function upEspera(tk){clearInterval(UPT);let n=0;UPT=setInterval(async()=>{if(!document.getElementById('upm')){clearInterval(UPT);return}if(++n>450){clearInterval(UPT);return}
+  try{const r=await sb.rpc('ps_verificar',{p_token:tk}),s=r&&r.data&&r.data.status;
+    if(s==='pagamento_aprovado'){clearInterval(UPT);upModal(`<div class="lki">🎉</div><h3>Você agora é Premium!</h3><p>Pagamento confirmado. O seu vencimento continua o mesmo e as funções Premium já estão liberadas.</p><button type="button" class="btn red" onclick="upPronto()">Abrir o Personalizar</button>`)}
+    else if(s==='falha_ativacao'){clearInterval(UPT);upModal(`<div class="lki">⚠️</div><h3>Pagamento recebido</h3><p>Recebemos o seu Pix, mas a liberação precisa de uma conferência do moderador. Ele já foi avisado e resolve em seguida.</p><button type="button" class="btn red" onclick="upFecha()">Entendi</button>`)}
+    else if(s==='cancelado'||s==='expirado'){clearInterval(UPT);upModal(`<div class="lki">⌛</div><h3>Este Pix expirou</h3><p>Gere um novo para continuar.</p><button type="button" class="btn red" onclick="upgradeAbre()">Gerar outro</button><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Fechar</button>`)}}
+  catch(e){}},4000)}
+async function upPronto(){upFecha();AC=null;MP=undefined;try{await acessoCarrega()}catch(e){}adm('personalizar')}
+
 async function init(){
   if(DEMO){V={nome:'Seu Nome',bio:'Conectando você à sua próxima moto com as melhores condições!',whatsapp:'',instagram:''};M=DEMO_M;
     document.body.insertAdjacentHTML('beforeend','<div style="position:fixed;top:0;left:0;right:0;background:#222;color:#fff;font:600 12px Inter,sans-serif;text-align:center;padding:5px;z-index:40">MODO DEMONSTRAÇÃO – configure o Supabase no início do arquivo</div>');return route()}
@@ -1903,8 +1935,7 @@ const vTot=()=>((CF().videos||[]).filter(x=>x&&x.u&&mp4Ok(x.u)).length)+((CF().e
 const planoNome=()=>AC&&AC.plano==='premium'?'Premium':'Essencial';
 const limMsg=(w,n)=>`Limite do plano ${planoNome()}: até ${n} ${w}. ${(AC&&AC.plano!=='premium')?(w==='vídeos'?'Remova algum ou faça upgrade para o Premium (até 10 vídeos).':'Remova alguma ou faça upgrade para o Premium (até 6 fotos).'):(w==='vídeos'?'Remova algum antes.':'Remova alguma antes.')}`;
 function persLock(){toast('Essa função é apenas para os planos Premium');if(document.querySelector('.lkm'))return;const o=document.createElement('div');o.className='lkm';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.onclick=e=>{if(e.target===o)o.remove()};
- o.innerHTML=`<div class="lkb"><div class="lki">🔒</div><h3>Essa função é apenas para os planos Premium</h3><p>Com o <b>Premium</b> você deixa o site com a sua cara: muda a <b>cor</b>, o formato dos <b>cantos</b>, as <b>letras</b>, o <b>topo</b>, os <b>botões</b> e o <b>fundo</b>, escreve o seu <b>título</b> e o <b>Sobre mim</b>, cria uma <b>faixa de promoção</b>, escolhe quais seções aparecem, envia <b>pedidos especiais</b> ao moderador e publica até <b>10 vídeos</b> e <b>6 fotos</b>.</p><div class="lkp"><span>Seu plano: ${planoNome()}</span><span>${LIMV()} vídeos · ${LIMF()} fotos</span><span class="pr">Premium: 10 vídeos e 6 fotos · R$ 25/mês</span></div><button type="button" class="btn red" onclick="this.closest('.lkm').remove()">Entendi</button></div>`;document.body.appendChild(o)}
-const psRevert=()=>{if(!PSLIVE)return;PSLIVE=false;custReset();aplicaCustom(PSAVED)};
+ o.innerHTML=`<div class="lkb"><div class="lki">🔒</div><h3>Essa função é apenas para os planos Premium</h3><p>Com o <b>Premium</b> você deixa o site com a sua cara: muda a <b>cor</b>, o formato dos <b>cantos</b>, as <b>letras</b>, o <b>topo</b>, os <b>botões</b> e o <b>fundo</b>, escreve o seu <b>título</b> e o <b>Sobre mim</b>, cria uma <b>faixa de promoção</b>, escolhe quais seções aparecem, envia <b>pedidos especiais</b> ao moderador e publica até <b>10 vídeos</b> e <b>6 fotos</b>.</p><div class="lkp"><span>Seu plano: ${planoNome()}</span><span>${LIMV()} vídeos · ${LIMF()} fotos</span><span class="pr">Premium: 10 vídeos e 6 fotos · R$ 25/mês</span></div><button type="button" class="btn red" onclick="upgradeAbre()">⭐ Quero ser Premium</button><button type="button" class="btn" style="margin-top:8px" onclick="this.closest('.lkm').remove()">Entendi</button></div>`;document.body.appendChild(o)} const psRevert=()=>{if(!PSLIVE)return;PSLIVE=false;custReset();aplicaCustom(PSAVED)};
 function adm(t){ if(t)T=t; if(T!=='personalizar')psRevert(); if(T==='personalizar'&&AC&&AC.limites&&!ehPrem()){T='inicio';persLock()}
   if(T==='resumo')T='inicio';
   if(T==='pedidos'||T==='leads')T='vendas';
