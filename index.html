@@ -1023,13 +1023,15 @@ const entCard=x=>{const nm=x.t==='c'?'Contemplado(a): '+esc(x.n):'Parabéns, '+e
 const enPlayV=v=>{const r=v.play();if(r&&r.catch)r.catch(()=>{})};
 function enFmt(f,v){if(v.videoWidth&&v.videoHeight)f.classList.toggle('land',v.videoWidth>v.videoHeight*1.15)}
 function enLoad(v){if(!v.getAttribute('src')&&v.dataset.src)v.src=v.dataset.src}
-function enGo(f,som){const v=f.querySelector('video');if(!v)return;enLoad(v);v.muted=!som;f.classList.add('playing');enPlayV(v)}
-function enOff(f){const v=f.querySelector('video');if(!v)return;try{v.pause()}catch(e){}v.muted=true;f.classList.remove('playing');const ic=f.querySelector('.en-ico');if(ic)ic.textContent='🔇'}
+function enGo(f,som){const v=f.querySelector('video');if(!v)return;clearTimeout(f._rel);enLoad(v);v.muted=!som;f.classList.add('playing');enPlayV(v)}
+function enOff(f){const v=f.querySelector('video');if(!v)return;try{v.pause()}catch(e){}v.muted=true;f.classList.remove('playing');const ic=f.querySelector('.en-ico');if(ic)ic.textContent='🔇';
+  /* soltou o vídeo: depois de 5 s cancela o que ainda estava baixando (volta a mostrar só a capa) */
+  clearTimeout(f._rel);f._rel=setTimeout(()=>{if(v.paused&&v.dataset.src&&v.getAttribute('src')&&!document.getElementById('vm')&&!f.matches(':hover')){v.removeAttribute('src');try{v.load()}catch(e){}}},5000)}
 function enObs(){const cards=[...document.querySelectorAll('.en-mp')];if(!cards.length)return;
   cards.forEach(f=>{const v=f.querySelector('video'),ic=f.querySelector('.en-ico');v.addEventListener('loadedmetadata',()=>enFmt(f,v));if(f.dataset.p){const im=new Image();im.onload=()=>f.classList.toggle('land',im.naturalWidth>im.naturalHeight*1.15);im.src=f.dataset.p}v.addEventListener('play',()=>f.classList.add('playing'));v.addEventListener('pause',()=>f.classList.remove('playing'));
     /* mouse: passou por cima → toca com som; saiu → para */
-    f.addEventListener('pointerenter',e=>{if(e.pointerType==='touch'||document.getElementById('vm'))return;enGo(f,true);setTimeout(()=>{if(v.paused&&!document.getElementById('vm')&&f.matches(':hover')){v.muted=true;enPlayV(v)}if(ic)ic.textContent=v.muted?'🔇':'🔊'},150)});
-    f.addEventListener('pointerleave',e=>{if(e.pointerType!=='touch')enOff(f)});
+    f.addEventListener('pointerenter',e=>{if(e.pointerType==='touch'||document.getElementById('vm'))return;clearTimeout(f._hi);f._hi=setTimeout(()=>{if(!f.matches(':hover')||document.getElementById('vm'))return;enGo(f,true);setTimeout(()=>{if(v.paused&&!document.getElementById('vm')&&f.matches(':hover')){v.muted=true;enPlayV(v)}if(ic)ic.textContent=v.muted?'🔇':'🔊'},150)},450)});
+    f.addEventListener('pointerleave',e=>{clearTimeout(f._hi);if(e.pointerType!=='touch')enOff(f)});
     /* dedo: segurou (sem arrastar) → toca mudo; soltou → para depois de alguns segundos. Toque rápido = abre em tela maior */
     let t0=null,off=null,sx=0,sy=0;
     f.addEventListener('pointerdown',e=>{if(e.pointerType!=='touch')return;sx=e.clientX;sy=e.clientY;f._held=false;clearTimeout(off);clearTimeout(t0);t0=setTimeout(()=>{if(!document.getElementById('vm')){f._held=true;enGo(f,false)}},220)},{passive:true});
@@ -1975,6 +1977,7 @@ function pSite(){
 async function saveSite(){const config={...CF()};['titulo','sub','aviso','horario','endereco'].forEach(k=>{const v=$('#c_'+k).value.trim();v?config[k]=v:delete config[k]});
   const{error}=await sb.from('vendedores').update({config}).eq('id',V.id);if(!error)V.config=config;toast(error?'Erro: '+error.message:'Site atualizado!')}
 
+/*cache-fotos*/ try{if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!DEMO)addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})})}catch(e){}
 init();
 </script>
 </body>
