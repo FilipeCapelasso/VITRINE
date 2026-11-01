@@ -903,7 +903,8 @@ function htmlLimpo(s){
   return d.body.innerHTML}
 function aplicaCustom(c){
   try{
-    if(!c||typeof c!=='object'||Array.isArray(c))return; CUST=c;
+    if(!c||typeof c!=='object'||Array.isArray(c))return;
+    /* ISOLAMENTO: tema que declara ser de OUTRO endereço nunca é aplicado */ if(c._slug&&String(c._slug).toLowerCase()!==String(SLUG||'').toLowerCase())return; CUST=c;
     if(/^#[0-9a-f]{6}$/i.test(c.cor||'')){const r=document.documentElement;r.style.setProperty('--r',c.cor);r.classList.add('tm')}
     const R=document.documentElement.classList;if(['reto','suave','redondo'].includes(c.cantos))R.add('cn-'+c.cantos);if(c.fonte==='elegante')R.add('fn-el');if(c.fonte==='arredondada')R.add('fn-ar');if(c.estilo_topo==='cor')R.add('tp-cor');(Array.isArray(c.ocultar)?c.ocultar:[]).forEach(k=>{if(['videos','entregas','porque','loja','duvidas'].includes(k))R.add('ho-'+k)});
     if(c.css){const s=document.createElement('style');s.id='cust-css';s.textContent=cssLimpo(c.css);document.head.appendChild(s)}
@@ -1724,7 +1725,7 @@ const PS_SEC=[['videos','🎬','Vídeos','Seção “Assista e conheça”'],['e
 const PS_RAD={'':{b:'999px',c:'18px',h:'0 0 22px 22px'},suave:{b:'12px',c:'12px',h:'0 0 14px 14px'},reto:{b:'4px',c:'5px',h:'0'},redondo:{b:'999px',c:'28px',h:'0 0 34px 34px'}};
 const lumHex=h=>{const c=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)/255).map(v=>v<=.04045?v/12.92:Math.pow((v+.055)/1.055,2.4));return .2126*c[0]+.7152*c[1]+.0722*c[2]};
 const corOk=c=>!c||(/^#[0-9a-f]{6}$/i.test(c)&&lumHex(c)<=0.32);
-const psOwner=o=>{const r={};['css','topo','meio','fim','flags'].forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});return r};
+const psSlugOk=d=>{if(d&&d.slug&&String(d.slug).toLowerCase()!==String(SLUG||'').toLowerCase())throw new Error('Este login não é deste site. Entre pelo endereço do seu próprio site.');return d}; const psOwner=o=>{const r={};['css','topo','meio','fim','flags'].forEach(k=>{if(o&&o[k]!==undefined)r[k]=o[k]});return r};
 function psPay(){const o={};if(S.cor)o.cor=S.cor.toLowerCase();if(S.cantos)o.cantos=S.cantos;if(S.fonte)o.fonte=S.fonte;if(S.estilo_topo)o.estilo_topo=S.estilo_topo;if((S.cta||'').trim())o.cta=S.cta.trim();
  const f=S.faixa||{};if((f.texto||'').trim())o.faixa={texto:f.texto.trim(),link:(f.link||'').trim(),ativo:f.ativo!==false};if((S.ocultar||[]).length)o.ocultar=[...S.ocultar];return o}
 function psPv(){const cor=corOk(S.cor)&&S.cor?S.cor:'#c80000',r=PS_RAD[S.cantos||'']||PS_RAD[''],f=S.faixa||{};
@@ -1747,14 +1748,14 @@ function psCor(v){v=String(v||'').trim().toLowerCase();if(v&&v[0]!=='#')v='#'+v;
 function psFx(k,v){S.faixa={...(S.faixa||{ativo:true}),[k]:v};psLive()}
 function psSec(k,on){const s=new Set(S.ocultar||[]);if(on)s.delete(k);else s.add(k);S.ocultar=[...s];psLive()}
 async function psSalvar(){const b=$('#ps_sv');if(!b||!corOk(S.cor))return;b.disabled=true;const t=b.textContent;b.textContent='Publicando…';
- try{const r=await sb.rpc('meu_custom_salvar',{p:psPay()});if(r.error)throw r.error;const d=r.data||{};PSAVED=d.atual||{};PSTEM=!!d.tem_anterior;PSBASE={...psOwner(PSBASE),...PSAVED};PSLIVE=false;custReset();aplicaCustom(PSBASE);S=JSON.parse(JSON.stringify(PSAVED));toast('Pronto! Seu site já está com o novo visual 🎉');pPers(true)}
+ try{const r=await sb.rpc('meu_custom_salvar',{p:psPay()});if(r.error)throw r.error;const d=psSlugOk(r.data||{});PSAVED=d.atual||{};PSTEM=!!d.tem_anterior;PSBASE={...psOwner(PSBASE),...PSAVED};PSLIVE=false;custReset();aplicaCustom(PSBASE);S=JSON.parse(JSON.stringify(PSAVED));toast('Pronto! Seu site já está com o novo visual 🎉');pPers(true)}
  catch(e){toast((e&&e.message)||'Não foi possível salvar');b.disabled=false;b.textContent=t}}
-async function psDesfazer(){try{const r=await sb.rpc('meu_custom_desfazer');if(r.error)throw r.error;const d=r.data||{};PSAVED=d.atual||{};PSTEM=!!d.tem_anterior;PSBASE={...psOwner(PSBASE),...PSAVED};PSLIVE=false;custReset();aplicaCustom(PSBASE);S=JSON.parse(JSON.stringify(PSAVED));toast('Voltei para o visual anterior');pPers(true)}catch(e){toast((e&&e.message)||'Erro')}}
-async function psRestaurar(){if(!confirm('Voltar o site para o visual padrão (vermelho Honda)? Você pode desfazer depois.'))return;try{const r=await sb.rpc('meu_custom_restaurar');if(r.error)throw r.error;const d=r.data||{};PSAVED=d.atual||{};PSTEM=!!d.tem_anterior;PSBASE={...psOwner(PSBASE),...PSAVED};PSLIVE=false;custReset();aplicaCustom(PSBASE);S={};toast('Site no visual padrão');pPers(true)}catch(e){toast((e&&e.message)||'Erro')}}
+async function psDesfazer(){try{const r=await sb.rpc('meu_custom_desfazer');if(r.error)throw r.error;const d=psSlugOk(r.data||{});PSAVED=d.atual||{};PSTEM=!!d.tem_anterior;PSBASE={...psOwner(PSBASE),...PSAVED};PSLIVE=false;custReset();aplicaCustom(PSBASE);S=JSON.parse(JSON.stringify(PSAVED));toast('Voltei para o visual anterior');pPers(true)}catch(e){toast((e&&e.message)||'Erro')}}
+async function psRestaurar(){if(!confirm('Voltar o site para o visual padrão (vermelho Honda)? Você pode desfazer depois.'))return;try{const r=await sb.rpc('meu_custom_restaurar');if(r.error)throw r.error;const d=psSlugOk(r.data||{});PSAVED=d.atual||{};PSTEM=!!d.tem_anterior;PSBASE={...psOwner(PSBASE),...PSAVED};PSLIVE=false;custReset();aplicaCustom(PSBASE);S={};toast('Site no visual padrão');pPers(true)}catch(e){toast((e&&e.message)||'Erro')}}
 async function pPers(keep){
  if(!ehPrem()){$('#pn').innerHTML='<div class="ps-c ps-lock"><div class="big">🔒</div><h3>Essa função é apenas para os planos Premium</h3><p class="sub">Faça upgrade para o Premium e personalize o seu site.</p></div>';return}
  if(!keep){$('#pn').innerHTML='<p class="mu">Carregando…</p>';
-  try{const r=await sb.rpc('meu_custom_ler');if(r.error)throw r.error;const d=r.data||{};PSAVED=d.atual||{};PSTEM=!!d.tem_anterior;PSBASE=JSON.parse(JSON.stringify(CUST||{}));S=JSON.parse(JSON.stringify(PSAVED))}catch(e){$('#pn').innerHTML='<p class="mu">Não foi possível carregar: '+esc((e&&e.message)||e)+'</p>';return}
+  try{const r=await sb.rpc('meu_custom_ler');if(r.error)throw r.error;const d=psSlugOk(r.data||{});PSAVED=d.atual||{};PSTEM=!!d.tem_anterior;PSBASE=JSON.parse(JSON.stringify(CUST||{}));S=JSON.parse(JSON.stringify(PSAVED))}catch(e){$('#pn').innerHTML='<p class="mu">Não foi possível carregar: '+esc((e&&e.message)||e)+'</p>';return}
   PSLIVE=false}
  S.faixa=S.faixa||{texto:'',link:'',ativo:true};S.ocultar=S.ocultar||[];const ct=enCont(CF().entregas||[]);
  const opt=(k,v,t,s,ic)=>`<button type="button" data-o="${k}:${v}" onclick="psSet('${k}','${v}')">${ic}${esc(t)}<small>${esc(s)}</small></button>`;
