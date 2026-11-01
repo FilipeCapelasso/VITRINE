@@ -1690,6 +1690,11 @@ const vdVolta=()=>{if(!document.hidden&&sb&&V.id){if(T==='vendas'&&$('#vdl'))pVe
 document.addEventListener('visibilitychange',vdVolta);addEventListener('focus',vdVolta);addEventListener('online',()=>{VCH=null;vdLive();vdVolta()});
 
 /* ===== TESTAR ENTREGA: faz exatamente o que um cliente do seu site faz e mostra o resultado (ou o erro exato) ===== */
+async function entregaDiag(){try{const{data:ss}=await sb.auth.getSession(),u=ss&&ss.session&&ss.session.user;
+  if(!u)return{txt:'a sua sessão expirou: saia e entre de novo no painel',outra:true};
+  const{data:own}=await sb.from('vendedores').select('id').eq('id',V.id).eq('user_id',u.id).maybeSingle();
+  if(!own)return{txt:'este navegador está logado com OUTRA conta ('+(u.email||'de outro vendedor')+'), não a deste site',outra:true}}catch(e){}
+  return{txt:'o pedido foi gravado mas o painel não o enxerga',outra:false}}
 async function testarEntrega(){
   const gid=()=>(window.crypto&&crypto.randomUUID)?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:(r&3|8)).toString(16)});
   const box=document.createElement('div');box.style.cssText='position:fixed;inset:0;z-index:99999;background:rgba(18,18,28,.55);backdrop-filter:blur(3px);display:flex;align-items:center;justify-content:center;padding:16px';
@@ -1706,11 +1711,9 @@ async function testarEntrega(){
     add('Formulário de financiamento',!r.error,r.error?r.error.message:'contato gravado');
     r=await anon.rpc('registrar_rascunho',{p:{id:gid(),origem:'financiamento',nome:tag,telefone:'(68) 90000-0000',moto_nome:'TESTE',dados:{nome:tag}}});
     add('Cliente digitando (sem enviar)',!r.error,r.error?r.error.message:'enviado');
-    const rd=await sb.from('pedidos_chat').select('id').eq('id',pid);
-    add('Seu painel enxerga o que o cliente enviou',!!(rd.data&&rd.data.length),rd.error?rd.error.message:(rd.data&&rd.data.length?'sim':'o pedido foi gravado mas o painel não o enxerga'));
+    const rd=await sb.from('pedidos_chat').select('id').eq('id',pid); const vi=!!(rd.data&&rd.data.length); let det=rd.error?rd.error.message:(vi?'sim':'o pedido foi gravado mas o painel não o enxerga'),outra=false; if(!vi&&!rd.error){const dg=await entregaDiag();det=dg.txt;outra=dg.outra} add('Seu painel enxerga o que o cliente enviou',vi,det); if(outra)window.__teOutra=true;
     await sb.from('pedidos_chat').delete().eq('id',pid);await sb.from('leads').delete().eq('nome',tag);try{await sb.from('rascunhos').delete().eq('nome',tag)}catch(e){}
-    const falhou=rows.some(x=>!x[1]);
-    rows.push([falhou?'Resultado: HÁ FALHAS. Tire um print desta tela e envie ao suporte.':'Resultado: tudo certo, os pedidos chegam ao seu painel.',!falhou,'',true]);draw();
+    const falhou=rows.some(x=>!x[1]),so=falhou&&window.__teOutra&&rows.filter(x=>!x[1]&&!x[3]).length===1; window.__teOutra=false; rows.push([so?'Resultado: o teste não conseguiu conferir o painel porque este navegador está com OUTRA conta logada. Feche as outras abas do painel, saia, entre com o login deste site e teste de novo.':falhou?'Resultado: HÁ FALHAS. Tire um print desta tela e envie ao suporte.':'Resultado: tudo certo, os pedidos chegam ao seu painel.',!falhou,'',true]);draw();
   }catch(e){add('Erro inesperado',false,String(e&&e.message||e))}
 }
 
