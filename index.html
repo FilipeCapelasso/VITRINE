@@ -1006,13 +1006,13 @@ if(!window.__peB){window.__peB=setInterval(peBadge,60000)}
 const heroExtra=()=>{const s=CUSTV('selo',''),u=CUSTV('subtitulo','');return(s?`<div class="hbd">${esc(s)}</div>`:'')+(u?`<p class="hsub">${esc(u)}</p>`:'')};
 const sobreH=()=>{const t=CUSTV('sobre','');if(!t)return'';return `<section class="sobre" id="sobre"><div class="sec"><div><span class="eyb ey2">SOBRE MIM</span><h2>Quem vai te atender</h2></div></div><div class="sobre-b">${V.foto_url?`<img class="sobre-f" ${IMGA(V.foto_url,'ava')} alt="${esc(V.nome)}" loading="lazy" decoding="async">`:''}<p>${esc(t).replace(/\n/g,'<br>')}</p></div></section>`};
 /* ---- contagem da assinatura por expediente (06h às 19h, horário de Rio Branco) ---- */
-const EXPD={ini:6,fim:19,utc:-5};
+const EXPD={ini:0,fim:24,utc:-5}; const expAtivo=()=>(EXPD.fim-EXPD.ini)<24; /*sem-janela*/
 async function expCarrega(){try{const r=await sb.rpc('ps_expediente');const d=r&&r.data;if(d&&d.ini!=null&&d.fim!=null&&+d.fim>+d.ini){EXPD.ini=+d.ini;EXPD.fim=+d.fim}}catch(e){}}
 const expF=ms=>{const W=(EXPD.fim-EXPD.ini)*3600,L=ms/1000+EXPD.utc*3600,dia=Math.floor(L/86400),sod=L-dia*86400;return dia*W+Math.min(Math.max(sod-EXPD.ini*3600,0),W)};
 const expRestante=(venceMs,agoraMs)=>Math.max(0,Math.floor(expF(venceMs)-expF(agoraMs)+1e-6));
 const expCongelado=ms=>{const sod=(((ms/1000+EXPD.utc*3600)%86400)+86400)%86400;return sod<EXPD.ini*3600||sod>=EXPD.fim*3600};
 const expTxt=()=>`A contagem do tempo começa às ${EXPD.ini}h da manhã e congela às ${EXPD.fim}h. Um agrado aos vendedores!`;
-const expInfo=()=>`<button type="button" class="exp-i" data-tip="${esc(expTxt())}" aria-label="${esc(expTxt())}" onclick="this.classList.toggle('open')" onblur="this.classList.remove('open')">ⓘ</button>`;
+const expInfo=()=>!expAtivo()?'':`<button type="button" class="exp-i" data-tip="${esc(expTxt())}" aria-label="${esc(expTxt())}" onclick="this.classList.toggle('open')" onblur="this.classList.remove('open')">ⓘ</button>`;
 function paintPlano(){clearInterval(mpT);if(!document.getElementById('plc'))return;
   const tick=()=>{const el=document.getElementById('plc');if(!el){clearInterval(mpT);return}if(!MP||!MP.vence){el.innerHTML='';el.className='';return}
     const now=Date.now(),vm=new Date(MP.vence).getTime(),fim=now>=vm,s=fim?0:expRestante(vm,now),cong=!fim&&expCongelado(now);
