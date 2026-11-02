@@ -398,6 +398,26 @@ html.an-off .cta.w:before,html.an-off .btn.red:before{display:none}
 .pmb-pulso .p1{animation:efPulso 2.2s infinite}
 .pmm-anel .pm-ava{animation:efAnel 3s ease-in-out infinite}.pmm-gradiente .pm-ava{border:3px solid transparent;background:linear-gradient(#111,#111) padding-box,conic-gradient(from var(--efa),var(--pc),#ffd37a,#fff,var(--pc)) border-box;animation:efGira 4s linear infinite}
 .pmc-levantar .pm-cd>div{transform:translateY(-4px);box-shadow:0 12px 20px -10px #0006}.pmc-brilho .pm-cd>div{outline:2px solid var(--pc);outline-offset:-2px}
+/*v19-inicio*/
+.hero2 .hero2-a button.hero-bt{background:#fff!important;color:#16161a!important;border:0!important;font-weight:800;box-shadow:0 8px 20px -8px #000a}.hero2 .hero2-a button.hero-bt:hover{background:#f3f3f6!important}
+.rn-av{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:linear-gradient(135deg,#fff7e0,#ffe9b8);border:1px solid #f1c76a;border-radius:18px;padding:14px 18px;margin:0 0 16px;color:#4a3300}
+.rn-av.crit{background:linear-gradient(135deg,#ffecec,#ffd0d0);border-color:#f08a8a;color:#5a0b0b}
+.rn-i{font-size:26px}.rn-t{flex:1;min-width:220px;line-height:1.45;font-size:14.5px}.rn-av .rn-b{width:auto;padding:11px 20px;background:#16161a;color:#fff}
+.ini-at .at-i{padding:14px 0;border-top:1px solid #efeff4}.ini-at .at-i:first-of-type{border-top:0;padding-top:0}
+.at-d{display:flex;align-items:center;gap:8px;font-size:12.5px;color:#6b6b7a;margin-bottom:4px}.at-d em{font-style:normal;background:var(--r);color:#fff;font-weight:800;font-size:10.5px;padding:2px 8px;border-radius:99px;letter-spacing:.5px}
+.at-i h4{margin:0 0 4px;font-size:16px}.at-i p{margin:0;color:#4d4d5a;line-height:1.55;font-size:14.5px}.at-i.dst{background:linear-gradient(90deg,color-mix(in srgb,var(--r) 8%,#fff),#fff);margin:0 -10px;padding:14px 10px;border-radius:12px;border-top:0}
+.at-m{margin-top:12px;background:#fff;border:1.5px solid #dcdce5;border-radius:99px;padding:8px 16px;font:700 13px inherit;cursor:pointer;color:#33333c}.at-m:hover{border-color:var(--r);color:var(--r)}
+.vt-q{margin:0 0 4px;font-size:16.5px;font-weight:800}.vt-d{margin:0 0 12px;font-size:13.5px;line-height:1.5}
+.vt-g{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:10px}
+.vt-o{display:flex;flex-direction:column;gap:4px;text-align:left;padding:14px;border:1.5px solid #e3e3ec;border-radius:14px;background:#fff;font:inherit;cursor:pointer}
+button.vt-o:hover{border-color:var(--r);box-shadow:0 8px 20px -14px var(--r)}.vt-o b{font-size:15px}.vt-o small{color:#666679;line-height:1.4}
+.vt-o.me{border-color:var(--r);background:color-mix(in srgb,var(--r) 8%,#fff);cursor:default}.vt-o.off{opacity:.55;cursor:default}
+.vt-ok{margin:12px 0 0;color:#2f6a3f;font-size:13.5px}.vt-n{margin:12px 0 0;font-size:12.5px}
+.pl-l{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;margin-bottom:14px}.pl-l div{background:#f6f6fa;border-radius:12px;padding:12px 14px}.pl-l span{display:block;font-size:12px;color:#6b6b7a}.pl-l b{font-size:16px}
+.pl-b{display:flex;gap:10px;flex-wrap:wrap}.pl-b .btn{width:auto;padding:12px 20px}.pl-n{font-size:12.5px;margin:12px 0 0}
+.plc-rn{background:linear-gradient(135deg,#ff5a5a,#d11a1a)!important;color:#fff!important;margin-left:8px}
+.rn-ops{display:grid;gap:10px;margin:14px 0 6px}.rn-op{display:grid;grid-template-columns:1fr auto;gap:2px 10px;text-align:left;padding:13px 15px;border:1.5px solid #e3e3ec;border-radius:14px;background:#fff;font:inherit;cursor:pointer}
+.rn-op:hover,.rn-op.atual{border-color:var(--r)}.rn-op b{font-size:15px}.rn-op span{font-weight:800;color:var(--r);font-size:17px}.rn-op small{grid-column:1/-1;color:#666679}
 </style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
@@ -1070,7 +1090,7 @@ function paintPlano(){clearInterval(mpT);if(!document.getElementById('plc'))retu
     const now=Date.now(),vm=new Date(MP.vence).getTime(),fim=now>=vm,s=fim?0:expRestante(vm,now),cong=!fim&&expCongelado(now);
     const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sg=s%60,pd=n=>String(n).padStart(2,'0');
     el.className='plc'+(fim?' fim':d<3?' alerta':'')+(cong?' cong':'');
-    el.innerHTML=`<div class="plc-i"><b>${esc(String(MP.plano||'Plano').replace(/^./,c=>c.toUpperCase()))} · ${MP.periodo==='anual'?'anual':MP.periodo==='semestral'?'6 meses':'mensal'}</b><small>Comprado em ${fdhv(MP.inicio)} · suspensão automática prevista em ${fdhv(MP.vence)}</small></div><div class="plc-t">${fim?'<b>Prazo encerrado</b>':`<span><b>${d}</b>dias</span><span><b>${pd(h)}</b>h</span><span><b>${pd(m)}</b>min</span><span><b>${pd(sg)}</b>seg</span>`}<span class="plc-x">${cong?`<em class="plc-c">⏸ Pausada · volta às ${EXPD.ini}h</em>`:''}${expInfo()}</span></div>${!fim&&String(MP.plano).toLowerCase()!=='premium'?'<button type="button" class="plc-up" onclick="upgradeAbre()">⭐ Fazer upgrade para Premium</button>':''}`};
+    el.innerHTML=`<div class="plc-i"><b>${esc(String(MP.plano||'Plano').replace(/^./,c=>c.toUpperCase()))} · ${MP.periodo==='anual'?'anual':MP.periodo==='semestral'?'6 meses':'mensal'}</b><small>Comprado em ${fdhv(MP.inicio)} · suspensão automática prevista em ${fdhv(MP.vence)}</small></div><div class="plc-t">${fim?'<b>Prazo encerrado</b>':`<span><b>${d}</b>dias</span><span><b>${pd(h)}</b>h</span><span><b>${pd(m)}</b>min</span><span><b>${pd(sg)}</b>seg</span>`}<span class="plc-x">${cong?`<em class="plc-c">⏸ Pausada · volta às ${EXPD.ini}h</em>`:''}${expInfo()}</span></div>${!fim&&String(MP.plano).toLowerCase()!=='premium'?'<button type="button" class="plc-up" onclick="upgradeAbre()">⭐ Fazer upgrade para Premium</button>':''}${renBtn()}`};
   tick();mpT=setInterval(tick,1000)}
 
 /* ===== proteção contra conta errada no painel (vários logins no mesmo navegador) ===== */
@@ -1187,6 +1207,56 @@ async function peEnviar(){const t=document.getElementById('pe_t'),b=document.get
   catch(e){PEMS=PEMS.filter(m=>m!==tmp);peDesenha();t.value=x;peAuto(t);toast((e&&e.message)||'Não foi possível enviar')}
   b.disabled=false;t.focus()}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&T==='personalizar'&&PTAB==='pedido'&&document.getElementById('pe_th'))peCarrega(true)});
+
+/* ===== v19: Início renovado (Atualizações · Futuras melhorias · Seu plano), votação e renovação ===== */
+let INI={atu:[],vot:{ativa:false},ren:null},INIALL=false;
+const iniData=d=>{const s=String(d||'');return /^\d{4}-\d{2}-\d{2}/.test(s)?s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4):s};
+const rnDias=()=>{if(!MP||!MP.vence)return null;const t=new Date(MP.vence).getTime();return isNaN(t)?null:(t-Date.now())/864e5};
+const rnPer=p=>p==='anual'?'anual':p==='semestral'?'6 meses':'mensal';
+const rnN=d=>d<1?'menos de 1 dia':Math.ceil(d)+(Math.ceil(d)>1?' dias':' dia');
+const renBtn=()=>{const d=rnDias();return d!==null&&d<=7?'<button type="button" class="plc-up plc-rn" onclick="renovaAbre()">🔄 Renovar plano</button>':''};
+function renAvisoH(){const r=INI.ren;if(!r||!r.possivel)return'';const d=r.dias_restantes;if(!(r.vencido||d<=7))return'';const crit=r.vencido||d<=3;
+  const txt=r.vencido?`Seu plano <b>venceu em ${esc(fdhv(r.vence))}</b>. Renove para o seu site voltar ao ar.`:`Seu plano vence em <b>${rnN(d)}</b> (${esc(fdhv(r.vence))}). Renove agora para não ficar sem o site no ar.`;
+  return `<section class="rn-av${crit?' crit':''}" role="alert"><div class="rn-i" aria-hidden="true">${crit?'⚠️':'🔔'}</div><div class="rn-t">${txt}</div><button type="button" class="btn hero-bt rn-b" onclick="renovaAbre()">🔄 Renovar plano</button></section>`}
+function iniAtuH(){const L=INI.atu||[],V=INIALL?L:L.slice(0,3);
+  return `<section class="card2 ini-at"><div class="card2-h"><h3>📣 Atualizações</h3><small>Novidades do seu painel e do seu site</small></div>${V.length?V.map(a=>`<article class="at-i${a.destaque?' dst':''}"><div class="at-d"><span>${esc(iniData(a.data))}</span>${a.destaque?'<em>NOVO</em>':''}</div><h4>${esc(a.titulo)}</h4><p>${esc(a.texto).replace(/\n/g,'<br>')}</p></article>`).join(''):'<p class="mu">Ainda não há atualizações por aqui.</p>'}${L.length>3?`<button type="button" class="mini at-m" onclick="INIALL=!INIALL;iniRedesenha()">${INIALL?'Ver menos':'Ver todas ('+L.length+')'}</button>`:''}</section>`}
+function iniVotH(){const q=INI.vot||{};
+  if(!q.ativa)return `<section class="card2 ini-vt"><div class="card2-h"><h3>🗳️ Futuras melhorias</h3></div><p class="mu">Nenhuma votação aberta agora. Quando abrirmos uma nova, ela aparece aqui.</p></section>`;
+  const ops=(q.opcoes||[]).map(o=>q.votou?`<div class="vt-o${q.minha===o.id?' me':' off'}"><b>${q.minha===o.id?'✅ ':''}${esc(o.titulo)}</b><small>${esc(o.detalhe||'')}</small></div>`:`<button type="button" class="vt-o" onclick="iniVotar('${esc(o.id)}')"><b>${esc(o.titulo)}</b><small>${esc(o.detalhe||'')}</small></button>`).join('');
+  return `<section class="card2 ini-vt"><div class="card2-h"><h3>🗳️ Futuras melhorias</h3><small>${q.votou?'Voto registrado':'Sua opinião decide o que vem primeiro'}</small></div><p class="vt-q">${esc(q.titulo)}</p>${q.descricao?`<p class="mu vt-d">${esc(q.descricao)}</p>`:''}<div class="vt-g">${ops}</div>${q.votou?'<p class="vt-ok">Obrigado! Seu voto foi registrado e <b>não pode ser alterado</b>. Quando abrirmos uma nova votação, ela aparece aqui.</p>':'<p class="mu vt-n">O voto é definitivo: depois de escolher, não dá para mudar.</p>'}</section>`}
+function iniPlanoH(){const r=INI.ren;if(!r)return'';
+  if(!r.possivel)return `<section class="card2 ini-pl"><div class="card2-h"><h3>🔔 Seu plano</h3></div><p class="mu">${esc(r.mensagem||'')}</p></section>`;
+  const d=r.dias_restantes,ess=String(r.plano).toLowerCase()!=='premium',nm=String(r.plano).charAt(0).toUpperCase()+String(r.plano).slice(1);
+  return `<section class="card2 ini-pl"><div class="card2-h"><h3>🔔 Seu plano</h3><small>${esc(nm)} · ${esc(rnPer(r.periodo_atual))}</small></div><div class="pl-l"><div><span>${r.vencido?'Venceu em':'Vence em'}</span><b>${esc(fdhv(r.vence))}</b></div><div><span>${r.vencido?'Situação':'Faltam'}</span><b>${r.vencido?'Plano vencido':rnN(d)}</b></div></div><div class="pl-b"><button type="button" class="btn red" onclick="renovaAbre()">🔄 Renovar plano</button>${ess&&!r.vencido?'<button type="button" class="btn" onclick="upgradeAbre()">⭐ Fazer upgrade para Premium</button>':''}</div><p class="mu pl-n">Pague pelo Pix e o novo prazo soma ao que ainda falta: você não perde nenhum dia.</p></section>`}
+function iniRedesenha(){const el=document.getElementById('ini_x');if(el)el.innerHTML=iniAtuH()+iniVotH()+iniPlanoH()}
+async function iniVotar(id){const o=((INI.vot||{}).opcoes||[]).find(x=>x.id===id);if(!o||!confirm('Confirmar seu voto em “'+o.titulo+'”?\n\nDepois de votar não é possível alterar.'))return;
+  try{const r=await sb.rpc('meu_votar',{p_opcao:id});if(r.error)throw r.error;INI.vot=r.data||INI.vot;iniRedesenha();toast('Voto registrado. Obrigado!')}
+  catch(e){toast((e&&e.message)||'Não foi possível votar');try{const r=await sb.rpc('meu_votacao');if(r&&r.data){INI.vot=r.data;iniRedesenha()}}catch(_){}}}
+async function pInicio(){ $('#pn').innerHTML='<div class="sk" style="height:150px;border-radius:18px"></div><div class="sk" style="height:90px;border-radius:18px;margin-top:14px"></div>'; await vdLoad();if(T!=='inicio')return;
+  const q=async(n)=>{try{const r=await sb.rpc(n);return(r&&!r.error)?r.data:null}catch(e){return null}};
+  const [atu,vot,ren]=await Promise.all([q('meu_atualizacoes'),q('meu_votacao'),q('meu_renovar_orcamento')]);if(T!=='inicio')return;
+  INI={atu:Array.isArray(atu)?atu:[],vot:vot||{ativa:false},ren:ren||null};
+  const hr=new Date().getHours(),sd=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',novos=VD.filter(vdNovo),hoje=VD.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()).length;
+  const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length,link=location.origin+'/'+SLUG,nn=novos.length;
+  $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button><button class="btn" onclick="adm('playbook')">📚 Abrir o playbook</button></div></section>${renAvisoH()}<section class="kp4"><div class="${nn?'n':''}"><b>${nn}</b><span>novos</span></div><div><b>${hoje}</b><span>hoje</span></div><div><b>${atend}</b><span>em atendimento</span></div><div><b>${at}</b><span>motos no site</span></div></section><div id="ini_x">${iniAtuH()}${iniVotH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at"><button class="btn" onclick="cpTxt('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
+/* --- renovar o plano (Pix) --- */
+async function renovaAbre(){document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">🔄</div><h3>Renovar plano</h3><p>Calculando…</p>');
+  try{const r=await sb.rpc('meu_renovar_orcamento');if(r.error)throw r.error;const q=r.data||{};
+    if(!q.possivel){upModal(`<div class="lki">ℹ️</div><h3>Renovação indisponível</h3><p>${esc(q.mensagem||'')}</p><button type="button" class="btn red" onclick="upFecha()">Entendi</button>`);return}
+    const nm=String(q.plano).charAt(0).toUpperCase()+String(q.plano).slice(1);
+    upModal(`<div class="lki">🔄</div><h3>Renovar plano ${esc(nm)}</h3><p>${q.vencido?'Seu plano venceu em':'Seu plano vence em'} <b>${esc(fdhv(q.vence))}</b>. ${q.vencido?'Ao pagar, o seu site volta ao ar.':'O novo prazo <b>soma ao que ainda falta</b>.'}</p><div class="rn-ops">${(q.opcoes||[]).map(o=>`<button type="button" class="rn-op${o.periodo===q.periodo_atual?' atual':''}" onclick="renovaPix('${esc(o.periodo)}')"><b>${esc(o.rotulo)}</b><span>${upR(o.preco)}</span><small>Novo vencimento: ${esc(fdhv(o.novo_vence))}</small></button>`).join('')}</div><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Agora não</button>`)}
+  catch(e){upModal(`<div class="lki">⚠️</div><h3>Não foi possível calcular</h3><p>${esc((e&&e.message)||e)}</p><button type="button" class="btn red" onclick="upFecha()">Fechar</button>`)}}
+async function renovaPix(per){upModal('<div class="lki">💸</div><h3>Gerando o Pix…</h3><p>Aguarde um instante.</p>');
+  try{const r=await sb.rpc('meu_renovar_criar',{p_periodo:per});if(r.error)throw r.error;const d=r.data||{};
+    upModal(`<div class="lki">💸</div><h3>Pague o Pix de ${upR(d.valor)}</h3><p>Abra o app do seu banco, escolha <b>Pix</b> e leia o QR Code ou use o código Pix Copia e Cola.</p>${d.qr64?`<img class="up-qr" alt="QR Code do Pix" src="data:image/png;base64,${esc(d.qr64)}">`:''}<textarea class="up-cp" id="up_cp" readonly rows="3" aria-label="Pix Copia e Cola">${esc(d.qr||'')}</textarea><button type="button" class="btn red" onclick="upCopia()">Copiar código Pix</button><p class="up-n" id="up_st">⏳ Aguardando o pagamento… a renovação é automática.</p><button type="button" class="btn" onclick="upFecha()">Fechar (a renovação continua automática)</button>`);renEspera(d.token)}
+  catch(e){upModal(`<div class="lki">⚠️</div><h3>Não foi possível gerar o Pix</h3><p>${esc((e&&e.message)||e)}</p><button type="button" class="btn red" onclick="renovaAbre()">Tentar de novo</button><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Fechar</button>`)}}
+function renEspera(tk){clearInterval(UPT);let n=0;UPT=setInterval(async()=>{if(!document.getElementById('upm')){clearInterval(UPT);return}if(++n>450){clearInterval(UPT);return}
+  try{const r=await sb.rpc('ps_verificar',{p_token:tk}),s=r&&r.data&&r.data.status;
+    if(s==='pagamento_aprovado'){clearInterval(UPT);upModal(`<div class="lki">🎉</div><h3>Plano renovado!</h3><p>Pagamento confirmado. O seu novo prazo já está valendo e o seu site continua no ar.</p><button type="button" class="btn red" onclick="renovaPronto()">Ver meu plano</button>`)}
+    else if(s==='falha_ativacao'){clearInterval(UPT);upModal(`<div class="lki">⚠️</div><h3>Pagamento recebido</h3><p>Recebemos o seu Pix, mas a renovação precisa de uma conferência do moderador. Ele já foi avisado e resolve em seguida.</p><button type="button" class="btn red" onclick="upFecha()">Entendi</button>`)}
+    else if(s==='cancelado'||s==='expirado'){clearInterval(UPT);upModal(`<div class="lki">⌛</div><h3>Este Pix expirou</h3><p>Gere um novo para continuar.</p><button type="button" class="btn red" onclick="renovaAbre()">Gerar outro</button><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Fechar</button>`)}}
+  catch(e){}},4000)}
+async function renovaPronto(){upFecha();MP=undefined;AC=null;try{await meuPlano()}catch(e){}adm('inicio')}
 
 async function init(){
   if(DEMO){V={nome:'Seu Nome',bio:'Conectando você à sua próxima moto com as melhores condições!',whatsapp:'',instagram:''};M=DEMO_M;
@@ -2073,7 +2143,7 @@ let MP,mpT=null;
 const fdhv=x=>{const d=new Date(x);return isNaN(d)?'-':d.toLocaleDateString('pt-BR')+' às '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})};
 async function meuPlano(){if(MP===undefined){try{const r=await sb.rpc('meu_plano');MP=(r&&r.data)||null}catch(e){MP=null}}await expCarrega();paintPlano()}
 /* ---- Início ---- */
-async function pInicio(){
+async function pInicio0(){
   $('#pn').innerHTML='<div class="sk" style="height:150px;border-radius:18px"></div><div class="sk" style="height:90px;border-radius:18px;margin-top:14px"></div>';
   await vdLoad();if(T!=='inicio')return;
   const hr=new Date().getHours(),sd=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',novos=VD.filter(vdNovo),hoje=VD.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()).length;
