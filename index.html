@@ -475,7 +475,7 @@ button.vt-o:hover{border-color:#6d28d9;background:#f2edff;transform:translateY(-
 .pp-l li.ok{background:#ecfdf3;border-color:#b7e4c7}.pp-i{font-size:26px}.pp-l b{display:block;font-size:16.5px}.pp-l small{display:block;color:#4a4a5a;font-size:14.5px;line-height:1.4}
 .pp-ok{font-weight:800;color:#16803c;font-size:14.5px}.pp-l .btn{width:auto;padding:11px 18px;font-weight:800}
 @media(max-width:640px){.pp-l li{grid-template-columns:auto 1fr}.pp-l li .btn,.pp-l li .pp-ok{grid-column:1/-1}}
-/*v24-painel-neutro*/html body:has(.shell) .btn.red,html body:has(.shell) .shell .btn.red{background:var(--r,#c80000)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 8px 18px -10px var(--r,#c80000)!important}/*v25-corrige*/button[onclick*="psTestaConfete"]{min-height:42px;padding:10px 18px;font-size:14.5px;font-weight:700}</style>
+/*v24-painel-neutro*/html body:has(.shell) .btn.red,html body:has(.shell) .shell .btn.red{background:var(--r,#c80000)!important;color:#fff!important;border-color:transparent!important;box-shadow:0 8px 18px -10px var(--r,#c80000)!important}/*v25-corrige*/button[onclick*="psTestaConfete"]{min-height:42px;padding:10px 18px;font-size:14.5px;font-weight:700}/*v26-fim*/</style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
 .ck b{display:block;font-size:14px;margin-bottom:4px}.ck p{margin:0 0 6px;color:#d7d7dd}.ck a{color:#fff;text-decoration:underline}
@@ -1396,7 +1396,22 @@ function iniPassosH(){const link=location.origin+'/'+SLUG;if(INIVIS===undefined)
     {ok:(VD||[]).length>0,ic:'👥',t:'Receba o primeiro cliente',d:'Quando alguém preencher o “Fale comigo”, ele aparece em Clientes.',b:''}];
   const n=P.filter(x=>x.ok).length;if(n===P.length)return'';
   return `<section class="card2 ini-card ini-ps">${iniHd('🚀','Primeiros passos',n+' de '+P.length+' concluídos','c4')}<div class="ini-bd"><div class="pp-bar" role="progressbar" aria-valuenow="${n}" aria-valuemin="0" aria-valuemax="${P.length}"><i style="width:${Math.round(n/P.length*100)}%"></i></div><ul class="pp-l">${P.map(x=>`<li class="${x.ok?'ok':''}"><span class="pp-i" aria-hidden="true">${x.ok?'✅':x.ic}</span><div><b>${x.t}</b><small>${x.d}</small></div>${x.ok?'<span class="pp-ok">Feito</span>':x.b}</li>`).join('')}</ul></div></section>`}
-const PN_CL=['cn-reto','cn-suave','cn-redondo','fn-el','fn-ar','tp-cor','bt-gr','bt-ct','fd-su','fd-cr','cs-co','cs-gr','an-off'];const __adm0=adm;adm=function(t){if(t==='personalizar'){try{localStorage.setItem('pf_pers','1')}catch(e){}}const r=__adm0.apply(this,arguments);try{if(T!=='personalizar')document.documentElement.classList.remove(...PN_CL)}catch(e){}return r};
+const PN_CL=['cn-reto','cn-suave','cn-redondo','fn-el','fn-ar','tp-cor','bt-gr','bt-ct','fd-su','fd-cr','cs-co','cs-gr','an-off'];const __adm0=adm;adm=function(t){if(t==='personalizar'){try{localStorage.setItem(pfK('pf_pers'),'1')}catch(e){}}const r=__adm0.apply(this,arguments);try{if(T!=='personalizar')document.documentElement.classList.remove(...PN_CL)}catch(e){}return r};
+
+/* ===== v26: Clientes felizes (vídeos primeiro) + Primeiros passos (4 etapas, some para sempre) ===== */
+const enOrd=L=>L.map((x,i)=>[x,i]).sort((a,b)=>(((a[0].u&&!a[0].f)?0:1)-((b[0].u&&!b[0].f)?0:1))||(a[1]-b[1])).map(a=>a[0]);
+const pfK=k=>k+'_'+((typeof V==='object'&&V&&V.id)||'x');
+function passoLink(l){try{localStorage.setItem(pfK('pf_link'),'1')}catch(e){}cpTxt(l);iniRedesenha()}
+let PASSOS_SALVANDO=false;
+async function passosFim(){if(PASSOS_SALVANDO)return;PASSOS_SALVANDO=true;try{localStorage.setItem(pfK('pf_ok'),'1')}catch(e){}try{const config={...CF(),passos_ok:true};const{error}=await sb.from('vendedores').update({config}).eq('id',V.id);if(!error)V.config=config}catch(e){}}
+function iniPassosH(){if((CF()||{}).passos_ok||pfGet(pfK('pf_ok')))return'';
+  const link=location.origin+'/'+SLUG;if(INIVIS===undefined)iniVisCarrega();
+  const P=[{ok:!!V.foto_url,ic:'📸',t:'Coloque a sua foto de perfil',d:'O cliente confia mais em quem mostra o rosto.',b:`<button type="button" class="btn" onclick="CTAB='perfil';adm('conta')">Adicionar foto</button>`},
+    {ok:pfGet(pfK('pf_link')),ic:'🔗',t:'Copie o seu link e divulgue',d:'Instagram, status do WhatsApp e grupos.',b:`<button type="button" class="btn" onclick="passoLink('${esc(link)}')">Copiar link</button>`},
+    {ok:pfGet(pfK('pf_pers')),ic:'🎨',t:'Personalize o seu site',d:'Cores, letras, botões e efeitos.',b:`<button type="button" class="btn" onclick="adm('personalizar')">Personalizar</button>`},
+    {ok:!!(INIVIS&&INIVIS.visitas>0),ic:'👀',t:'Receba a primeira visita',d:'Assim que alguém abrir o seu link, isto marca sozinho.',b:''}];
+  const n=P.filter(x=>x.ok).length;if(n===P.length){passosFim();return''}
+  return `<section class="card2 ini-card ini-ps">${iniHd('🚀','Primeiros passos',n+' de '+P.length+' concluídos','c4')}<div class="ini-bd"><div class="pp-bar" role="progressbar" aria-valuenow="${n}" aria-valuemin="0" aria-valuemax="${P.length}"><i style="width:${Math.round(n/P.length*100)}%"></i></div><ul class="pp-l">${P.map(x=>`<li class="${x.ok?'ok':''}"><span class="pp-i" aria-hidden="true">${x.ok?'✅':x.ic}</span><div><b>${x.t}</b><small>${x.d}</small></div>${x.ok?'<span class="pp-ok">Feito</span>':x.b}</li>`).join('')}</ul></div></section>`}
 
 async function init(){
   if(DEMO){V={nome:'Seu Nome',bio:'Conectando você à sua próxima moto com as melhores condições!',whatsapp:'',instagram:''};M=DEMO_M;
@@ -1545,7 +1560,7 @@ function enSlow(){document.querySelectorAll('.en-w').forEach(w=>{const s=w.query
     if(dir>0&&pos>=max-1){dir=-1;pausa=Date.now()+2500}else if(dir<0&&pos<=0){dir=1;pausa=Date.now()+2500}}
   if(window.IntersectionObserver)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis){last=0;requestAnimationFrame(tick)}},{threshold:.1}).observe(w);else{vis=true;requestAnimationFrame(tick)}})}
 function enNav(btn,d){const s=btn.parentElement.querySelector('.en-s');if(s)s.scrollBy({left:d*Math.max(260,s.clientWidth*.8),behavior:'smooth'})}
-const entH=()=>{const all=(CF().entregas||[]).filter(enOk),en=all.filter(x=>x.t!=='c'),ct=all.filter(x=>x.t==='c');let h='';
+const entH=()=>{const all=(CF().entregas||[]).filter(enOk),en=enOrd(all.filter(x=>x.t!=='c')),ct=enOrd(all.filter(x=>x.t==='c'));let h='';
   if(en.length)h+=`<section class="ent" id="entregas"><div class="sec"><div><span class="eyb ey2">CLIENTES FELIZES</span><h2>Mais um sonho realizado</h2><p class="mu" style="margin:4px 0 0;font-size:14px">Quem já saiu de moto nova com a gente.</p></div></div><div class="en-w"><div class="en-s">${en.map(entCard).join('')}</div><button type="button" class="en-nv l" aria-label="Anterior" onclick="enNav(this,-1)">‹</button><button type="button" class="en-nv r" aria-label="Próximo" onclick="enNav(this,1)">›</button></div></section>`;
   if(ct.length)h+=`<section class="ent" id="contemplacoes"><div class="sec"><div><span class="eyb ey2">REGISTROS DE CONTEMPLAÇÃO</span><h2>Conquistas compartilhadas</h2><p class="mu" style="margin:4px 0 0;font-size:14px">Confira os registros compartilhados.</p></div></div><div class="en-w"><div class="en-s">${ct.map(entCard).join('')}</div><button type="button" class="en-nv l" aria-label="Anterior" onclick="enNav(this,-1)">‹</button><button type="button" class="en-nv r" aria-label="Próximo" onclick="enNav(this,1)">›</button></div></section>`;
   return h};
