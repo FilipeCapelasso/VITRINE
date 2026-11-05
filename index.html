@@ -483,7 +483,7 @@ button.vt-o:hover{border-color:#6d28d9;background:#f2edff;transform:translateY(-
 .cd-cv{display:block;width:100%;height:auto;aspect-ratio:4/5;border-radius:12px;background:#eef0f6}
 .cd-i>b{font-size:15.5px;line-height:1.3}.cd-b{display:flex;gap:8px;margin-top:auto}.cd-b .btn{flex:1;width:auto;padding:13px 10px;font-size:15px;font-weight:800}
 @media(max-width:640px){.cd-g{grid-template-columns:1fr}.mt-seg button{flex:1}}
-</style>
+/*v29-cookies*/html body .ck{left:16px;right:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:calc(100% - 32px);max-width:440px;margin:0;border-radius:22px;padding:20px 22px;font-size:14.5px;line-height:1.55}html body .ck b{font-size:17px;margin-bottom:8px}html body .ck p{margin:0 0 10px}html body .ck .r{margin-top:14px}html body .ck button{padding:12px 30px;font-size:15px}html body .ck a{font-weight:600}@media(max-width:520px){html body .ck{left:12px;right:12px;width:auto;max-width:none;padding:18px 18px}}</style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
 .ck b{display:block;font-size:14px;margin-bottom:4px}.ck p{margin:0 0 6px;color:#d7d7dd}.ck a{color:#fff;text-decoration:underline}
@@ -506,10 +506,10 @@ function polAbrir(e){
   function banner(){
     if(lido()||document.getElementById('ckb'))return;
     const d=document.createElement('div');d.id='ckb';d.className='ck';d.setAttribute('role','dialog');d.setAttribute('aria-label','Aviso de cookies e privacidade');
-    d.innerHTML='<b>Uso de Cookies</b><p>Este site utiliza cookies para melhorar sua experiência de navegação, personalizar conteúdos e analisar o tráfego. Ao continuar navegando, você concorda com o uso desses cookies.</p><p>Seus dados são tratados conforme a Lei Geral de Proteção de Dados (LGPD), com respeito à sua privacidade. Você pode gerenciar suas preferências a qualquer momento nas configurações do navegador.</p><div class="r"><button type="button" id="ckok">Aceitar</button><a href="#" id="ckpp">Política de Privacidade</a></div>';
+    d.innerHTML='<b>Uso de Cookies</b><p>Este site utiliza cookies para melhorar sua experiência de navegação, personalizar conteúdos e analisar o tráfego. Ao continuar navegando, você concorda com o uso desses cookies.</p><p>Seus dados são tratados conforme a Lei Geral de Proteção de Dados (LGPD), com respeito à sua privacidade. Você pode gerenciar suas preferências a qualquer momento nas configurações do navegador.</p><div class="r"><button type="button" id="ckok">Aceitar</button><a href="https://termosgrupostar.vercel.app/" target="_blank" rel="noopener" id="ckpp">Política de Privacidade</a></div>';
     document.body.appendChild(d);d.style.display='block';
     document.getElementById('ckok').onclick=function(){try{localStorage.setItem(K,'1')}catch(e){}d.remove()};
-    document.getElementById('ckpp').onclick=polAbrir}
+    document.getElementById('ckpp').onclick=function(e){if(!POLITICA_URL)return polAbrir(e)}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',banner);else banner();
 })();
 </script>
