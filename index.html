@@ -483,7 +483,9 @@ button.vt-o:hover{border-color:#6d28d9;background:#f2edff;transform:translateY(-
 .cd-cv{display:block;width:100%;height:auto;aspect-ratio:4/5;border-radius:12px;background:#eef0f6}
 .cd-i>b{font-size:15.5px;line-height:1.3}.cd-b{display:flex;gap:8px;margin-top:auto}.cd-b .btn{flex:1;width:auto;padding:13px 10px;font-size:15px;font-weight:800}
 @media(max-width:640px){.cd-g{grid-template-columns:1fr}.mt-seg button{flex:1}}
-/*v29-cookies*/html body .ck{left:16px;right:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:calc(100% - 32px);max-width:440px;margin:0;border-radius:22px;padding:20px 22px;font-size:14.5px;line-height:1.55}html body .ck b{font-size:17px;margin-bottom:8px}html body .ck p{margin:0 0 10px}html body .ck .r{margin-top:14px}html body .ck button{padding:12px 30px;font-size:15px}html body .ck a{font-weight:600}@media(max-width:520px){html body .ck{left:12px;right:12px;width:auto;max-width:none;padding:18px 18px}}/*v30-catalogo*//*v31-so-catalogo*/</style>
+/*v29-cookies*/html body .ck{left:16px;right:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:calc(100% - 32px);max-width:440px;margin:0;border-radius:22px;padding:20px 22px;font-size:14.5px;line-height:1.55}html body .ck b{font-size:17px;margin-bottom:8px}html body .ck p{margin:0 0 10px}html body .ck .r{margin-top:14px}html body .ck button{padding:12px 30px;font-size:15px}html body .ck a{font-weight:600}@media(max-width:520px){html body .ck{left:12px;right:12px;width:auto;max-width:none;padding:18px 18px}}/*v30-catalogo*//*v31-so-catalogo*//*v32-logo-loja-whats*/.hero.hasl{padding-top:126px}.hlg-w{position:absolute;z-index:3;top:28px;left:max(40px,calc((100% - 1376px)/2));animation:up .7s cubic-bezier(.2,.8,.2,1) both}@media(min-width:2200px){.hlg-w{left:max(40px,calc((100% - 1500px)/2))}}@media(max-width:980px){.hero.hasl{padding-top:106px}.hlg-w{top:22px;left:18px}}.hlg{display:inline-flex;align-items:center;border-radius:14px}.hlg img{display:block;height:46px;width:auto;max-width:min(260px,62vw);object-fit:contain}.hlg-escuro{background:#08080bb3;padding:10px 18px;border:1px solid #ffffff1c;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}.hlg-claro{background:#fff;padding:10px 18px;box-shadow:0 10px 24px -14px #000}.hlg-nenhum{padding:0}@media(min-width:900px){.hlg img{height:56px}}
+.criar-w{margin:22px 0 6px;text-align:center}.criar{display:inline-flex;align-items:center;justify-content:center;padding:16px 30px;border-radius:99px;background:var(--r);color:#fff;font-weight:800;font-size:15.5px;text-decoration:none;box-shadow:0 14px 28px -16px var(--r);transition:filter .2s,transform .2s}.criar:hover{filter:brightness(.92);transform:translateY(-2px)}
+.cf-st{margin:14px 0;padding:14px 18px;border-radius:12px;background:#f1f1f6;display:flex;flex-direction:column;gap:2px}.cf-st.on{background:#e4f7ea}.cf-st span{color:var(--mu,#666);font-size:14px}.cf-pv{margin:12px 0;max-width:560px}.cf-pv .vid{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#000}.cf-lk{display:flex;gap:8px;flex-wrap:wrap}.cf-lk input{flex:1;min-width:220px}.cf-del{background:#fff;color:#c00;border:1px solid #f1b9b9}</style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
 .ck b{display:block;font-size:14px;margin-bottom:4px}.ck p{margin:0 0 6px;color:#d7d7dd}.ck a{color:#fff;text-decoration:underline}
@@ -1065,7 +1067,7 @@ let V={nome:'Vendedor',whatsapp:''},M=[],L=[],A=[],K=[],Q='',C='Todas',G=0,cur=0
 const toast=t=>{const e=$('#toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2800)};
 const ORIG=(()=>{try{const q=new URLSearchParams(location.search),o=['utm_source','utm_medium','utm_campaign','utm_content'].map(k=>q.get(k)).filter(Boolean);if(!o.length&&q.get('fbclid'))o.push('facebook');if(o.length){sessionStorage.setItem('orig',o.join(' / '));return o.join(' / ')}return sessionStorage.getItem('orig')||''}catch(e){return''}})();
 const origTxt=()=>ORIG?'\n\n(origem: '+ORIG.slice(0,80)+')':'';
-const wa=t=>`https://wa.me/${V.whatsapp}?text=${encodeURIComponent(t+origTxt())}`;
+const wa=t=>`https://wa.me/${waNum(V.whatsapp)}?text=${encodeURIComponent(t+origTxt())}`;
 const tel=()=>{const n=(V.whatsapp||'').replace(/^55/,'');return n.length>=10?`(${n.slice(0,2)}) ${n.slice(2,-4)}-${n.slice(-4)}`:n};
 const av=(u,c)=>u?`<img class="ava ${c||''}" ${IMGA(u,'ava')} alt="${esc(V.nome)}" decoding="async" data-foto="1" title="Ver foto" tabindex="0" role="button">`:`<div class="ava ${c||''}">${esc((V.nome||'?')[0])}</div>`;
 const img0=m=>(m.fotos||[])[0]||'';
@@ -1302,7 +1304,7 @@ async function pInicio(){ $('#pn').innerHTML='<div class="sk" style="height:150p
   const [atu,vot,ren]=await Promise.all([q('meu_atualizacoes'),q('meu_votacao'),q('meu_renovar_orcamento')]);if(T!=='inicio')return;
   INI={atu:Array.isArray(atu)?atu:[],vot:vot||{ativa:false},ren:ren||null};
   const hr=new Date().getHours(),sd=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',novos=VD.filter(vdNovo),hoje=VD.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()).length;
-  const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length,link=location.origin+'/'+SLUG,nn=novos.length;
+  const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length,link=siteUrl()+'/'+SLUG,nn=novos.length;
   $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button><button class="btn" onclick="adm('playbook')">📚 Abrir o playbook</button></div></section>${renAvisoH()}<div id="ini_x">${iniPassosH()}${iniAtuH()}${iniVotH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
 /* --- renovar o plano (Pix) --- */
 async function renovaAbre(){document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">🔄</div><h3>Renovar plano</h3><p>Calculando…</p>');
@@ -1367,7 +1369,7 @@ async function visCarrega(){const v=document.getElementById('vs_v');if(!v)return
 function visPer(d){VISD=d;VISDATA=null;visCarrega()}
 const VIS_OR={instagram:'📸 Instagram',facebook:'👥 Facebook',whatsapp:'💬 WhatsApp',google:'🔎 Google',tiktok:'🎵 TikTok',youtube:'▶️ YouTube',telegram:'✈️ Telegram',x:'🐦 X (Twitter)',direto:'🔗 Link direto',outros:'🌐 Outros sites'};
 function visBarras(L,k,v,nome){const mx=Math.max(1,...L.map(x=>+x[v]||0));return L.length?L.map(x=>`<div class="vs-r"><span class="vs-rn">${esc(nome?nome(x[k]):x[k])}</span><span class="vs-rb"><i style="width:${Math.max(4,Math.round((+x[v]||0)/mx*100))}%"></i></span><b>${+x[v]||0}</b></div>`).join(''):'<p class="vs-vz">Ainda sem dados neste período.</p>'}
-function visDesenha(){const el=document.getElementById('vs_v'),d=VISDATA;if(!el||!d)return;const link=location.origin+'/'+SLUG,pct=d.visitas?Math.round(d.exploraram*100/d.visitas):0,vazio=!d.visitas&&!d.whatsapp&&!d.chats,pd=d.por_dia||[],mx=Math.max(1,...pd.map(x=>x.visitas)),passo=pd.length>16?5:pd.length>8?2:1;
+function visDesenha(){const el=document.getElementById('vs_v'),d=VISDATA;if(!el||!d)return;const link=siteUrl()+'/'+SLUG,pct=d.visitas?Math.round(d.exploraram*100/d.visitas):0,vazio=!d.visitas&&!d.whatsapp&&!d.chats,pd=d.por_dia||[],mx=Math.max(1,...pd.map(x=>x.visitas)),passo=pd.length>16?5:pd.length>8?2:1;
   const card=(ic,n,t,s,cl)=>`<div class="vs-k ${cl}"><span class="vs-ki" aria-hidden="true">${ic}</span><b>${n}</b><strong>${t}</strong><small>${s}</small></div>`;
   el.innerHTML=`<section class="card2 ini-card vs-card"><div class="ini-hd c2"><span class="ini-ic" aria-hidden="true">👁️</span><div><h3>Visitas ao seu site</h3><p>Quem entrou e o que explorou, sem mostrar dados pessoais</p></div><div class="vs-per" role="group" aria-label="Período">${[7,14,30].map(n=>`<button type="button" class="${VISD===n?'on':''}" onclick="visPer(${n})">${n} dias</button>`).join('')}</div></div><div class="ini-bd">
 ${vazio?`<div class="vs-empty"><b>Ainda não há visitas registradas.</b><p>A contagem começa a valer a partir de agora. Divulgue o seu link no Instagram, no WhatsApp e nos seus grupos e volte aqui para ver quem entrou.</p><button type="button" class="btn red" onclick="cpTxt('${esc(link)}')">🔗 Copiar link do meu site</button></div>`:''}
@@ -1389,14 +1391,11 @@ function iniPlanoH(){const r=INI.ren;if(!r)return'';
 
 /* ===== v23: selo "valores conferidos" + Primeiros passos do vendedor ===== */
 let CAT_EM=null,INIVIS;
-const catTxt=()=>{if(!CAT_EM)return'';try{const t=new Date(CAT_EM).toLocaleString('pt-BR',{timeZone:'America/Rio_Branco',day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'}).replace(', ',' às ');return '✔ Valores conferidos no site oficial do Consórcio Honda em '+t+'.'}catch(e){return''}};
-const catSelo=()=>`<span class="cat-selo">${esc(catTxt())}</span>`;
-function catCarrega(){try{if(!sb||DEMO)return;Promise.resolve(sb.rpc('catalogo_atualizado_em')).then(r=>{if(r&&!r.error&&r.data){CAT_EM=r.data;document.querySelectorAll('.cat-selo').forEach(e=>e.textContent=catTxt())}}).catch(()=>{})}catch(e){}}
-setTimeout(catCarrega,1200);
+const catTxt=()=>'';const catSelo=()=>'';
 const pfGet=k=>{try{return localStorage.getItem(k)==='1'}catch(e){return false}};
 function passoLink(l){try{localStorage.setItem('pf_link','1')}catch(e){}cpTxt(l);iniRedesenha()}
 async function iniVisCarrega(){if(INIVIS!==undefined)return;INIVIS=null;try{const r=await sb.rpc('meu_visitas',{p_dias:30});if(r&&!r.error&&r.data)INIVIS=r.data}catch(e){}iniRedesenha()}
-function iniPassosH(){const link=location.origin+'/'+SLUG;if(INIVIS===undefined)iniVisCarrega();
+function iniPassosH(){const link=siteUrl()+'/'+SLUG;if(INIVIS===undefined)iniVisCarrega();
   const P=[{ok:!!V.foto_url,ic:'📸',t:'Coloque a sua foto de perfil',d:'O cliente confia mais em quem mostra o rosto.',b:`<button type="button" class="btn" onclick="CTAB='perfil';adm('conta')">Adicionar foto</button>`},
     {ok:pfGet('pf_link'),ic:'🔗',t:'Copie o seu link e divulgue',d:'Instagram, status do WhatsApp e grupos.',b:`<button type="button" class="btn" onclick="passoLink('${esc(link)}')">Copiar link</button>`},
     {ok:pfGet('pf_pers'),ic:'🎨',t:'Personalize o seu site',d:'Cores, letras, botões e efeitos.',b:`<button type="button" class="btn" onclick="adm('personalizar')">Personalizar</button>`},
@@ -1413,7 +1412,7 @@ function passoLink(l){try{localStorage.setItem(pfK('pf_link'),'1')}catch(e){}cpT
 let PASSOS_SALVANDO=false;
 async function passosFim(){if(PASSOS_SALVANDO)return;PASSOS_SALVANDO=true;try{localStorage.setItem(pfK('pf_ok'),'1')}catch(e){}try{const config={...CF(),passos_ok:true};const{error}=await sb.from('vendedores').update({config}).eq('id',V.id);if(!error)V.config=config}catch(e){}}
 function iniPassosH(){if((CF()||{}).passos_ok||pfGet(pfK('pf_ok')))return'';
-  const link=location.origin+'/'+SLUG;if(INIVIS===undefined)iniVisCarrega();
+  const link=siteUrl()+'/'+SLUG;if(INIVIS===undefined)iniVisCarrega();
   const P=[{ok:!!V.foto_url,ic:'📸',t:'Coloque a sua foto de perfil',d:'O cliente confia mais em quem mostra o rosto.',b:`<button type="button" class="btn" onclick="CTAB='perfil';adm('conta')">Adicionar foto</button>`},
     {ok:pfGet(pfK('pf_link')),ic:'🔗',t:'Copie o seu link e divulgue',d:'Instagram, status do WhatsApp e grupos.',b:`<button type="button" class="btn" onclick="passoLink('${esc(link)}')">Copiar link</button>`},
     {ok:pfGet(pfK('pf_pers')),ic:'🎨',t:'Personalize o seu site',d:'Cores, letras, botões e efeitos.',b:`<button type="button" class="btn" onclick="adm('personalizar')">Personalizar</button>`},
@@ -1474,12 +1473,35 @@ async function cdDesenha(cv,m,k,semFoto){const W=1080,H=1350,x=cv.getContext('2d
   /* rodapé */
   x.textAlign='center';x.fillStyle='#6a6a78';cdFit(x,'*Os valores podem ser ajustados conforme tabela do consórcio.',1000,25,600,18);x.fillText('*Os valores podem ser ajustados conforme tabela do consórcio.',540,1240);
   let yy=1278;if(typeof catTxt==='function'&&catTxt()){x.fillStyle='#2f6a3f';cdFit(x,catTxt(),1000,24,700,16);x.fillText(catTxt(),540,yy);yy+=38}
-  x.fillStyle='#c80000';cdFit(x,location.host+'/'+SLUG,1000,27,800,16);x.fillText(location.host+'/'+SLUG,540,yy+4);x.textAlign='left';return cv}
+  x.fillStyle='#c80000';cdFit(x,siteUrl().replace(/^https?:\/\//,'')+'/'+SLUG,1000,27,800,16);x.fillText(siteUrl().replace(/^https?:\/\//,'')+'/'+SLUG,540,yy+4);x.textAlign='left';return cv}
 async function cdBlob(m,semFoto){const cv=document.createElement('canvas');await cdDesenha(cv,m,1,semFoto);return new Promise((res,rej)=>cv.toBlob(b=>b?res(b):rej(new Error('vazio')),'image/png'))}
 const cdNome=m=>(SLUG+'-'+(m.nome||'moto')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.png';
 async function cdPronto(m){try{return{b:await cdBlob(m),aviso:''}}catch(e){return{b:await cdBlob(m,true),aviso:' (sem a foto da moto: o navegador bloqueou)'}}}
 async function cdBaixa(id){const m=M.find(x=>x.id===id);if(!m)return;toast('Gerando a imagem…');try{const r=await cdPronto(m),u=URL.createObjectURL(r.b),a=document.createElement('a');a.href=u;a.download=cdNome(m);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);toast('Imagem baixada: '+cdNome(m)+r.aviso)}catch(e){toast('Não consegui gerar a imagem. Tente de novo.')}}
 async function cdEnvia(id){const m=M.find(x=>x.id===id);if(!m)return;try{const r=await cdPronto(m),f=new File([r.b],cdNome(m),{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:m.nome});else toast('Seu aparelho não permite enviar direto: use o botão Baixar.')}catch(e){if(e&&e.name!=='AbortError')toast('Não consegui enviar. Use o botão Baixar.')}}
+
+
+/* ===== v32: logo global, WhatsApp completo, vídeo "Como funciona" do vendedor ===== */
+function waNum(n){let d=String(n||'').replace(/\D/g,'').replace(/^0+/,'');if(d.length===10||d.length===11)d='55'+d;return d}
+function waOpen(u){try{const w=window.open(u,'_blank');if(!w)location.href=u}catch(e){location.href=u}}
+function siteUrl(){return String((typeof CFG!=='undefined'&&CFG&&CFG.url_vitrine)||location.origin).replace(/\/+$/,'')}
+function cfUrl(){const c=((CF()||{}).como_funciona||{}).u;return /^https?:\/\//i.test(c||'')?c:CFG['video_como_funciona']}
+function logoOk(){return !!(CFG&&/^https?:\/\//i.test(CFG.logo_empresa||''))}
+function logoH(){if(!logoOk())return'';const u=CFG.logo_empresa;const f=['escuro','claro','nenhum'].includes(CFG.logo_fundo)?CFG.logo_fundo:'escuro';return `<div class="hlg-w"><div class="hlg hlg-${f}"><img src="${esc(u)}" alt="Logo da empresa" decoding="async" onerror="var h=document.querySelector('.hero');this.closest('.hlg-w').remove();if(h)h.classList.remove('hasl')"></div></div>`}
+async function cfSave(o){const config={...CF()};if(o)config.como_funciona=o;else delete config.como_funciona;const{error}=await sb.from('vendedores').update({config}).eq('id',V.id);if(error)throw error;V.config=config}
+function cfRm(u){try{const m=/\/object\/public\/midia\/(.+)$/.exec(String(u||''));if(m){const p=decodeURIComponent(m[1]);if(p.startsWith(V.id+'/'))sb.storage.from('midia').remove([p])}}catch(e){}}
+function pComo(){const c=CF().como_funciona||{},u=c.u||'',custom=/^https?:\/\//i.test(u),vu=custom?u:(CFG['video_como_funciona']||''),arq=/\/storage\/v1\/object\/public\//.test(u);
+  $(PNS).innerHTML=`<h3 style="margin-top:0">Como funciona o consórcio</h3><p class="mu">Este é o vídeo que abre quando o cliente toca em <b>“Como funciona?”</b> no seu site. Por padrão aparece o <b>vídeo oficial da Honda</b>. Você pode trocar pelo seu próprio vídeo e, se excluir, o da Honda volta.</p>
+  <div class="cf-st${custom?' on':''}"><b>${custom?'O seu vídeo está no ar':'Vídeo oficial da Honda'}</b><span>${custom?'Ele aparece no seu site no lugar do vídeo da Honda.':'É o vídeo que os seus clientes estão vendo agora.'}</span></div>
+  ${vu?`<div class="cf-pv">${vid(vu)}</div>`:'<p class="mu">Nenhum vídeo está configurado.</p>'}
+  <div class="pv-act"><label class="upl">🎬 ${custom?'Trocar pelo meu vídeo':'Enviar o meu vídeo'} (MP4, até 50 MB)<input type="file" accept="video/mp4,video/webm" onchange="cfFile(this)" hidden></label></div>
+  <div class="fld"><label class="l" for="cf_l">Ou cole o link do vídeo (YouTube, Instagram, Facebook, TikTok ou Vimeo)</label><div class="cf-lk"><input id="cf_l" placeholder="https://youtube.com/watch?v=..." value="${custom&&!arq?esc(u):''}"><button class="btn red" type="button" onclick="cfLink()">Usar este link</button></div></div>
+  ${custom?`<p><button class="btn cf-del" type="button" onclick="cfDel()">🗑️ Excluir o meu vídeo e voltar ao da Honda</button></p>`:''}`}
+async function cfFile(el){const f=el.files&&el.files[0];if(!f)return;if(!/^video\/(mp4|webm)$/i.test(f.type||'')&&!/\.(mp4|webm)$/i.test(f.name)){el.value='';return toast('Envie o vídeo em MP4 ou WebM')}if(f.size>50*1024*1024){el.value='';return toast('O vídeo passa de 50 MB: reduza o tamanho do arquivo e envie de novo')}
+  try{toast('Enviando vídeo...');const ant=(CF().como_funciona||{}).u,r=await upVideo(f);await cfSave({u:r.u,...(r.p?{p:r.p}:{})});if(ant&&ant!==r.u)cfRm(ant);pComo();toast('O seu vídeo agora aparece no seu site!')}catch(e){el.value='';toast('Erro: '+(e&&e.message||e))}}
+async function cfLink(){const v=($('#cf_l').value||'').trim();if(!/^https:\/\/[^\s]+$/i.test(v))return toast('Cole um link que comece com https://');if(vKind(v)==='link')return toast('Esse link não parece ser de um vídeo. Use YouTube, Instagram, Facebook, TikTok ou Vimeo.');
+  try{const ant=(CF().como_funciona||{}).u;await cfSave({u:v});if(ant&&ant!==v)cfRm(ant);pComo();toast('Link salvo! Ele aparece no seu site.')}catch(e){toast('Erro: '+(e&&e.message||e))}}
+async function cfDel(){if(!confirm('Excluir o seu vídeo? O vídeo oficial da Honda volta a aparecer no seu site.'))return;try{const ant=(CF().como_funciona||{}).u;await cfSave(null);cfRm(ant);pComo();toast('Pronto! Voltou o vídeo oficial da Honda.')}catch(e){toast('Erro: '+(e&&e.message||e))}}
 
 async function init(){
   if(DEMO){V={nome:'Seu Nome',bio:'Conectando você à sua próxima moto com as melhores condições!',whatsapp:'',instagram:''};M=DEMO_M;
@@ -1487,7 +1509,7 @@ async function init(){
   if(!M.length)$('#app').innerHTML='<div class="hero" style="min-height:230px" aria-busy="true"><div class="hin nl"><div class="ava" style="background:#ffffff1a"></div><div class="idt"><i class="skl" style="width:55%"></i><i class="skl" style="width:80%;height:12px"></i></div></div></div><div class="wrap" style="padding-top:28px"><div class="grid">'+'<div class="sk"></div>'.repeat(8)+'</div></div>';
   const [v,m,cf,cu]=await Promise.all([sb.from('vendedor_publico').select().maybeSingle(),sb.from('motos').select().order('ordem').order('created_at'),Promise.resolve(sb.rpc('config_publica')).then(r=>r,()=>({data:null})),Promise.resolve(sb.rpc('custom_publica',PREVIA?{p_previa:PREVIA}:{})).then(r=>r,()=>({data:null}))]);
   CFG=(cf&&cf.data&&typeof cf.data==='object')?cf.data:{};
-  if(!v.data||v.data.suspenso)return off(!v.data);V=v.data;M=m.data||[];aplicaCustom(cu&&cu.data);try{if(SLUG){let l=document.querySelector('link[rel=canonical]');if(!l){l=document.createElement('link');l.rel='canonical';document.head.appendChild(l)}l.href=location.origin+'/'+SLUG}}catch(e){}route();
+  if(!v.data||v.data.suspenso)return off(!v.data);V=v.data;M=m.data||[];aplicaCustom(cu&&cu.data);try{if(SLUG){let l=document.querySelector('link[rel=canonical]');if(!l){l=document.createElement('link');l.rel='canonical';document.head.appendChild(l)}l.href=siteUrl()+'/'+SLUG}}catch(e){}route();
 }
 addEventListener('hashchange',route);
 async function route(){
@@ -1522,8 +1544,8 @@ function corSel(i){const m=L[cur];if(!m)return;const c=(m.cores||[]).filter(Bool
   if(COR_SEL[m.id]&&(m.fotos||[])[i]&&c.length<=(m.fotos||[]).length)gShow(i);
   const b=document.getElementById('corbox');if(b)b.outerHTML=corPick(m);
   document.querySelectorAll('.dt-cta a.wa,.dt-bar a.wa').forEach(a=>a.href=wa('Olá! Tenho interesse na '+hn(m)+corTxt(m)+'. Gostaria de saber mais sobre as condições.'))}
-const lojaH=()=>{const e=CF().endereco||CFG.loja_endereco,t=CFG.loja_telefone,h=CF().horario||CFG.loja_horario;if(!e)return'';const mp=CFG.loja_maps||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e));
-  return `<section class="loja" id="loja" aria-label="Loja"><div class="loja-i"><h2>Visite ${CFG.loja_nome?'a '+esc(CFG.loja_nome):'nossa loja'}</h2><p>📍 ${esc(e)}</p>${h?`<p>🕒 ${esc(h)}</p>`:''}${t?`<p>📞 <a href="tel:${esc(String(t).replace(/[^+\d]/g,''))}">${esc(t)}</a></p>`:''}</div><div class="loja-a"><a class="btn red" target="_blank" rel="noopener" href="${esc(mp)}">📍 Como chegar</a>${V.whatsapp?`<a class="btn wa" target="_blank" rel="noopener" href="${wa('Olá! Vou visitar a loja e gostaria de saber mais.')}">Falar antes de ir</a>`:''}</div></section>`};
+const lojaH=()=>{const lj=(CFG.lojas||[]).find(x=>x.id===V.loja_id),e=lj?lj.endereco:(CF().endereco||CFG.loja_endereco),t=CFG.loja_telefone,h=CF().horario||CFG.loja_horario;if(!e)return'';const mp=lj?('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(lj.nome+' '+e)):(CFG.loja_maps||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e)));
+  return `<section class="loja" id="loja" aria-label="Loja"><div class="loja-i"><h2>Visite ${(lj?lj.nome:CFG.loja_nome)?'a '+esc(lj?lj.nome:CFG.loja_nome):'nossa loja'}</h2><p>📍 ${esc(e)}</p>${h?`<p>🕒 ${esc(h)}</p>`:''}${t?`<p>📞 <a href="tel:${esc(String(t).replace(/[^+\d]/g,''))}">${esc(t)}</a></p>`:''}</div><div class="loja-a"><a class="btn red" target="_blank" rel="noopener" href="${esc(mp)}">📍 Como chegar</a>${V.whatsapp?`<a class="btn wa" target="_blank" rel="noopener" href="${wa('Olá! Vou visitar a loja e gostaria de saber mais.')}">Falar antes de ir</a>`:''}</div></section>`};
 const chipsH=()=>K.map((c,i)=>`<button class="chip ${c===C?'on':''}" aria-pressed="${c===C}" onclick="setC(${i})">${esc(c)}</button>`).join('');
 const FVC='♥ Favoritas';
 function mkK(){K=['Todas',...(FV.length?[FVC]:[]),...new Set(A.map(m=>m.categoria).filter(Boolean))]}
@@ -1642,8 +1664,8 @@ function home(){
   mkK();
   const AM=A.filter(m=>!soCon(m)),vs=AM.flatMap(m=>(m.planos||[]).map(p=>p.valor)).filter(v=>v>0),mn=vs.length?Math.min(...vs):0;
   const bxd=(()=>{try{return sessionStorage.getItem('bx')}catch(e){return''}})();
-  $('#app').innerHTML=`${tnavH()}<header class="hero"><span class="glow"></span><div class="spd"><i></i><i></i><i></i><i></i></div>
-  <div class="hin ${V.logo_url?'':'nl'}">${av(V.foto_url)}
+  $('#app').innerHTML=`${tnavH()}<header class="hero${logoOk()?' hasl':''}"><span class="glow"></span><div class="spd"><i></i><i></i><i></i><i></i></div>
+  ${logoH()}<div class="hin nl">${av(V.foto_url)}
   <div class="idt"><h1>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>${V.bio?`<p>${esc(V.bio)}</p>`:''}</div>
   <h2 class="hhead"><span class="eyb">ENCONTRE A SUA HONDA</span>${hhead()}</h2>${heroExtra()}
   <div class="ctas"><a class="cta w" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site e quero uma moto.')}" onclick="return chatOpen(event)">${IC.wa}${esc(CUSTV('cta','Fale comigo'))}</a>${V.instagram?`<a class="cta" target="_blank" rel="noopener" href="https://instagram.com/${esc(V.instagram)}">${IC.ig}Instagram</a>`:''}${V.facebook?`<a class="cta" target="_blank" rel="noopener" href="${esc(fbu(V.facebook))}">${IC.fb}Facebook</a>`:''}</div>
@@ -1651,7 +1673,7 @@ function home(){
   ${AVISO()}${faixaH()}${blocoC('topo')}<main class="wrap" id="catalogo"><ul class="tr"><li>${CK}Atendimento personalizado</li><li>${CK}Simulação rápida</li><li>${CK}Fale diretamente comigo</li></ul><div class="sec"><div><h2>${esc(CF().titulo||"Encontre sua próxima Honda")}</h2><p class="mu" style="margin:4px 0 0;font-size:14px">${esc(CF().sub||"Consórcio, financiamento e condições especiais diretamente com seu vendedor.")}</p></div><span class="nc" id="nc" aria-live="polite"></span></div>
   <div class="cat"><div id="ls" class="grid"></div></div>${blocoC('meio')}${sobreH()}${vidsH()}${entH()}${porqueH()}${INFO}${lojaH()}${blocoC('fim')}</main>
   ${MB()}${prevC()}<footer class="foot2"><b>${esc(V.nome)}</b><br>${tel()}${V.instagram?' · @'+esc(V.instagram):''}${CF().horario?`<br>Atendimento: ${esc(CF().horario)}`:''}${CF().endereco?`<br>${esc(CF().endereco)}`:''}
-  <div class="fl"><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(FICHA_CDC_URL)}">Ficha CDC<small>Financiamento</small></a><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(FICHA_CNH_URL)}">Ficha CNH<small>Consórcio</small></a></div><p class="disc2">Imagens ilustrativas. Valores, cores, versões e disponibilidade sujeitos à confirmação no atendimento. Marcas e imagens pertencem aos seus respectivos titulares. ${catSelo()}</p><div class="ful"><a target="_blank" rel="noopener" href="https://consorcionacionalhonda.com.br/atendimento/pagamento/sobre-o-pagamento">Como pagar com segurança ↗</a><a target="_blank" rel="noopener" href="https://www.bcb.gov.br/meubc/faqs/p/cuidados-na-hora-de-contratar-uma-operacao-de-credito">Cuidados ao contratar crédito ↗</a><a href="#" onclick="priv();return false">Política de Privacidade</a></div><a class="up" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">↑ Voltar ao topo</a></footer>
+  <div class="fl"><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cdc||FICHA_CDC_URL)}">Ficha CDC<small>Financiamento</small></a><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cnh||FICHA_CNH_URL)}">Ficha CNH<small>Consórcio</small></a></div><p class="disc2">Imagens ilustrativas. Valores, cores, versões e disponibilidade sujeitos à confirmação no atendimento. Marcas e imagens pertencem aos seus respectivos titulares. ${catSelo()}</p><div class="ful"><a target="_blank" rel="noopener" href="https://consorcionacionalhonda.com.br/atendimento/pagamento/sobre-o-pagamento">Como pagar com segurança ↗</a><a target="_blank" rel="noopener" href="https://www.bcb.gov.br/meubc/faqs/p/cuidados-na-hora-de-contratar-uma-operacao-de-credito">Cuidados ao contratar crédito ↗</a><a href="#" onclick="priv();return false">Política de Privacidade</a></div><a class="up" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">↑ Voltar ao topo</a><div class="criar-w"><a class="criar" target="_blank" rel="noopener" href="${esc(CFG.url_comercial||'https://sitevendedorhonda.vercel.app/')}">Crie seu site vendedor</a></div></footer>
   ${bxd?'':`<div class="bw"><a class="bubble" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site.')}" onclick="return chatOpen(event)">${av(V.foto_url)}Estou online. Fale agora!</a><button class="bx" aria-label="Fechar" onclick="try{sessionStorage.setItem('bx',1)}catch(e){}this.closest('.bw').remove()">×</button></div>`}`;
   lista(1);cnt();seo();heroInit();tnavInit();rvInit();enObs();enSlow();
 }
@@ -1666,14 +1688,13 @@ function corChips(m){
 
 /* ===== VÍDEO "COMO FUNCIONA O CONSÓRCIO" (configurado no admin geral, vale para todos os vendedores) ===== */
 var CFG={};
-function comoFunciona(){
-  const u=CFG.video_como_funciona;if(!u)return;
+function comoFunciona(){ const u=cfUrl();if(!u)return;
   const old=document.getElementById('vm');if(old)old.remove();
   const html=vid(u).replace('allowfullscreen','allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowfullscreen').replace(/embed\/([\w-]{11})/,'embed/$1?autoplay=1&rel=0').replace('<video class="vid" controls','<video class="vid" controls autoplay');
   const o=document.createElement('div');o.id='vm';o.className='vm';o.onclick=e=>{if(e.target===o)o.remove()};
   o.innerHTML=`<div class="vmb" role="dialog" aria-label="Como funciona o consórcio"><button type="button" class="vmx" aria-label="Fechar" onclick="this.closest('.vm').remove()">✕</button><h3>${esc(CFG.video_titulo||'Como funciona o consórcio Honda')}</h3>${html}<p class="mu" style="margin:10px 0 0">Ficou com alguma dúvida? Fale com ${esc(V.nome)}, ele te ajuda a escolher o melhor plano.</p><div class="vmc"><a class="btn wa" target="_blank" rel="noopener" href="${wa('Olá! Assisti ao vídeo sobre o consórcio e quero saber mais.')}">Fale comigo</a><button type="button" class="btn red" onclick="document.getElementById('vm').remove();chatOpen(null)">Quero simular</button></div></div>`;
   document.body.appendChild(o)}
-function howOrVideo(){CFG.video_como_funciona?comoFunciona():howT()}
+function howOrVideo(){cfUrl()?comoFunciona():howT()}
 const corHex=n=>COR_HEX[String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim()]||'#999';
 const cdots=m=>{const c=Array.isArray(m.cores)?m.cores.filter(Boolean):[];return c.length?`<div class="cdots" title="Cores: ${esc(c.join(', '))}">${c.slice(0,6).map(n=>`<i style="background:${corHex(n)}"></i>`).join('')}<span>${c.length} ${c.length>1?'cores':'cor'}</span></div>`:''}
 function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visTrack('moto',m.nome)}catch(e){}}let b='';
@@ -1703,8 +1724,8 @@ function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visT
     <p class="mu" style="font-size:12px;border-top:1px solid var(--bd);padding-top:12px">Ao preencher ou enviar, você concorda com nossa <a href="#" onclick="priv();return false">Política de Privacidade</a>. O que você digita já fica disponível ao vendedor, para ele poder te ajudar, mesmo que você não conclua o envio.</p>
     <button class="btn wa" onclick="finSend()">Enviar para o vendedor</button>`;
   const mo=$('#modal');if(mo.style.display!=='block'){history.pushState({m:1},'');FO=document.activeElement}
-  const lg=V.logo_url?`<img class="ava s" style="object-fit:contain;background:#fff" ${IMGA(V.logo_url,'ava')}>`:'';
-  mo.innerHTML=`<div class="sheet"><div class="mh"><div class="mp">${lg}${av(V.foto_url,'s')}<div><small style="color:var(--tx)">${tel()}</small><br><small>${V.instagram?'@'+esc(V.instagram):''}</small></div></div>${(v==='det'&&CFG.video_como_funciona)?`<button type="button" class="wab" onclick="comoFunciona()"><span class="wl">▶ Como funciona o consórcio</span><span class="ws">▶ Como funciona</span></button>`:''}</div>
+  const lg='';
+  mo.innerHTML=`<div class="sheet"><div class="mh"><div class="mp">${lg}${av(V.foto_url,'s')}<div><small style="color:var(--tx)">${tel()}</small><br><small>${V.instagram?'@'+esc(V.instagram):''}</small></div></div>${(v==='det'&&cfUrl())?`<button type="button" class="wab" onclick="comoFunciona()"><span class="wl">▶ Como funciona o consórcio</span><span class="ws">▶ Como funciona</span></button>`:''}</div>
   <div class="mt"><div><h2>${esc(m.nome)}</h2><small>${[m.categoria,m.modelo].filter(Boolean).map(esc).join(' · ')}</small>${m.selo?`<span class="sb2">${esc(m.selo)}</span>`:''}</div><span><b role="button" tabindex="0" aria-label="Moto anterior" onclick="nav(-1)">‹</b><b role="button" tabindex="0" aria-label="Próxima moto" onclick="nav(1)">›</b><b role="button" tabindex="0" aria-label="Fechar" onclick="closeM()">✕</b></span></div>${b}</div>`;
   mo.style.display='block';mo.scrollTop=0;bindSwipe();{const x=mo.querySelector('[aria-label=Fechar]');x&&x.focus({preventScroll:true})}
 }
@@ -1714,7 +1735,7 @@ async function lead(tipo,x={}){const m=L[cur],r={tipo,moto_id:m.id,moto_nome:m.n
 function conWa(rep){
   const m=L[cur],r=document.querySelector('input[name=pl]:checked'),p=r&&(m.planos||[])[r.value];
   const t=rep?`Olá! Quero um repasse de consórcio da ${hn(m)}.`:p?`Olá! Tenho interesse na ${hn(m)} no plano de ${p.parcelas} parcelas de ${brl(p.valor)}. Gostaria de fazer uma simulação.`:`Olá! Tenho interesse no consórcio da ${hn(m)}. Gostaria de fazer uma simulação.`;
-  lead('consorcio',{detalhes:t});window.open(wa(t),'_blank');
+  lead('consorcio',{detalhes:t});waOpen(wa(t));
 }
 let fsb=0;
 function vitRasc(e){const id=e.target&&e.target.id||'';if(!/^f_(nom|tel|cpf|nas|ent|hab|cor)$/.test(id))return;
@@ -1728,7 +1749,7 @@ function finSend(){
   const d={entrada:g('f_ent'),nascimento:g('f_nas'),cpf:g('f_cpf'),nome:g('f_nom'),telefone:g('f_tel'),habilitacao:$('#f_hab').value,cor:g('f_cor')};
   fsb=1;setTimeout(()=>fsb=0,3000);lead('financiamento',d).then(ok=>{rascCompleto('financiamento','fin-'+m.id);if(!ok)toast('Seu pedido foi guardado e será reenviado automaticamente. Confirme também pelo WhatsApp.')});
   const t=`Olá! Quero financiar a ${hn(m)}.\nNome: ${d.nome}\nTelefone: ${d.telefone}\nCPF: ${d.cpf}\nNascimento: ${d.nascimento}\nEntrada: ${d.entrada||'Sem entrada'}${d.cor?`\nCor da moto: ${d.cor}`:''}\nPossui habilitação: ${d.habilitacao}`;
-  window.open(wa(t),'_blank');toast('Enviado ao vendedor!');
+  waOpen(wa(t));toast('Enviado ao vendedor!');
 }
 
 /* ================= ADMIN ================= */
@@ -1768,8 +1789,8 @@ function capaVideo(file){return new Promise(ok=>{const v=document.createElement(
 async function upVideo(file){const u=await up(file);let p='';try{const b=await capaVideo(file);if(b){const pp=`${V.id}/opt/poster-${Date.now()}-${Math.random().toString(36).slice(2,7)}.webp`;const{error}=await sb.storage.from('midia').upload(pp,b,{contentType:'image/webp',cacheControl:'31536000'});if(!error)p=sb.storage.from('midia').getPublicUrl(pp).data.publicUrl}}catch(e){}return{u,p}}
 
 function pPerfil(){
-  $(PNS).innerHTML=`<div class="pf"><div><h4>Foto e logo</h4><div class="pf-up"><div class="pf-c">${av(V.foto_url)}<div><b>Foto de perfil</b><small>Aparece no topo do seu site</small><label class="upl">Trocar foto<input type="file" accept="image/*" onchange="upV('foto_url',this)"></label></div></div>
-  <div class="pf-c">${V.logo_url?`<img class="logo" ${IMGA(V.logo_url,'ava')} alt="">`:'<div class="logo" style="display:grid;place-items:center;font-size:26px">🏢</div>'}<div><b>Logo da empresa</b><small>Opcional</small><label class="upl">Trocar logo<input type="file" accept="image/*" onchange="upV('logo_url',this)"></label></div></div></div></div>
+  $(PNS).innerHTML=`<div class="pf"><div><h4>Foto de perfil</h4><div class="pf-up"><div class="pf-c">${av(V.foto_url)}<div><b>Foto de perfil</b><small>Aparece no topo do seu site</small><label class="upl">Trocar foto<input type="file" accept="image/*" onchange="upV('foto_url',this)"></label></div></div>
+  </div></div>
   <div><h4>Dados de contato</h4><div class="fg"><div><label class="l" for="v_n">Nome do vendedor</label><input id="v_n" value="${esc(V.nome)}"></div><div><label class="l" for="v_w">WhatsApp (55 + DDD + número)</label><input id="v_w" value="${esc(V.whatsapp)}" inputmode="numeric" placeholder="5568999990000"></div><div class="full"><label class="l" for="v_b">Frase de apresentação</label><input id="v_b" value="${esc(V.bio)}" placeholder="Ex.: Venha conquistar sua moto comigo!"></div></div></div>
   <div><h4>Redes sociais</h4><div class="fg"><div><label class="l" for="v_i">Instagram (sem @)</label><input id="v_i" value="${esc(V.instagram)}"></div><div><label class="l" for="v_f">Facebook (usuário ou link)</label><input id="v_f" value="${esc(V.facebook)}"></div></div></div>
   <div class="pf-s"><button class="btn red" onclick="saveV()">Salvar perfil</button></div></div>`}
@@ -1782,7 +1803,7 @@ async function upV(k,el){
   try{toast('Enviando...');const u=await up(el.files[0]);const{error}=await sb.from('vendedores').update({[k]:u}).eq('id',V.id);if(error)throw error;V[k]=u;toast('Salvo!');pPerfil()}catch(e){toast('Erro: '+e.message)}
 }
 async function saveV(){
-  const p={nome:$('#v_n').value.trim(),bio:$('#v_b').value.trim(),whatsapp:$('#v_w').value.replace(/\D/g,''),instagram:$('#v_i').value.replace('@','').trim(),facebook:$('#v_f').value.trim()};
+  const p={nome:$('#v_n').value.trim(),bio:$('#v_b').value.trim(),whatsapp:waNum($('#v_w').value),instagram:$('#v_i').value.replace('@','').trim(),facebook:$('#v_f').value.trim()};
   const{error}=await sb.from('vendedores').update(p).eq('id',V.id);if(!error)V={...V,...p};toast(error?'Erro: '+error.message:'Perfil salvo!');
 }
 const CAT=[['POP 110I ES +10%', 'Street', 'C', '80:216.59,60:280.54,48:345.55,36:455.23,24:669.58,18:887.60,12:1323.66'], ['BIZ 125 ES', 'Street', 'C', '80:273.75,60:354.56,48:436.72,36:575.35,24:846.25,18:1121.80,12:1672.91'], ['ELITE 125', 'Street', 'C', '80:287.34,60:372.16,48:458.40,36:603.92,24:888.27,18:1177.49,12:1755.97'], ['BIZ 125 EX', 'Street', 'C', '80:339.18,60:439.31,48:541.12,36:712.89,24:1048.54,18:1389.96,12:2072.81'], ['CG 160 START', 'Street', 'C', '80:349.24,60:452.34,48:557.16,36:734.03,24:1079.64,18:1431.17,12:2134.28'], ['PCX CBS', 'Street', 'C', '80:374.60,60:485.19,48:597.62,36:787.33,24:1158.04,18:1535.11,12:2289.27'], ['CG 160 FAN', 'Street', 'C', '80:381.06,60:493.56,48:607.93,36:800.91,24:1178.01,18:1561.58,12:2328.74'], ['CG 160 TITAN', 'Street', 'C', '80:404.82,60:524.33,48:645.83,36:850.85,24:1251.46,18:1658.94,12:2473.95'], ['PCX ABS', 'Street', 'C', '80:410.87,60:532.17,48:655.49,36:863.56,24:1270.17'], ['NXR160 BROS CBS', 'Adventure', 'C', '80:447.90,60:580.12,48:714.55,36:941.38,24:1384.62'], ['NXR160 BROS ABS', 'Adventure', 'C', '80:469.53,60:608.14,48:749.07,36:986.85,24:1451.51'], ['CRF 300F', 'Off Road', 'S', '80:439.74,60:569.56,48:701.54,36:924.24,24:1359.41'], ['XRE 190', 'Adventure', 'C', '80:469.31,60:607.86,48:748.72,36:986.40,24:1450.83'], ['HONDA ADV', 'Adventure', 'C', '80:504.99,60:654.08,48:805.64,36:1061.39,24:1561.13'], ['CB300F TWISTER ABS', 'Street', 'C', '80:512.68,60:664.03,48:817.90,36:1077.53,24:1584.88'], ['XR 300L TORNADO', 'Adventure', 'C', '80:602.02,60:779.75,48:960.44,36:1265.32,24:1861.08'], ['SAHARA 300', 'Adventure', 'C', '80:618.12,60:800.59,48:986.11,36:1299.14,24:1910.83'], ['SAHARA 300 ADV', 'Adventure', 'C', '80:638.80,60:827.38,48:1019.11,36:1342.61,24:1974.77'], ['CB 500 HORNET', 'Street', 'S', '72:779.89'], ['NX 500', 'Adventure', 'S', '72:829.67'], ['CB1000 HORNET ABS (70% DO VALOR)', 'Street', 'S', '72:955.38'], ['CB 750 HORNET', 'Street', 'S', '72:961.23'], ['TRX 420FM (4X4)', 'Off Road', 'S', '72:998.13'], ['NC 750X ABS MT', 'Adventure', 'S', '72:1014.82'], ['CB 650R E-CLUTCH', 'Street', 'S', '72:1065.03'], ['CRF 1100L AFRICA TWIN MT (70% DO VALOR)', 'Adventure', 'S', '72:1067.64'], ['XL 750 TRANSALP', 'Big Trail', 'S', '72:1171.81'], ['M&M ESSENCIAL', 'Motores e Máquinas', 'S', '18:126.04'], ['M&M ESSENCIAL+', 'Motores e Máquinas', 'S', '18:163.51'], ['M&M AVANÇADO', 'Motores e Máquinas', 'S', '18:204.39'], ['M&M AVANÇADO+', 'Motores e Máquinas', 'S', '18:245.27']];
@@ -1833,7 +1854,7 @@ function fm(){
   <section class="card2"><h3>Descrição e ficha técnica</h3><p class="mu fm-h">Uma linha por item (ex.: Cilindrada: 109,5 cc). Dica: pesquise no Google, copie e cole aqui.</p>
     <textarea rows="7" oninput="E.descricao=this.value">${esc(E.descricao)}</textarea>
     <button type="button" class="btn sm" style="margin-top:10px" onclick="window.open('https://www.google.com/search?q='+encodeURIComponent((E.nome+' '+(E.modelo||'')+' ficha técnica descrição Honda').trim()))">🔎 Pesquisar essa moto no Google</button></section>
-  <section class="card2"><h3>Planos de consórcio</h3>${E.catalogo_id?`<div class="fm-lock"><b>${esc(E.emplacamento||'Com emplacamento')}</b><div class="fm-pl">${(E.planos||[]).map(p=>`<span><em>${p.parcelas}x</em>${brl(p.valor)}</span>`).join('')||'<span>Consulte as condições</span>'}</div><small>🔒 Os valores do consórcio são atualizados automaticamente pelo site oficial e não podem ser alterados aqui.</small></div>`:`<div class="fld"><label class="l">Emplacamento</label><select onchange="E.emplacamento=this.value">${['Com emplacamento','Sem emplacamento'].map(o=>`<option ${(E.emplacamento||'Com emplacamento')===o?'selected':''}>${o}</option>`).join('')}</select></div>
+  <section class="card2"><h3>Planos de consórcio</h3>${E.catalogo_id?`<div class="fm-lock"><b>${esc(E.emplacamento||'Com emplacamento')}</b><div class="fm-pl">${(E.planos||[]).map(p=>`<span><em>${p.parcelas}x</em>${brl(p.valor)}</span>`).join('')||'<span>Consulte as condições</span>'}</div><small>🔒 Os valores do consórcio são atualizados automaticamente e não podem ser alterados aqui.</small></div>`:`<div class="fld"><label class="l">Emplacamento</label><select onchange="E.emplacamento=this.value">${['Com emplacamento','Sem emplacamento'].map(o=>`<option ${(E.emplacamento||'Com emplacamento')===o?'selected':''}>${o}</option>`).join('')}</select></div>
     ${E.planos.map((p,i)=>`<div class="pr"><div class="fld"><label class="l">Parcelas</label><input type="number" value="${p.parcelas}" placeholder="Parcelas" oninput="E.planos[${i}].parcelas=+this.value"></div><div class="fld"><label class="l">Valor da parcela (R$)</label><input type="number" step="0.01" value="${p.valor}" placeholder="Valor R$" oninput="E.planos[${i}].valor=+this.value"></div><button type="button" class="btn sm" onclick="E.planos.splice(${i},1);fm()" aria-label="Remover plano">×</button></div>`).join('')}
     <button type="button" class="btn sm" style="margin-top:10px" onclick="E.planos.push({parcelas:80,valor:0});fm()">+ Adicionar plano</button>`}</section>
   <section class="card2"><label class="sw"><input type="checkbox" ${E.ativo?'checked':''} onchange="E.ativo=this.checked"><span class="sw-t"></span><span><b>Mostrar no site</b><small>Desligue para ocultar esta moto dos clientes sem apagá-la.</small></span></label></section>
@@ -1886,7 +1907,7 @@ function fmtDesc(t){return esc(t).split('\n').map(l=>{const x=l.trim();if(!x)ret
   const m=/^([^:]{2,40}):(.*)$/.exec(x);return m?`<div><b>${m[1]}:</b>${m[2]}</div>`:`<div>${x}</div>`}).join('')}
 function priv(){return polAbrir()}
 function zoom(){const u=(L[cur].fotos||[])[G];if(!u)return;const d=document.createElement('div');d.className='lb';d.setAttribute('role','dialog');d.setAttribute('aria-label','Foto ampliada');d.innerHTML=`<img ${IMGA(u,'lb')} alt="${esc(L[cur].nome)}">`;d.onclick=()=>d.remove();document.body.appendChild(d)}
-function shareM(){const m=L[cur],u=location.origin+'/'+SLUG+'#moto='+m.id;
+function shareM(){const m=L[cur],u=siteUrl()+'/'+SLUG+'#moto='+m.id;
   if(navigator.share)navigator.share({title:m.nome,text:m.nome+' - '+V.nome,url:u}).catch(()=>{});
   else navigator.clipboard.writeText(u).then(()=>toast('Link copiado!'))}
 addEventListener('popstate',()=>{document.querySelectorAll('.lb').forEach(x=>x.remove());$('#modal').style.display='none';if(FO&&FO.focus){FO.focus({preventScroll:true});FO=null}});
@@ -2021,9 +2042,7 @@ function chRasc(done){
   const p={id:CH.id,origem:'chat',nome:dd.nome,telefone:dd.telefone,moto_nome:dd.moto_nome,cor:dd.cor,dados:dd},fila=()=>obxAdd({slug:SLUG,rpc:'registrar_rascunho',row:{p},ts:Date.now(),n:0});
   try{sb.rpc('registrar_rascunho',{p}).then(r=>{if(r&&r.error)fila();else CH.rascOk=true},()=>fila())}catch(e){fila()}}
 function chRascFim(){CH.pedOk=true;try{sb.rpc('registrar_rascunho',{p:{id:CH.id,origem:'chat',completo:true}}).then(()=>{},()=>{})}catch(e){}}
-async function fim(){CH.step='fim';opts([]);lock(true);const a=CH.ans,m=msg(),nd=a.pag==='financiamento'||a.pag==='consorcio';CH.saved=true;sync(true);
- if(await say([nd?`Fechado, ${pn()}! Recebi seus dados para a pré-análise. O resultado final é passado pelo vendedor.`:`Fechado, ${pn()}! Já anotei tudo por aqui. O vendedor te passa os valores e as condições.`,'Clique no botão abaixo para continuar com o vendedor pelo WhatsApp.',{wa:m}])===false)return;opts(['Nova conversa']);CH.step='fim';chBk()}
-function partial(){}
+async function fim(){CH.step='fim';opts([]);lock(true);const a=CH.ans,m=msg(),nd=a.pag==='financiamento'||a.pag==='consorcio',id0=CH.id,okWa=waNum(V.whatsapp).length>=12;CH.saved=true;const salvo=Promise.resolve(sync(true)).catch(()=>{}); if(await say([nd?`Fechado, ${pn()}! Recebi seus dados para a pré-análise. O resultado final é passado pelo vendedor.`:`Fechado, ${pn()}! Já anotei tudo por aqui. O vendedor te passa os valores e as condições.`,...(okWa?['Estou abrindo o WhatsApp do vendedor com os seus dados já organizados. Se não abrir sozinho, toque no botão abaixo.',{wa:m}]:['O vendedor recebeu os seus dados e vai falar com você em breve.'])])===false)return;opts(['Nova conversa']);CH.step='fim';chBk(); await Promise.race([salvo,sleep(2500)]); if(okWa&&CH.id===id0&&CH.step==='fim')setTimeout(()=>{const c=$c('ch');if(CH.id===id0&&CH.step==='fim'&&c&&c.classList.contains('on'))location.href=wa(m)},250)} function partial(){}
 function start(){CH.tk++;CH.id=uid();const pm=CH.pre&&motos().find(m=>m.id===CH.pre),hasPre=!!pm;CH.pre=null;CH.ans=pm?{moto:pm.nome,motoId:pm.id}:{};CH.hist=[];CH.saved=false;CH.part=false;CH.step=null;CH.busy=false;CH.started=true;$c('chl').innerHTML='';opts([]);(async()=>{lock(true);if(await say([{html:`Bem-vindo(a)! Sou ${esc(V.nome)} e vou te ajudar a escolher sua próxima moto. Ao avançar você concorda com a nossa Política de Privacidade.<br><br><a class="ln" href="#" onclick="priv();return false">Ler a Política de Privacidade</a>`}])===false)return;ask(hasPre?'nome':'ini')})()}
 function build(){if($c('ch'))return;document.body.insertAdjacentHTML('beforeend',`<div class="chbd" id="chbd"></div><div class="ch" id="ch" role="dialog" aria-label="Chat com o vendedor"><div class="chh"><button class="chb" id="chbk" type="button" aria-label="Voltar uma pergunta" title="Voltar">‹</button>${avH()}<div><b>${esc(V.nome)}</b><small><i></i>Online agora</small></div><button class="chb" id="chrs" type="button" aria-label="Recomeçar" title="Recomeçar">↻</button><button class="chb" id="chx" type="button" aria-label="Fechar">✕</button></div><div class="chl" id="chl" aria-live="polite"></div><div class="chq" id="chq"></div><form class="chf" id="chf" autocomplete="off"><input id="chi" placeholder="Digite aqui" enterkeyhint="send" aria-label="Sua resposta"><button>Enviar</button></form></div>`);
  $c('chf').onsubmit=e=>{e.preventDefault();submit($c('chi').value)};
@@ -2050,7 +2069,7 @@ const CK='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-widt
 const MB=()=>`<nav class="mb" aria-label="Ações rápidas">${V.whatsapp?`<a class="mw" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site e quero uma moto.')}">${IC.wa}WhatsApp</a>`:''}<button type="button" class="mr" onclick="chatOpen()">Simular</button><button type="button" onclick="document.getElementById('catalogo').scrollIntoView({behavior:'smooth'})">${IC.se}Ver motos</button></nav>`;
 function seo(){const mt=(a,n,v)=>{if(!v)return;let e=document.head.querySelector(`meta[${a}="${n}"]`);if(!e){e=document.createElement('meta');e.setAttribute(a,n);document.head.appendChild(e)}e.content=v};
   const t=V.nome+' | Consórcio e financiamento Honda',d=(V.bio||'Consórcio, financiamento e condições especiais diretamente com seu vendedor.').slice(0,155);
-  document.title=t;mt('name','description',d);mt('property','og:title',t);mt('property','og:description',d);mt('property','og:image',V.foto_url||V.logo_url);mt('name','twitter:card','summary')}
+  document.title=t;mt('name','description',d);mt('property','og:title',t);mt('property','og:description',d);mt('property','og:image',V.foto_url||CFG.logo_empresa);mt('name','twitter:card','summary')}
 /* validação do formulário de financiamento */
 const fld=(id,l,a,mk)=>`<label class="l" for="${id}">${l}</label><input id="${id}" ${a||''} ${mk?`oninput="msk(this,'${mk}')"`:''} ${VR[id]?`onblur="vf('${id}')"`:''}><small class="fe" id="${id}_e" role="alert"></small>`;
 const cpfOk=c=>{if(c.length!==11||/^(\d)\1+$/.test(c))return false;for(const n of[9,10]){let s=0;for(let i=0;i<n;i++)s+=c[i]*(n+1-i);if((s*10%11)%10!=c[n])return false}return true};
@@ -2364,7 +2383,7 @@ async function pInicio0(){
   await vdLoad();if(T!=='inicio')return;
   const hr=new Date().getHours(),sd=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',novos=VD.filter(vdNovo),hoje=VD.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()).length;
   const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length;
-  const cnt=Array(11).fill(0);VD.forEach(o=>cnt[faseDe(o)]++);const mx=Math.max(1,...cnt.slice(1)),link=location.origin+'/'+SLUG,nn=novos.length;
+  const cnt=Array(11).fill(0);VD.forEach(o=>cnt[faseDe(o)]++);const mx=Math.max(1,...cnt.slice(1)),link=siteUrl()+'/'+SLUG,nn=novos.length;
   $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div>
     <div class="hero2-a"><button class="btn red" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button><button class="btn" onclick="adm('playbook')">📚 Abrir o playbook</button></div></section>
   
@@ -2488,7 +2507,7 @@ function ogBlob(cv){return new Promise(async(ok,no)=>{let q=.88,b=null;for(let i
 let OGT=null;
 function pPrevia(){
   if(!('config' in V)){$(PNS).innerHTML='<p class="mu">Para personalizar a prévia, rode o SQL único (coluna config) no Supabase e recarregue a página.</p>';return}
-  const og=CF().og||{},host=location.host,link='https://'+host+'/'+SLUG;
+  const og=CF().og||{},host=siteUrl().replace(/^https?:\/\//,''),link=siteUrl()+'/'+SLUG;
   $(PNS).innerHTML=`<h3 style="margin-top:0">Prévia do link (WhatsApp e Instagram)</h3><p class="mu">É o cartão que aparece quando você manda o link do seu site numa conversa ou numa rede social: <b>foto, nome e uma frase de chamada</b>.</p>
   <div class="pr-g"><div class="pr-f">
     <div class="fld"><label class="l" for="og_t">Título <small>(até 70 letras)</small></label><input id="og_t" maxlength="70" value="${esc(og.t||'')}" placeholder="${esc(V.nome+' | Consórcio e financiamento Honda')}" oninput="ogLive()"></div>
@@ -2503,7 +2522,7 @@ function ogDados(){const t=($('#og_t').value||'').trim(),d=($('#og_d').value||''
 function ogLive(){clearTimeout(OGT);OGT=setTimeout(async()=>{const k=$('#og_card');if(!k)return;const o=ogDados(),card=$('#og_c').checked;
   k.innerHTML=`${card?'<canvas id="og_cv" class="pr-cv"></canvas>':`<div class="pr-th">${V.foto_url?`<img ${IMGA(V.foto_url,'th')} alt="">`:''}</div>`}<div class="pr-tx"><small>${esc(location.host)}</small><b>${esc(o.tt)}</b><span>${esc(o.dd)}</span></div>`;
   if(card){try{await ogDraw($('#og_cv'),o.nome,o.acento,o.dd,V.foto_url)}catch(e){}}},180)}
-function ogCopiar(){const l='https://'+location.host+'/'+SLUG;try{navigator.clipboard.writeText(l).then(()=>toast('Link copiado!'),()=>toast(l))}catch(e){toast(l)}}
+function ogCopiar(){const l=siteUrl()+'/'+SLUG;try{navigator.clipboard.writeText(l).then(()=>toast('Link copiado!'),()=>toast(l))}catch(e){toast(l)}}
 function ogRm(u){try{const m=/\/object\/public\/midia\/(.+)$/.exec(String(u||''));if(m&&decodeURIComponent(m[1]).startsWith(V.id+'/og-'))sb.storage.from('midia').remove([decodeURIComponent(m[1])])}catch(e){}}
 async function ogSalvar(){const b=$('#og_b'),o=ogDados(),card=$('#og_c').checked;if(b){b.disabled=true;b.textContent='Salvando...'}
   try{const ant=(CF().og||{}).img;const og={...(CF().og||{}),t:o.t,d:o.d};
@@ -2515,9 +2534,9 @@ async function ogSalvar(){const b=$('#og_b'),o=ogDados(),card=$('#og_c').checked
   if(b){b.disabled=false;b.textContent='Salvar prévia'}}
 
 function pConta(){
-  $('#pn').innerHTML=`<div class="seg">${[['perfil','Perfil e contato'],['textos','Textos do site'],['entregas','Clientes felizes'],['previa','Prévia do link'],['entrega','Entrega de pedidos']].map(a=>`<button class="${CTAB===a[0]?'on':''}" onclick="CTAB='${a[0]}';pConta()">${a[1]}</button>`).join('')}</div><div id="pn3" class="card2"></div>`;
+  $('#pn').innerHTML=`<div class="seg">${[['perfil','Perfil e contato'],['textos','Textos do site'],['entregas','Clientes felizes'],['como','Como funciona o consórcio'],['previa','Prévia do link'],['entrega','Entrega de pedidos']].map(a=>`<button class="${CTAB===a[0]?'on':''}" onclick="CTAB='${a[0]}';pConta()">${a[1]}</button>`).join('')}</div><div id="pn3" class="card2"></div>`;
   PNS='#pn3';
-  if(CTAB==='perfil')pPerfil();else if(CTAB==='textos')pSite();else if(CTAB==='entregas')pEntregas();else if(CTAB==='videos')pVideos();else if(CTAB==='previa')pPrevia();else $('#pn3').innerHTML='<h3 style="margin-top:0">Entrega de pedidos</h3><p class="mu">Faz o mesmo que um cliente faz no seu site (chat, formulário e preenchimento) e mostra se cada pedido chegou ao seu painel. Se algo falhar, aparece o erro exato.</p><button class="btn red" onclick="testarEntrega()">🧪 Testar entrega agora</button><p class="mu" style="margin:14px 0 0;font-size:12.5px">Versão do painel: 01/11/2026</p>'}
+  if(CTAB==='perfil')pPerfil();else if(CTAB==='textos')pSite();else if(CTAB==='entregas')pEntregas();else if(CTAB==='videos')pVideos();else if(CTAB==='como')pComo();else if(CTAB==='previa')pPrevia();else $('#pn3').innerHTML='<h3 style="margin-top:0">Entrega de pedidos</h3><p class="mu">Faz o mesmo que um cliente faz no seu site (chat, formulário e preenchimento) e mostra se cada pedido chegou ao seu painel. Se algo falhar, aparece o erro exato.</p><button class="btn red" onclick="testarEntrega()">🧪 Testar entrega agora</button><p class="mu" style="margin:14px 0 0;font-size:12.5px">Versão do painel: 01/11/2026</p>'}
 
 function pSite(){
   if(!('config' in V)){$(PNS).innerHTML='<p class="mu">Para personalizar os textos do site, rode o SQL opcional (coluna config) no Supabase e recarregue a página.</p>';return}
