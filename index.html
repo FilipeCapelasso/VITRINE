@@ -493,10 +493,10 @@ button.vt-o:hover{border-color:#6d28d9;background:#f2edff;transform:translateY(-
 .hb{display:flex;align-items:center;gap:16px;width:100%;margin:0 0 6px;flex-wrap:nowrap;min-width:0}
 .hero.v34 .hb .ava{grid-area:auto;width:62px;height:62px;border:2px solid #ff5a5a99;box-shadow:0 0 0 4px #ffffff12,0 10px 26px #0009;flex:none;font-size:22px}
 .hb .idt{min-width:0;align-self:center;grid-area:auto}.hb h1{margin:0;font-size:clamp(20px,2vw,29px);line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}.hb h1 .vf{display:inline-block;vertical-align:-.1em;margin-left:.35em}.hb .idt p{margin:3px 0 0;font-size:13px;color:#ffffffa6}
-.hlg{display:inline-flex;align-items:center;gap:12px;color:#fff;flex:none}
+.hero.v34 .hlg{display:inline-flex;align-items:center;gap:12px;color:#fff;flex:none}
 .hlg .hst{height:42px;width:auto;display:block;filter:drop-shadow(0 4px 16px #ee000080)}
 .hlg-t{font-weight:600;font-size:clamp(19px,1.7vw,25px);letter-spacing:-.012em;line-height:1;white-space:nowrap}
-.hlg img{display:block;height:46px;width:auto;max-width:min(240px,48vw);object-fit:contain}
+.hero.v34 .hlg img{display:block;height:46px;width:auto;max-width:min(240px,48vw);object-fit:contain}
 .hero.v34 .hlg-escuro,.hero.v34 .hlg-nenhum{background:none;border:0;padding:0;box-shadow:none;-webkit-backdrop-filter:none;backdrop-filter:none;border-radius:0}
 .hero.v34 .hlg-claro{background:#fff;padding:8px 14px;border-radius:12px;box-shadow:0 10px 24px -14px #000;border:0}
 .hmk{margin-top:14px}.hmk .hlg{gap:16px}.hmk .hlg .hst{height:clamp(54px,4.6vw,74px);filter:drop-shadow(0 6px 22px #ee000090)}.hmk .hlg-t{font-size:clamp(30px,2.8vw,44px)}.hmk .hlg img{height:clamp(58px,4.8vw,78px);max-width:min(360px,76vw)}
@@ -519,7 +519,7 @@ html.tp-cor .hlz i{background:linear-gradient(180deg,transparent 0,#ffffff 40%,#
 @media(max-width:979px){.hero.v34{padding:22px 18px 26px}.hn{width:100%;height:92px;padding:10px 14px;border-radius:22px;overflow:hidden;background:radial-gradient(60% 130% at 100% 0%,color-mix(in srgb,var(--r) 42%,#000) 0,transparent 60%),linear-gradient(165deg,#0b0b10,#060609 75%);border:1px solid #ffffff18;box-shadow:inset 0 1px 0 #ffffff1a,0 26px 50px -30px #000;justify-self:stretch}.hn::before{inset:0;background:radial-gradient(closest-side at 50% 50%,#040406 0,#040406d9 60%,transparent 100%);z-index:0}.hn::after{content:"";position:absolute;right:-8%;bottom:-40%;width:34%;height:120%;transform:skewX(-34deg);background:linear-gradient(90deg,transparent,var(--r) 70%);opacity:.8}.hn-s,.hn-i{position:relative;z-index:1;width:auto;max-width:96px;height:100%}.hlz .l3,.hlz .r3{display:none}}
 @media(max-width:560px){.hero.v34 .hb .ava{width:50px;height:50px}.hero.v34 .hin{gap:16px}.hmk .hlg .hst{height:50px}.hmk .hlg-t{font-size:30px}}
 /*v35-topo2*/
-</style>
+/*v37-topo-por-tela*/</style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
 .ck b{display:block;font-size:14px;margin-bottom:4px}.ck p{margin:0 0 6px;color:#d7d7dd}.ck a{color:#fff;text-decoration:underline}
@@ -1176,7 +1176,7 @@ async function peBadge(){if(!document.querySelector('.nv')||!ehPrem())return;try
   if(n>0&&T!=='personalizar'){if(!nb){nb=document.createElement('span');nb.className='nb';nb.id='pe_nb';btn.appendChild(nb)}nb.textContent=n}else if(nb)nb.remove()}
 if(!window.__peB){window.__peB=setInterval(peBadge,60000)}
 /* ---- aparência pública: título, selo, frase e "Sobre mim" ---- */
-const heroExtra=()=>{const s=CUSTV('selo',''),u=CUSTV('subtitulo','Qualidade, confiança e as melhores condições para você sair de Honda!');return(s?`<div class="hbd">${esc(s)}</div>`:'')+(u?`<p class="hsub">${esc(u)}</p>`:'')};
+const heroExtra=(pc)=>{const s=CUSTV('selo',''),u=CUSTV('subtitulo',pc?'Qualidade, confiança e as melhores condições para você sair de Honda!':'');return(s?`<div class="hbd">${esc(s)}</div>`:'')+(u?`<p class="hsub">${esc(u)}</p>`:'')};
 const sobreH=()=>{const t=CUSTV('sobre','');if(!t)return'';return `<section class="sobre" id="sobre"><div class="sec"><div><span class="eyb ey2">SOBRE MIM</span><h2>Quem vai te atender</h2></div></div><div class="sobre-b">${V.foto_url?`<img class="sobre-f" ${IMGA(V.foto_url,'ava')} alt="${esc(V.nome)}" loading="lazy" decoding="async">`:''}<p>${esc(t).replace(/\n/g,'<br>')}</p></div></section>`};
 /* ---- contagem da assinatura por expediente (06h às 19h, horário de Rio Branco) ---- */
 const EXPD={ini:0,fim:24,utc:-5}; const expAtivo=()=>(EXPD.fim-EXPD.ini)<24; /*tip-baixo*/ document.addEventListener('click',e=>{document.querySelectorAll('.exp-i.open').forEach(x=>{if(x!==e.target)x.classList.remove('open')})}); /*sem-janela*/
@@ -1555,6 +1555,12 @@ function hondaH(){const u=CFG&&CFG.logo_honda,im=/^https?:\/\//i.test(u||'');ret
 function heroDir(){const x=heroFeat();return x?`<div class="hfx">${x}</div>${hondaH()}`:''}
 function luzesH(){return '<div class="hlz" aria-hidden="true">'+['l1','l2','l3','l4','r1','r2','r3','r4'].map(c=>`<i class="${c}"></i>`).join('')+'</div>'}
 
+/* ===== v37: um topo para computador e outro para celular ===== */
+function celular(){try{return matchMedia('(max-width:979px)').matches}catch(e){return false}}
+(function(){let mq;try{mq=matchMedia('(max-width:979px)')}catch(e){return}let ult=mq.matches;
+  const f=()=>{if(mq.matches===ult)return;ult=mq.matches;if(typeof isAdm==='function'&&isAdm())return;if(!document.querySelector('#app header.hero'))return;const y=scrollY;try{home();scrollTo(0,y)}catch(e){}};
+  if(mq.addEventListener)mq.addEventListener('change',f);else if(mq.addListener)mq.addListener(f)})();
+
 async function init(){
   if(DEMO){V={nome:'Seu Nome',bio:'Conectando você à sua próxima moto com as melhores condições!',whatsapp:'',instagram:''};M=DEMO_M;
     document.body.insertAdjacentHTML('beforeend','<div style="position:fixed;top:0;left:0;right:0;background:#222;color:#fff;font:600 12px Inter,sans-serif;text-align:center;padding:5px;z-index:40">MODO DEMONSTRAÇÃO – configure o Supabase no início do arquivo</div>');return route()}
@@ -1716,11 +1722,16 @@ function home(){
   mkK();
   const AM=A.filter(m=>!soCon(m)),vs=AM.flatMap(m=>(m.planos||[]).map(p=>p.valor)).filter(v=>v>0),mn=vs.length?Math.min(...vs):0;
   const bxd=(()=>{try{return sessionStorage.getItem('bx')}catch(e){return''}})();
-  $('#app').innerHTML=`${tnavH()}<header class="hero v34"><span class="glow"></span><div class="spd"><i></i><i></i><i></i><i></i></div>
-  ${luzesH()}<div class="hin nl"><div class="hb">${av(V.foto_url,'s')} <div class="idt"><h1>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>${V.bio?`<p>${esc(V.bio)}</p>`:''}</div></div>
+  $('#app').innerHTML=`${tnavH()}${celular()?`<header class="hero${logoOk()?' hasl':''}"><span class="glow"></span><div class="spd"><i></i><i></i><i></i><i></i></div>
+  ${logoH()}<div class="hin nl">${av(V.foto_url)}
+  <div class="idt"><h1>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>${V.bio?`<p>${esc(V.bio)}</p>`:''}</div>
   <h2 class="hhead"><span class="eyb">ENCONTRE A SUA HONDA</span>${hhead()}</h2>${heroExtra()}
   <div class="ctas"><a class="cta w" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site e quero uma moto.')}" onclick="return chatOpen(event)">${IC.wa}${esc(CUSTV('cta','Fale comigo'))}</a>${V.instagram?`<a class="cta" target="_blank" rel="noopener" href="https://instagram.com/${esc(V.instagram)}">${IC.ig}Instagram</a>`:''}${V.facebook?`<a class="cta" target="_blank" rel="noopener" href="${esc(fbu(V.facebook))}">${IC.fb}Facebook</a>`:''}</div>
-  <div class="stats"><div><b data-n="${AM.length}">${AM.length}</b><span>modelos para escolher</span></div>${mn?`<div><b data-n="${mn}" data-m="1">${brl(mn)}</b><span>parcela de consórcio a partir de</span></div>`:''}</div><div class="hmk">${marcaH()}</div></div>${heroDir()}</header>
+  <div class="stats"><div><b data-n="${AM.length}">${AM.length}</b><span>modelos para escolher</span></div>${mn?`<div><b data-n="${mn}" data-m="1">${brl(mn)}</b><span>parcela de consórcio a partir de</span></div>`:''}</div></div>${heroFeat()}</header>`:`<header class="hero v34"><span class="glow"></span><div class="spd"><i></i><i></i><i></i><i></i></div>
+  ${luzesH()}<div class="hin nl"><div class="hb">${av(V.foto_url,'s')} <div class="idt"><h1>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>${V.bio?`<p>${esc(V.bio)}</p>`:''}</div></div>
+  <h2 class="hhead"><span class="eyb">ENCONTRE A SUA HONDA</span>${hhead()}</h2>${heroExtra(1)}
+  <div class="ctas"><a class="cta w" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site e quero uma moto.')}" onclick="return chatOpen(event)">${IC.wa}${esc(CUSTV('cta','Fale comigo'))}</a>${V.instagram?`<a class="cta" target="_blank" rel="noopener" href="https://instagram.com/${esc(V.instagram)}">${IC.ig}Instagram</a>`:''}${V.facebook?`<a class="cta" target="_blank" rel="noopener" href="${esc(fbu(V.facebook))}">${IC.fb}Facebook</a>`:''}</div>
+  <div class="stats"><div><b data-n="${AM.length}">${AM.length}</b><span>modelos para escolher</span></div>${mn?`<div><b data-n="${mn}" data-m="1">${brl(mn)}</b><span>parcela de consórcio a partir de</span></div>`:''}</div><div class="hmk">${marcaH()}</div></div>${heroDir()}</header>`}
   ${AVISO()}${faixaH()}${blocoC('topo')}<main class="wrap" id="catalogo"><ul class="tr"><li>${CK}Atendimento personalizado</li><li>${CK}Simulação rápida</li><li>${CK}Fale diretamente comigo</li></ul><div class="sec"><div><h2>${esc(CF().titulo||"Encontre sua próxima Honda")}</h2><p class="mu" style="margin:4px 0 0;font-size:14px">${esc(CF().sub||"Consórcio, financiamento e condições especiais diretamente com seu vendedor.")}</p></div><span class="nc" id="nc" aria-live="polite"></span></div>
   <div class="cat"><div id="ls" class="grid"></div></div>${blocoC('meio')}${sobreH()}${vidsH()}${entH()}${porqueH()}${INFO}${lojaH()}${blocoC('fim')}</main>
   ${MB()}${prevC()}<footer class="foot2"><b>${esc(V.nome)}</b><br>${tel()}${V.instagram?' · @'+esc(V.instagram):''}${CF().horario?`<br>Atendimento: ${esc(CF().horario)}`:''}${CF().endereco?`<br>${esc(CF().endereco)}`:''}
