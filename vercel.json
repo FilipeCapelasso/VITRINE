@@ -11,9 +11,26 @@
       ],
       "destination": "/:slug",
       "permanent": false
+    },
+    {
+      "source": "/",
+      "destination": "https://sitevendedorhonda.vercel.app/",
+      "permanent": false
     }
   ],
   "rewrites": [
+    {
+      "source": "/:slug/cdc",
+      "destination": "https://sitecdc.vercel.app/:slug"
+    },
+    {
+      "source": "/:slug/cnh",
+      "destination": "https://sitecnh.vercel.app/:slug"
+    },
+    {
+      "source": "/:slug/admin",
+      "destination": "/index.html"
+    },
     {
       "source": "/:slug",
       "has": [
