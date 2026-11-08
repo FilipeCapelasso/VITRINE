@@ -485,7 +485,7 @@ button.vt-o:hover{border-color:#6d28d9;background:#f2edff;transform:translateY(-
 @media(max-width:640px){.cd-g{grid-template-columns:1fr}.mt-seg button{flex:1}}
 /*v29-cookies*/html body .ck{left:16px;right:auto;bottom:calc(16px + env(safe-area-inset-bottom,0px));width:calc(100% - 32px);max-width:440px;margin:0;border-radius:22px;padding:20px 22px;font-size:14.5px;line-height:1.55}html body .ck b{font-size:17px;margin-bottom:8px}html body .ck p{margin:0 0 10px}html body .ck .r{margin-top:14px}html body .ck button{padding:12px 30px;font-size:15px}html body .ck a{font-weight:600}@media(max-width:520px){html body .ck{left:12px;right:12px;width:auto;max-width:none;padding:18px 18px}}/*v30-catalogo*//*v31-so-catalogo*//*v32-logo-loja-whats*/.hero.hasl{padding-top:126px}.hlg-w{position:absolute;z-index:3;top:28px;left:max(40px,calc((100% - 1376px)/2));animation:up .7s cubic-bezier(.2,.8,.2,1) both}@media(min-width:2200px){.hlg-w{left:max(40px,calc((100% - 1500px)/2))}}@media(max-width:980px){.hero.hasl{padding-top:106px}.hlg-w{top:22px;left:18px}}.hlg{display:inline-flex;align-items:center;border-radius:14px}.hlg img{display:block;height:46px;width:auto;max-width:min(260px,62vw);object-fit:contain}.hlg-escuro{background:#08080bb3;padding:10px 18px;border:1px solid #ffffff1c;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}.hlg-claro{background:#fff;padding:10px 18px;box-shadow:0 10px 24px -14px #000}.hlg-nenhum{padding:0}@media(min-width:900px){.hlg img{height:56px}}
 .criar-w{margin:22px 0 6px;text-align:center}.criar{display:inline-flex;align-items:center;justify-content:center;padding:16px 30px;border-radius:99px;background:var(--r);color:#fff;font-weight:800;font-size:15.5px;text-decoration:none;box-shadow:0 14px 28px -16px var(--r);transition:filter .2s,transform .2s}.criar:hover{filter:brightness(.92);transform:translateY(-2px)}
-.cf-st{margin:14px 0;padding:14px 18px;border-radius:12px;background:#f1f1f6;display:flex;flex-direction:column;gap:2px}.cf-st.on{background:#e4f7ea}.cf-st span{color:var(--mu,#666);font-size:14px}.cf-pv{margin:12px 0;max-width:560px}.cf-pv .vid{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#000}.cf-lk{display:flex;gap:8px;flex-wrap:wrap}.cf-lk input{flex:1;min-width:220px}.cf-del{background:#fff;color:#c00;border:1px solid #f1b9b9}</style>
+.cf-st{margin:14px 0;padding:14px 18px;border-radius:12px;background:#f1f1f6;display:flex;flex-direction:column;gap:2px}.cf-st.on{background:#e4f7ea}.cf-st span{color:var(--mu,#666);font-size:14px}.cf-pv{margin:12px 0;max-width:560px}.cf-pv .vid{display:block;width:100%;aspect-ratio:16/9;border:0;border-radius:12px;background:#000}.cf-lk{display:flex;gap:8px;flex-wrap:wrap}.cf-lk input{flex:1;min-width:220px}.cf-del{background:#fff;color:#c00;border:1px solid #f1b9b9}/*v33-um-dominio*/</style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
 .ck b{display:block;font-size:14px;margin-bottom:4px}.ck p{margin:0 0 6px;color:#d7d7dd}.ck a{color:#fff;text-decoration:underline}
@@ -1033,7 +1033,7 @@ const SUPABASE_URL='https://qrmwgqkiwoenlkfzjazs.supabase.co';
 const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFybXdncWtpd29lbmxrZnpqYXpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MDc3OTIsImV4cCI6MjEwNjM4Mzc5Mn0.lhgkQS_WcB55uG0SKk0ngQgpc9oruFRt2H2D8orjNnc';
 /* =============================================================== */
 /* URLs dos outros 2 sites (ficha CDC e pré-contrato CNH) — publicados uma única vez, servem a todos os vendedores via ?v=slug */
-const fichaUrl=b=>{const x=String(b).replace(/\/+$/,'');return(typeof CFG!=='undefined'&&CFG&&CFG.ficha_path)?x+'/'+SLUG:x+'/?v='+SLUG};
+const fichaUrl=(b,k)=>{if(k&&typeof CFG!=='undefined'&&CFG&&CFG.link_modelo==='unico')return siteUrl()+'/'+SLUG+'/'+k;const x=String(b).replace(/\/+$/,'');return(typeof CFG!=='undefined'&&CFG&&CFG.ficha_path)?x+'/'+SLUG:x+'/?v='+SLUG};
 const FICHA_CDC_URL='https://sitecdc.vercel.app/',FICHA_CNH_URL='https://sitecnh.vercel.app/';
 const SU=SUPABASE_URL.trim().replace(/\/(rest|auth)\/v1.*$/,'').replace(/\/+$/,'');
 const DEMO=!(/^https:\/\/[a-z0-9-]+\.supabase\.co$/i.test(SU)&&SUPABASE_KEY.trim().length>30&&!SUPABASE_KEY.startsWith('COLE_'));
@@ -1041,7 +1041,7 @@ const DEFAULT_SLUG=''; /* sem o nome do vendedor no link o site NÃO abre (evita
 /* o vendedor é identificado SOMENTE pelo endereço: site.com/nome-do-vendedor */
 const SLUG_RE=/^[a-z0-9]+(-[a-z0-9]+)*$/,SLUG_RES=/^(api|admin|admingeral|index|ficha|contrato|cdc|cnh|vitrine|termos|og|vercel|static|assets|public|favicon|robots|sitemap|login|painel|www|app)$/;
 const slugOk=s=>typeof s==='string'&&s.length>=3&&s.length<=40&&SLUG_RE.test(s)&&!SLUG_RES.test(s);
-const PATH_SLUG=(()=>{const seg=location.pathname.split('/').filter(Boolean);if(seg.length!==1)return'';let s='';try{s=decodeURIComponent(seg[0])}catch(e){return''}s=s.replace(/\.html?$/i,'').toLowerCase();return slugOk(s)?s:''})();
+const PATH_SLUG=(()=>{const seg=location.pathname.split('/').filter(Boolean);if(!(seg.length===1||(seg.length===2&&/^admin$/i.test(seg[1]))))return'';let s='';try{s=decodeURIComponent(seg[0])}catch(e){return''}s=s.replace(/\.html?$/i,'').toLowerCase();return slugOk(s)?s:''})();
 const SLUG=PATH_SLUG||DEFAULT_SLUG;
 /* ENDEREÇO OFICIAL: site.com/nome-do-vendedor. O antigo ?v=nome NÃO identifica mais ninguém: só leva ao endereço oficial (e nunca mistura vendedores). */
 (function(){try{const p=new URLSearchParams(location.search);if(!p.has('v'))return;const q=String(p.get('v')||'').toLowerCase();p.delete('v');const rest=p.toString(),tail=(rest?'?'+rest:'')+location.hash;
@@ -1168,7 +1168,7 @@ async function contaCheck(){try{const{data:ss}=await sb.auth.getSession(),u=ss&&
   return{ok:false,motivo:'outra',email:u.email||'',texto:'Este navegador está logado com OUTRA conta ('+(u.email||'de outro vendedor')+'), não a deste site. Saia e entre com o login deste site.'}}
   catch(e){return{ok:true}}}
 let CTB=false;
-async function contaVerifica(){if(CTB||!sb||!V||!V.id||document.hidden)return;if(location.hash!=='#admin'||!document.querySelector('.nv'))return;
+async function contaVerifica(){if(CTB||!sb||!V||!V.id||document.hidden)return;if(!isAdm()||!document.querySelector('.nv'))return;
   const c=await contaCheck();if(c.ok||CTB)return;CTB=true;contaBloqueio(c)}
 function contaBloqueio(c){const o=document.createElement('div');o.className='lkm';o.id='ctb';o.setAttribute('role','alertdialog');o.setAttribute('aria-modal','true');
   const sess=c.motivo==='sessao';
@@ -1346,7 +1346,7 @@ function visIds(){let v,s;try{v=localStorage.getItem('vtv');if(!v){v=visRnd();lo
 function visOrigem(){try{const u=new URLSearchParams(location.search),us=(u.get('utm_source')||u.get('src')||'').toLowerCase();let h='';try{h=new URL(document.referrer).hostname.replace(/^www\./,'').toLowerCase()}catch(e){}
   if(!us&&(!h||h===location.hostname))return'direto';const t=us||h;
   if(/instagram/.test(t))return'instagram';if(/facebook|fb\./.test(t))return'facebook';if(/whatsapp|wa\.me/.test(t))return'whatsapp';if(/google/.test(t))return'google';if(/tiktok/.test(t))return'tiktok';if(/youtube|youtu\.be/.test(t))return'youtube';if(/telegram|t\.me/.test(t))return'telegram';if(/twitter|x\.com|t\.co/.test(t))return'x';return'outros'}catch(e){return'direto'}}
-function visPode(){try{if(document.querySelector('#app .shell')||location.hash==='#admin'||!document.querySelector('#app .tnav'))return false;if(/bot|crawl|spider|slurp|lighthouse/i.test(navigator.userAgent))return false;
+function visPode(){try{if(document.querySelector('#app .shell')||isAdm()||!document.querySelector('#app .tnav'))return false;if(/bot|crawl|spider|slurp|lighthouse/i.test(navigator.userAgent))return false;
   for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i)||'';if(/^sb-.*-auth-token$/.test(k)&&localStorage.getItem(k))return false}   /* quem está logado (o próprio vendedor) não conta */
   if(new URLSearchParams(location.search).has('pv'))return false}catch(e){}return true}
 const VISV={wa:0,moto:{}};
@@ -1503,6 +1503,11 @@ async function cfLink(){const v=($('#cf_l').value||'').trim();if(!/^https:\/\/[^
   try{const ant=(CF().como_funciona||{}).u;await cfSave({u:v});if(ant&&ant!==v)cfRm(ant);pComo();toast('Link salvo! Ele aparece no seu site.')}catch(e){toast('Erro: '+(e&&e.message||e))}}
 async function cfDel(){if(!confirm('Excluir o seu vídeo? O vídeo oficial da Honda volta a aparecer no seu site.'))return;try{const ant=(CF().como_funciona||{}).u;await cfSave(null);cfRm(ant);pComo();toast('Pronto! Voltou o vídeo oficial da Honda.')}catch(e){toast('Erro: '+(e&&e.message||e))}}
 
+/* ===== v33: endereço único (/nome/admin) ===== */
+function pathAdm(){return /^\/[^\/]+\/admin\/?$/i.test(location.pathname)}
+function isAdm(){return location.hash==='#admin'||pathAdm()}
+document.addEventListener('click',e=>{const a=e.target&&e.target.closest?e.target.closest('a[href="#"]'):null;if(a&&pathAdm()){e.preventDefault();location.href='/'+SLUG}},true);
+
 async function init(){
   if(DEMO){V={nome:'Seu Nome',bio:'Conectando você à sua próxima moto com as melhores condições!',whatsapp:'',instagram:''};M=DEMO_M;
     document.body.insertAdjacentHTML('beforeend','<div style="position:fixed;top:0;left:0;right:0;background:#222;color:#fff;font:600 12px Inter,sans-serif;text-align:center;padding:5px;z-index:40">MODO DEMONSTRAÇÃO – configure o Supabase no início do arquivo</div>');return route()}
@@ -1514,7 +1519,7 @@ async function init(){
 addEventListener('hashchange',route);
 async function route(){
   $('#modal').style.display='none';
-  if(location.hash==='#admin'){if(DEMO){$('#app').innerHTML='<div class="ad"><h1>Área do vendedor</h1><p class="mu">Configure o Supabase no início do arquivo para usar o painel.</p><p class=\"mu\" style=\"font-size:12px\">O arquivo está lendo: URL = '+esc(SUPABASE_URL.slice(0,45))+' | chave com '+SUPABASE_KEY.length+' caracteres</p><a class="btn red" href="#">Voltar ao site</a></div>';return}const{data}=await sb.auth.getSession();await guard(data.session)?adm():login()}else{C='Todas';Q='';home();const d=/^#moto=(.+)/.exec(location.hash);if(d){const i=L.findIndex(x=>x.id===d[1]);if(i>=0)openM(i,soCon(L[i])?'con':'det')}}
+  if(isAdm()){if(DEMO){$('#app').innerHTML='<div class="ad"><h1>Área do vendedor</h1><p class="mu">Configure o Supabase no início do arquivo para usar o painel.</p><p class=\"mu\" style=\"font-size:12px\">O arquivo está lendo: URL = '+esc(SUPABASE_URL.slice(0,45))+' | chave com '+SUPABASE_KEY.length+' caracteres</p><a class="btn red" href="#">Voltar ao site</a></div>';return}const{data}=await sb.auth.getSession();await guard(data.session)?adm():login()}else{C='Todas';Q='';home();const d=/^#moto=(.+)/.exec(location.hash);if(d){const i=L.findIndex(x=>x.id===d[1]);if(i>=0)openM(i,soCon(L[i])?'con':'det')}}
 }
 
 /* ================= CLIENTE ================= */
@@ -1673,7 +1678,7 @@ function home(){
   ${AVISO()}${faixaH()}${blocoC('topo')}<main class="wrap" id="catalogo"><ul class="tr"><li>${CK}Atendimento personalizado</li><li>${CK}Simulação rápida</li><li>${CK}Fale diretamente comigo</li></ul><div class="sec"><div><h2>${esc(CF().titulo||"Encontre sua próxima Honda")}</h2><p class="mu" style="margin:4px 0 0;font-size:14px">${esc(CF().sub||"Consórcio, financiamento e condições especiais diretamente com seu vendedor.")}</p></div><span class="nc" id="nc" aria-live="polite"></span></div>
   <div class="cat"><div id="ls" class="grid"></div></div>${blocoC('meio')}${sobreH()}${vidsH()}${entH()}${porqueH()}${INFO}${lojaH()}${blocoC('fim')}</main>
   ${MB()}${prevC()}<footer class="foot2"><b>${esc(V.nome)}</b><br>${tel()}${V.instagram?' · @'+esc(V.instagram):''}${CF().horario?`<br>Atendimento: ${esc(CF().horario)}`:''}${CF().endereco?`<br>${esc(CF().endereco)}`:''}
-  <div class="fl"><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cdc||FICHA_CDC_URL)}">Ficha CDC<small>Financiamento</small></a><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cnh||FICHA_CNH_URL)}">Ficha CNH<small>Consórcio</small></a></div><p class="disc2">Imagens ilustrativas. Valores, cores, versões e disponibilidade sujeitos à confirmação no atendimento. Marcas e imagens pertencem aos seus respectivos titulares. ${catSelo()}</p><div class="ful"><a target="_blank" rel="noopener" href="https://consorcionacionalhonda.com.br/atendimento/pagamento/sobre-o-pagamento">Como pagar com segurança ↗</a><a target="_blank" rel="noopener" href="https://www.bcb.gov.br/meubc/faqs/p/cuidados-na-hora-de-contratar-uma-operacao-de-credito">Cuidados ao contratar crédito ↗</a><a href="#" onclick="priv();return false">Política de Privacidade</a></div><a class="up" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">↑ Voltar ao topo</a><div class="criar-w"><a class="criar" target="_blank" rel="noopener" href="${esc(CFG.url_comercial||'https://sitevendedorhonda.vercel.app/')}">Crie seu site vendedor</a></div></footer>
+  <div class="fl"><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cdc||FICHA_CDC_URL,'cdc')}">Ficha CDC<small>Financiamento</small></a><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cnh||FICHA_CNH_URL,'cnh')}">Ficha CNH<small>Consórcio</small></a></div><p class="disc2">Imagens ilustrativas. Valores, cores, versões e disponibilidade sujeitos à confirmação no atendimento. Marcas e imagens pertencem aos seus respectivos titulares. ${catSelo()}</p><div class="ful"><a target="_blank" rel="noopener" href="https://consorcionacionalhonda.com.br/atendimento/pagamento/sobre-o-pagamento">Como pagar com segurança ↗</a><a target="_blank" rel="noopener" href="https://www.bcb.gov.br/meubc/faqs/p/cuidados-na-hora-de-contratar-uma-operacao-de-credito">Cuidados ao contratar crédito ↗</a><a href="#" onclick="priv();return false">Política de Privacidade</a></div><a class="up" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">↑ Voltar ao topo</a><div class="criar-w"><a class="criar" target="_blank" rel="noopener" href="${esc(CFG.url_comercial||'https://sitevendedorhonda.vercel.app/')}">Crie seu site vendedor</a></div></footer>
   ${bxd?'':`<div class="bw"><a class="bubble" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site.')}" onclick="return chatOpen(event)">${av(V.foto_url)}Estou online. Fale agora!</a><button class="bx" aria-label="Fechar" onclick="try{sessionStorage.setItem('bx',1)}catch(e){}this.closest('.bw').remove()">×</button></div>`}`;
   lista(1);cnt();seo();heroInit();tnavInit();rvInit();enObs();enSlow();
 }
@@ -1761,7 +1766,7 @@ async function doLogin(){
   const{error}=await sb.auth.signInWithPassword({email:$('#em').value,password:$('#se').value});
   if(error)return toast('E-mail ou senha incorretos');await init();await guard((await sb.auth.getSession()).data.session)?adm():login();
 }
-async function out(){AC=null;PSLIVE=false;await sb.auth.signOut();location.hash='';home()}
+async function out(){AC=null;PSLIVE=false;await sb.auth.signOut();if(pathAdm()){location.href='/'+SLUG;return}location.hash='';home()}
 async function shrink(f){
   if(!/^image\/(png|jpe?g|webp)$/.test(f.type)||f.size<250e3)return f;
   try{const b=await createImageBitmap(f),k=Math.min(1,1280/Math.max(b.width,b.height)),c=document.createElement('canvas');c.width=Math.round(b.width*k);c.height=Math.round(b.height*k);c.getContext('2d').drawImage(b,0,0,c.width,c.height);
@@ -1798,7 +1803,7 @@ async function nbSync(){const b=$('#nb');if(!b)return;const{count}=await sb.from
 let RT=null;
 function rt(){if(RT)return;try{RT=sb.channel('pd').on('postgres_changes',{event:'*',schema:'public',table:'pedidos_chat'},e=>{
   if(e.new&&e.new.completo&&e.new.status==='novo'&&!(e.old&&e.old.completo))toast('Novo pedido recebido!');
-  nbSync();if(T==='pedidos'&&location.hash==='#admin'&&!/SELECT/.test(document.activeElement.tagName))pPedidos()}).subscribe()}catch(x){}}
+  nbSync();if(T==='pedidos'&&isAdm()&&!/SELECT/.test(document.activeElement.tagName))pPedidos()}).subscribe()}catch(x){}}
 async function upV(k,el){
   try{toast('Enviando...');const u=await up(el.files[0]);const{error}=await sb.from('vendedores').update({[k]:u}).eq('id',V.id);if(error)throw error;V[k]=u;toast('Salvo!');pPerfil()}catch(e){toast('Erro: '+e.message)}
 }
