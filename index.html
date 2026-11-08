@@ -379,18 +379,18 @@ html.an-off *,html.an-off *:before,html.an-off *:after{animation:none!important;
 @keyframes efAnel{0%,100%{box-shadow:0 0 0 3px #ffffff33,0 0 0 6px color-mix(in srgb,var(--r) 35%,transparent),0 0 26px color-mix(in srgb,var(--r) 50%,transparent)}50%{box-shadow:0 0 0 3px #ffffff66,0 0 0 11px color-mix(in srgb,var(--r) 18%,transparent),0 0 44px color-mix(in srgb,var(--r) 75%,transparent)}}
 @property --efa{syntax:'<angle>';inherits:false;initial-value:0deg}
 @keyframes efGira{to{--efa:360deg}}
-html.ef-bt-brilho body:not(:has(.shell)) .cta.w,html.ef-bt-brilho body:not(:has(.shell)) .btn.red{position:relative;overflow:hidden}
-html.ef-bt-brilho body:not(:has(.shell)) .cta.w:before,html.ef-bt-brilho body:not(:has(.shell)) .btn.red:before{content:"";position:absolute;top:0;left:0;width:34%;height:100%;background:linear-gradient(100deg,transparent,#ffffff80,transparent);transform:translateX(-140%) skewX(-20deg);animation:efShine 3.2s ease-in-out infinite;pointer-events:none}
-html.ef-bt-pulso body:not(:has(.shell)) .cta.w{animation:efPulso 2.2s infinite}
-html.ef-cd-levantar body:not(:has(.shell)) .cd{transition:transform .28s,box-shadow .28s}
-html.ef-cd-levantar body:not(:has(.shell)) .cd:hover{transform:translateY(-8px);box-shadow:0 24px 44px -20px color-mix(in srgb,var(--r) 60%,#000)}
-html.ef-cd-brilho body:not(:has(.shell)) .cd{outline:2px solid transparent;outline-offset:-2px;transition:outline-color .3s,box-shadow .3s}
-html.ef-cd-brilho body:not(:has(.shell)) .cd:hover{outline-color:var(--r);box-shadow:0 0 0 5px color-mix(in srgb,var(--r) 18%,transparent),0 20px 38px -18px color-mix(in srgb,var(--r) 65%,transparent)}
-html.en-on body:not(:has(.shell)) :is(.cd,.loja,.why,.ent):not(.en-in){opacity:0}
-html.en-subir body:not(:has(.shell)) :is(.cd,.loja,.why,.ent).en-in{animation:efSobe .7s cubic-bezier(.2,.8,.2,1) both}
-html.en-aparecer body:not(:has(.shell)) :is(.cd,.loja,.why,.ent).en-in{animation:efAparece .8s ease both}
-html.mo-anel body:not(:has(.shell)) img.ava{animation:efAnel 3s ease-in-out infinite}
-html.mo-gradiente body:not(:has(.shell)) img.ava{border:4px solid transparent;background:linear-gradient(#111,#111) padding-box,conic-gradient(from var(--efa),var(--r),#ffd37a,#fff,var(--r)) border-box;animation:efGira 4s linear infinite}
+html.ef-bt-brilho body:not(.pn-on) .cta.w,html.ef-bt-brilho body:not(.pn-on) .btn.red{position:relative;overflow:hidden}
+html.ef-bt-brilho body:not(.pn-on) .cta.w:before,html.ef-bt-brilho body:not(.pn-on) .btn.red:before{content:"";position:absolute;top:0;left:0;width:34%;height:100%;background:linear-gradient(100deg,transparent,#ffffff80,transparent);transform:translateX(-140%) skewX(-20deg);animation:efShine 3.2s ease-in-out infinite;pointer-events:none}
+html.ef-bt-pulso body:not(.pn-on) .cta.w{animation:efPulso 2.2s infinite}
+html.ef-cd-levantar body:not(.pn-on) .cd{transition:transform .28s,box-shadow .28s}
+html.ef-cd-levantar body:not(.pn-on) .cd:hover{transform:translateY(-8px);box-shadow:0 24px 44px -20px color-mix(in srgb,var(--r) 60%,#000)}
+html.ef-cd-brilho body:not(.pn-on) .cd{outline:2px solid transparent;outline-offset:-2px;transition:outline-color .3s,box-shadow .3s}
+html.ef-cd-brilho body:not(.pn-on) .cd:hover{outline-color:var(--r);box-shadow:0 0 0 5px color-mix(in srgb,var(--r) 18%,transparent),0 20px 38px -18px color-mix(in srgb,var(--r) 65%,transparent)}
+html.en-on body:not(.pn-on) :is(.cd,.loja,.why,.ent):not(.en-in){opacity:0}
+html.en-subir body:not(.pn-on) :is(.cd,.loja,.why,.ent).en-in{animation:efSobe .7s cubic-bezier(.2,.8,.2,1) both}
+html.en-aparecer body:not(.pn-on) :is(.cd,.loja,.why,.ent).en-in{animation:efAparece .8s ease both}
+html.mo-anel body:not(.pn-on) img.ava{animation:efAnel 3s ease-in-out infinite}
+html.mo-gradiente body:not(.pn-on) img.ava{border:4px solid transparent;background:linear-gradient(#111,#111) padding-box,conic-gradient(from var(--efa),var(--r),#ffd37a,#fff,var(--r)) border-box;animation:efGira 4s linear infinite}
 html.an-off .cta.w:before,html.an-off .btn.red:before{display:none}
 @media(prefers-reduced-motion:reduce){html[class*=ef-] .cta.w,html.mo-anel img.ava,html.mo-gradiente img.ava{animation:none!important}html[class*=ef-] .cta.w:before,html[class*=ef-] .btn.red:before{display:none}html.en-on :is(.cd,.loja,.why,.ent):not(.en-in){opacity:1!important}}
 /* pré-visualização dos efeitos dentro do painel */
@@ -2660,5 +2660,13 @@ body.pn-on kbd,.cmd kbd{font:600 11px ui-monospace,SFMono-Regular,Menlo,monospac
 @media(max-width:860px){body.pn-on .pn-k{order:3;flex:1 1 100%;max-width:none;margin:0}body.pn-on .pn-k kbd{display:none}.cmd{padding-top:6vh}}
 @media(prefers-reduced-motion:reduce){body.pn-on .mn.ent>#pn,body.pn-on .mn.ent .mt2,.cmd.on,.cmd-b{animation-duration:.001ms!important}}
 body.pn-on,body.pn-on .shell,body.pn-on .mn,body.pn-on .mn:has(.ini-card){background:#fff}
+/* fix: a pré-visualização dos efeitos no painel sempre anima, mesmo com "reduzir movimento" ligado no aparelho */
+@media(prefers-reduced-motion:reduce){
+.pmb-brilho .p1:before{animation:efShine 3.2s ease-in-out infinite!important}
+.pmb-pulso .p1{animation:efPulso 2.2s infinite!important}
+.pmm-anel .pm-ava{animation:efAnel 3s ease-in-out infinite!important}
+.pmm-gradiente .pm-ava{animation:efGira 4s linear infinite!important}
+.pmc-levantar .pm-cd>div,.pmc-brilho .pm-cd>div{transition-duration:.28s!important}
+}
 </style></body>
 </html>
