@@ -1725,13 +1725,15 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 /* rolagem lenta e automática das fotos e vídeos (vai até o fim e volta); pausa ao tocar/passar o mouse */
 function enSlow(){document.querySelectorAll('.en-w').forEach(w=>{const s=w.querySelector('.en-s');if(!s||w.dataset.slow)return;w.dataset.slow='1';
   if(matchMedia('(prefers-reduced-motion:reduce)').matches||window.__enManual||document.documentElement.classList.contains('an-off'))return; s.classList.add('slow');let pos=s.scrollLeft,dir=1,pausa=0,vis=false,last=0,setv=-1;const VEL=14;
-  const para=ms=>{pausa=Date.now()+ms;pos=s.scrollLeft;setv=-1};
-  ['focusin'].forEach(ev=>w.addEventListener(ev,()=>para(120000),{passive:true}));
-  ['pointerdown','touchstart','wheel'].forEach(ev=>w.addEventListener(ev,()=>para(7000),{passive:true}));
+  const MANUAL=60000;/* mexeu na mão: a rolagem automática fica parada por 1 minuto */
+  const para=ms=>{pausa=Math.max(pausa,Date.now()+ms);pos=s.scrollLeft;setv=-1};
+  ['focusin','keydown'].forEach(ev=>w.addEventListener(ev,()=>para(MANUAL),{passive:true}));
+  ['pointerdown','touchstart'].forEach(ev=>w.addEventListener(ev,()=>para(MANUAL),{passive:true}));
+  w.addEventListener('wheel',e=>{if(Math.abs(e.deltaX)>Math.abs(e.deltaY)||e.shiftKey)para(MANUAL)},{passive:true});
   ['pointerleave','mouseleave'].forEach(ev=>w.addEventListener(ev,()=>para(400),{passive:true}));
   function tick(t){if(!vis||!s.isConnected)return;requestAnimationFrame(tick);if(!last){last=t;return}const dt=Math.min(.1,(t-last)/1000);last=t;
-    if(setv>=0&&Math.abs(s.scrollLeft-setv)>1.5){para(4000);return}
-    if(Date.now()<pausa)return;if(matchMedia('(hover:hover)').matches&&w.querySelector('.en-mp:hover,.en:hover,.en-nv:hover')){pausa=Date.now()+400;pos=s.scrollLeft;setv=-1;return}const max=s.scrollWidth-s.clientWidth;if(max<20)return;
+    if(setv>=0&&Math.abs(s.scrollLeft-setv)>1.5){para(MANUAL);return}
+    if(Date.now()<pausa)return;if(matchMedia('(hover:hover)').matches&&w.querySelector('.en-mp:hover,.en:hover,.en-nv:hover')){pausa=Math.max(pausa,Date.now()+400);pos=s.scrollLeft;setv=-1;return}const max=s.scrollWidth-s.clientWidth;if(max<20)return;
     pos=Math.max(0,Math.min(max,pos+dir*VEL*dt));s.scrollLeft=pos;setv=s.scrollLeft;
     if(dir>0&&pos>=max-1){dir=-1;pausa=Date.now()+2500}else if(dir<0&&pos<=0){dir=1;pausa=Date.now()+2500}}
   if(window.IntersectionObserver)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis){last=0;requestAnimationFrame(tick)}},{threshold:.1}).observe(w);else{vis=true;requestAnimationFrame(tick)}})}
