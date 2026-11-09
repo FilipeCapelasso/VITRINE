@@ -379,18 +379,18 @@ html.an-off *,html.an-off *:before,html.an-off *:after{animation:none!important;
 @keyframes efAnel{0%,100%{box-shadow:0 0 0 3px #ffffff33,0 0 0 6px color-mix(in srgb,var(--r) 35%,transparent),0 0 26px color-mix(in srgb,var(--r) 50%,transparent)}50%{box-shadow:0 0 0 3px #ffffff66,0 0 0 11px color-mix(in srgb,var(--r) 18%,transparent),0 0 44px color-mix(in srgb,var(--r) 75%,transparent)}}
 @property --efa{syntax:'<angle>';inherits:false;initial-value:0deg}
 @keyframes efGira{to{--efa:360deg}}
-html.ef-bt-brilho body:not(.pn-on) .cta.w,html.ef-bt-brilho body:not(.pn-on) .btn.red{position:relative;overflow:hidden}
-html.ef-bt-brilho body:not(.pn-on) .cta.w:before,html.ef-bt-brilho body:not(.pn-on) .btn.red:before{content:"";position:absolute;top:0;left:0;width:34%;height:100%;background:linear-gradient(100deg,transparent,#ffffff80,transparent);transform:translateX(-140%) skewX(-20deg);animation:efShine 3.2s ease-in-out infinite;pointer-events:none}
-html.ef-bt-pulso body:not(.pn-on) .cta.w{animation:efPulso 2.2s infinite}
-html.ef-cd-levantar body:not(.pn-on) .cd{transition:transform .28s,box-shadow .28s}
-html.ef-cd-levantar body:not(.pn-on) .cd:hover{transform:translateY(-8px);box-shadow:0 24px 44px -20px color-mix(in srgb,var(--r) 60%,#000)}
-html.ef-cd-brilho body:not(.pn-on) .cd{outline:2px solid transparent;outline-offset:-2px;transition:outline-color .3s,box-shadow .3s}
-html.ef-cd-brilho body:not(.pn-on) .cd:hover{outline-color:var(--r);box-shadow:0 0 0 5px color-mix(in srgb,var(--r) 18%,transparent),0 20px 38px -18px color-mix(in srgb,var(--r) 65%,transparent)}
-html.en-on body:not(.pn-on) :is(.cd,.loja,.why,.ent):not(.en-in){opacity:0}
-html.en-subir body:not(.pn-on) :is(.cd,.loja,.why,.ent).en-in{animation:efSobe .7s cubic-bezier(.2,.8,.2,1) both}
-html.en-aparecer body:not(.pn-on) :is(.cd,.loja,.why,.ent).en-in{animation:efAparece .8s ease both}
-html.mo-anel body:not(.pn-on) img.ava{animation:efAnel 3s ease-in-out infinite}
-html.mo-gradiente body:not(.pn-on) img.ava{border:4px solid transparent;background:linear-gradient(#111,#111) padding-box,conic-gradient(from var(--efa),var(--r),#ffd37a,#fff,var(--r)) border-box;animation:efGira 4s linear infinite}
+html.ef-bt-brilho body:not(:has(.shell)) .cta.w,html.ef-bt-brilho body:not(:has(.shell)) .btn.red{position:relative;overflow:hidden}
+html.ef-bt-brilho body:not(:has(.shell)) .cta.w:before,html.ef-bt-brilho body:not(:has(.shell)) .btn.red:before{content:"";position:absolute;top:0;left:0;width:34%;height:100%;background:linear-gradient(100deg,transparent,#ffffff80,transparent);transform:translateX(-140%) skewX(-20deg);animation:efShine 3.2s ease-in-out infinite;pointer-events:none}
+html.ef-bt-pulso body:not(:has(.shell)) .cta.w{animation:efPulso 2.2s infinite}
+html.ef-cd-levantar body:not(:has(.shell)) .cd{transition:transform .28s,box-shadow .28s}
+html.ef-cd-levantar body:not(:has(.shell)) .cd:hover{transform:translateY(-8px);box-shadow:0 24px 44px -20px color-mix(in srgb,var(--r) 60%,#000)}
+html.ef-cd-brilho body:not(:has(.shell)) .cd{outline:2px solid transparent;outline-offset:-2px;transition:outline-color .3s,box-shadow .3s}
+html.ef-cd-brilho body:not(:has(.shell)) .cd:hover{outline-color:var(--r);box-shadow:0 0 0 5px color-mix(in srgb,var(--r) 18%,transparent),0 20px 38px -18px color-mix(in srgb,var(--r) 65%,transparent)}
+html.en-on body:not(:has(.shell)) :is(.cd,.loja,.why,.ent):not(.en-in){opacity:0}
+html.en-subir body:not(:has(.shell)) :is(.cd,.loja,.why,.ent).en-in{animation:efSobe .7s cubic-bezier(.2,.8,.2,1) both}
+html.en-aparecer body:not(:has(.shell)) :is(.cd,.loja,.why,.ent).en-in{animation:efAparece .8s ease both}
+html.mo-anel body:not(:has(.shell)) img.ava{animation:efAnel 3s ease-in-out infinite}
+html.mo-gradiente body:not(:has(.shell)) img.ava{border:4px solid transparent;background:linear-gradient(#111,#111) padding-box,conic-gradient(from var(--efa),var(--r),#ffd37a,#fff,var(--r)) border-box;animation:efGira 4s linear infinite}
 html.an-off .cta.w:before,html.an-off .btn.red:before{display:none}
 @media(prefers-reduced-motion:reduce){html[class*=ef-] .cta.w,html.mo-anel img.ava,html.mo-gradiente img.ava{animation:none!important}html[class*=ef-] .cta.w:before,html[class*=ef-] .btn.red:before{display:none}html.en-on :is(.cd,.loja,.why,.ent):not(.en-in){opacity:1!important}}
 /* pré-visualização dos efeitos dentro do painel */
@@ -1059,6 +1059,32 @@ html.ho-videos #videos,html.ho-videos .tn-l a[href="#videos"],html.ho-entregas #
 .pm-cd{display:grid;grid-template-columns:1fr 1fr;gap:9px;padding:12px}.pm-cd div{background:#fff;padding:10px;font-size:10.5px;font-weight:700;box-shadow:0 8px 14px -10px #0007}
 .pm-cd div i{display:block;height:44px;border-radius:inherit;background:linear-gradient(135deg,#e9ebf2,#f8f9fc);margin-bottom:7px}.pm-cd div u{display:inline-block;text-decoration:none;margin-top:5px;padding:4px 8px;background:var(--pc);color:#fff;font-size:9.5px}
 .ps-lock{text-align:center;padding:40px 18px}.ps-lock .big{font-size:52px}
+</style><style id="cor40">
+@keyframes gfade{from{opacity:.0;transform:scale(1.015)}to{opacity:1;transform:none}}
+#gm{animation:gfade .38s cubic-bezier(.2,.7,.2,1)}
+.cor{cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s,background .18s;font:inherit;font-size:13px}
+.cor:hover{border-color:#b9bcc6;transform:translateY(-1px)}
+.cor.on{border-color:var(--r,#c80000);box-shadow:0 0 0 3px color-mix(in srgb,var(--r,#c80000) 16%,transparent);font-weight:700}
+.cor i{box-shadow:inset 0 0 0 1px rgba(255,255,255,.35)}
+.cor.semfoto{border-style:dashed;color:#5b5f6a}
+.cor.semfoto::after{content:"sem foto";font-size:10px;font-weight:600;letter-spacing:.02em;color:#8a8e99;margin-left:2px}
+.cores .cor-nf b{display:inline;margin:0;font-size:inherit}
+.cor-nf{display:block;background:#fff7e6;border:1px solid #f3d9a4;color:#7a5600;border-radius:10px;padding:8px 11px;line-height:1.4;animation:gfade .3s ease}
+.fcor{margin:16px 0 4px;padding:14px;border:1px solid #e6e7ee;border-radius:14px;background:#fafafc}
+.fcor-h{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}.fcor-h .l{margin:0}
+.fc-row{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:10px 0;border-top:1px solid #ececf2}.fc-row:first-of-type{border-top:0}
+.fc-row>.cor{min-width:112px;margin:0;cursor:default}.fc-opts{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.fc-th{padding:0;border:2px solid #dcdde6;border-radius:10px;background:#fff;width:76px;height:52px;overflow:hidden;cursor:pointer;transition:border-color .15s,transform .15s}
+.fc-th img{width:100%;height:100%;object-fit:contain;display:block}.fc-th:hover{transform:translateY(-1px)}
+.fc-th.on{border-color:var(--r,#c80000);box-shadow:0 0 0 3px color-mix(in srgb,var(--r,#c80000) 18%,transparent)}
+.fc-no{border:2px dashed #cfd1db;border-radius:10px;background:#fff;height:52px;padding:0 12px;font-size:12px;font-weight:600;color:#666b78;cursor:pointer}.fc-no.on{border-color:#666b78;color:#222}
+@media(prefers-reduced-motion:reduce){#gm,.cor-nf{animation:none}.cor,.fc-th{transition:none}}
+</style><style id="v41">
+.gcn{position:absolute;bottom:10px;left:12px;display:inline-flex;align-items:center;gap:6px;background:#000a;color:#fff;font:600 12px Inter,sans-serif;padding:3px 11px 3px 7px;border-radius:999px;backdrop-filter:blur(4px);animation:gfade .3s ease}
+.gcn i{width:12px;height:12px;border-radius:50%;border:1px solid #fff9;display:inline-block}
+.btn,.cta,button.cor,.fc-th,.fc-no{-webkit-tap-highlight-color:transparent}
+.btn:not(:disabled):active,.cta:not(:disabled):active,button.cor:active{transform:scale(.975)}
+@media(prefers-reduced-motion:reduce){.gcn{animation:none}.btn:active,.cta:active,button.cor:active{transform:none}}
 </style></head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -1626,12 +1652,6 @@ const INFO=`<div class="sec"><h2>Como comprar</h2></div><ol class="how"><li><b>E
 
 var COR_SEL={};
 const corTxt=m=>COR_SEL[m.id]?' na cor '+COR_SEL[m.id]:'';
-function corPick(m){const c=Array.isArray(m.cores)?m.cores.filter(Boolean):[];if(!c.length)return'';const s=COR_SEL[m.id]||'';
-  return `<div class="cores" id="corbox"><b>Escolha a cor${s?': <span class="cor-sel">'+esc(s)+'</span>':''}</b><div>${c.map((n,i)=>`<button type="button" class="cor ${s===n?'on':''}" aria-pressed="${s===n}" onclick="corSel(${i})"><i style="background:${corHex(n)}"></i>${esc(n)}</button>`).join('')}</div>${s?'':'<small class="mu">Toque numa cor para ver a foto e já informar sua preferência ao vendedor.</small>'}</div>`}
-function corSel(i){const m=L[cur];if(!m)return;const c=(m.cores||[]).filter(Boolean),n=c[i];COR_SEL[m.id]=COR_SEL[m.id]===n?'':n;
-  if(COR_SEL[m.id]&&(m.fotos||[])[i]&&c.length<=(m.fotos||[]).length)gShow(i);
-  const b=document.getElementById('corbox');if(b)b.outerHTML=corPick(m);
-  document.querySelectorAll('.dt-cta a.wa,.dt-bar a.wa').forEach(a=>a.href=wa('Olá! Tenho interesse na '+hn(m)+corTxt(m)+'. Gostaria de saber mais sobre as condições.'))}
 const lojaH=()=>{const lj=(CFG.lojas||[]).find(x=>x.id===V.loja_id),e=lj?lj.endereco:(CF().endereco||CFG.loja_endereco),t=CFG.loja_telefone,h=CF().horario||CFG.loja_horario;if(!e)return'';const mp=lj?('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(lj.nome+' '+e)):(CFG.loja_maps||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e)));
   return `<section class="loja" id="loja" aria-label="Loja"><div class="loja-i"><h2>Visite ${(lj?lj.nome:CFG.loja_nome)?'a '+esc(lj?lj.nome:CFG.loja_nome):'nossa loja'}</h2><p>📍 ${esc(e)}</p>${h?`<p>🕒 ${esc(h)}</p>`:''}${t?`<p>📞 <a href="tel:${esc(String(t).replace(/[^+\d]/g,''))}">${esc(t)}</a></p>`:''}</div><div class="loja-a"><a class="btn red" target="_blank" rel="noopener" href="${esc(mp)}">📍 Como chegar</a>${V.whatsapp?`<a class="btn wa" target="_blank" rel="noopener" href="${wa('Olá! Vou visitar a loja e gostaria de saber mais.')}">Falar antes de ir</a>`:''}</div></section>`};
 const chipsH=()=>K.map((c,i)=>`<button class="chip ${c===C?'on':''}" aria-pressed="${c===C}" onclick="setC(${i})">${esc(c)}</button>`).join('');
@@ -1725,15 +1745,13 @@ document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest
 /* rolagem lenta e automática das fotos e vídeos (vai até o fim e volta); pausa ao tocar/passar o mouse */
 function enSlow(){document.querySelectorAll('.en-w').forEach(w=>{const s=w.querySelector('.en-s');if(!s||w.dataset.slow)return;w.dataset.slow='1';
   if(matchMedia('(prefers-reduced-motion:reduce)').matches||window.__enManual||document.documentElement.classList.contains('an-off'))return; s.classList.add('slow');let pos=s.scrollLeft,dir=1,pausa=0,vis=false,last=0,setv=-1;const VEL=14;
-  const MANUAL=60000;/* mexeu na mão: a rolagem automática fica parada por 1 minuto */
-  const para=ms=>{pausa=Math.max(pausa,Date.now()+ms);pos=s.scrollLeft;setv=-1};
-  ['focusin','keydown'].forEach(ev=>w.addEventListener(ev,()=>para(MANUAL),{passive:true}));
-  ['pointerdown','touchstart'].forEach(ev=>w.addEventListener(ev,()=>para(MANUAL),{passive:true}));
-  w.addEventListener('wheel',e=>{if(Math.abs(e.deltaX)>Math.abs(e.deltaY)||e.shiftKey)para(MANUAL)},{passive:true});
+  const para=ms=>{pausa=Date.now()+ms;pos=s.scrollLeft;setv=-1};
+  ['focusin'].forEach(ev=>w.addEventListener(ev,()=>para(120000),{passive:true}));
+  ['pointerdown','touchstart','wheel'].forEach(ev=>w.addEventListener(ev,()=>para(7000),{passive:true}));
   ['pointerleave','mouseleave'].forEach(ev=>w.addEventListener(ev,()=>para(400),{passive:true}));
   function tick(t){if(!vis||!s.isConnected)return;requestAnimationFrame(tick);if(!last){last=t;return}const dt=Math.min(.1,(t-last)/1000);last=t;
-    if(setv>=0&&Math.abs(s.scrollLeft-setv)>1.5){para(MANUAL);return}
-    if(Date.now()<pausa)return;if(matchMedia('(hover:hover)').matches&&w.querySelector('.en-mp:hover,.en:hover,.en-nv:hover')){pausa=Math.max(pausa,Date.now()+400);pos=s.scrollLeft;setv=-1;return}const max=s.scrollWidth-s.clientWidth;if(max<20)return;
+    if(setv>=0&&Math.abs(s.scrollLeft-setv)>1.5){para(4000);return}
+    if(Date.now()<pausa)return;if(matchMedia('(hover:hover)').matches&&w.querySelector('.en-mp:hover,.en:hover,.en-nv:hover')){pausa=Date.now()+400;pos=s.scrollLeft;setv=-1;return}const max=s.scrollWidth-s.clientWidth;if(max<20)return;
     pos=Math.max(0,Math.min(max,pos+dir*VEL*dt));s.scrollLeft=pos;setv=s.scrollLeft;
     if(dir>0&&pos>=max-1){dir=-1;pausa=Date.now()+2500}else if(dir<0&&pos<=0){dir=1;pausa=Date.now()+2500}}
   if(window.IntersectionObserver)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis){last=0;requestAnimationFrame(tick)}},{threshold:.1}).observe(w);else{vis=true;requestAnimationFrame(tick)}})}
@@ -1791,7 +1809,52 @@ function comoFunciona(){ const u=cfUrl();if(!u)return;
 function howOrVideo(){cfUrl()?comoFunciona():howT()}
 const corHex=n=>COR_HEX[String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim()]||'#999';
 const cdots=m=>{const c=Array.isArray(m.cores)?m.cores.filter(Boolean):[];return c.length?`<div class="cdots" title="Cores: ${esc(c.join(', '))}">${c.slice(0,6).map(n=>`<i style="background:${corHex(n)}"></i>`).join('')}<span>${c.length} ${c.length>1?'cores':'cor'}</span></div>`:''}
-function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visTrack('moto',m.nome)}catch(e){}}let b='';
+
+/* ===== v40: COR ↔ FOTO (cada cor mostra a foto certa) ===== */
+const CORDET={};
+const corKey=n=>String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim();
+const corMapa=m=>(m&&m.fotos_cor&&typeof m.fotos_cor==='object'&&!Array.isArray(m.fotos_cor))?m.fotos_cor:{};
+const corTemMapa=m=>Object.keys(corMapa(m)).length>0;
+function corFoto(m,nome){const f=m.fotos||[],fc=corMapa(m);
+  if(fc[nome]){const k=f.indexOf(fc[nome]);if(k>=0)return k}
+  if(corTemMapa(m))return -1;
+  const d=CORDET[m.id];if(d)return nome in d?d[nome]:-1;
+  const c=(m.cores||[]).filter(Boolean),i=c.indexOf(nome);
+  return(c.length===f.length&&i>=0&&f[i])?i:-1}
+const corDe=(m,k)=>(m.cores||[]).filter(Boolean).find(n=>corFoto(m,n)===k)||'';
+function corFeats(u){return new Promise((ok,no)=>{const im=new Image();im.crossOrigin='anonymous';im.onerror=()=>no();im.onload=()=>{try{
+  const W=192,H=108,cv=document.createElement('canvas');cv.width=W;cv.height=H;const x=cv.getContext('2d',{willReadFrequently:true});
+  const r=Math.min(W/im.naturalWidth,H/im.naturalHeight),w=im.naturalWidth*r,hh=im.naturalHeight*r;x.drawImage(im,(W-w)/2,(H-hh)/2,w,hh);
+  const d=x.getImageData(0,0,W,H).data;let n=0;const c={};const add=(k)=>{c[k]=(c[k]||0)+1};
+  for(let i=0;i<d.length;i+=4){if(d[i+3]<=200)continue;n++;const R=d[i]/255,G=d[i+1]/255,B=d[i+2]/255,mx=Math.max(R,G,B),mn=Math.min(R,G,B),v=mx,s=mx>0?(mx-mn)/mx:0,dd=Math.max(mx-mn,1e-6);
+    let hu=mx===R?((G-B)/dd)%6:mx===G?(B-R)/dd+2:(R-G)/dd+4;hu*=60;if(hu<0)hu+=360;
+    if(v<.22){add('preto');continue}
+    if(s<.18){if(v>.72)add('branco');else if(v>.5){add('prata');add('c2')}else add('cinza');continue}
+    if((hu<18||hu>=340)&&s>.35)add('vermelho');if(hu>=190&&hu<260)add('azul');if(hu>=75&&hu<170)add('verde');if(hu>=260&&hu<335)add('roxo');
+    if(hu>=20&&hu<60&&s<.5&&v>.55)add('bege');if(hu>=18&&hu<45&&s>=.5)add('laranja');if(hu>=45&&hu<75&&s>=.5)add('amarelo');if(hu>=320&&hu<345&&s>.35)add('rosa');add('cr')}
+  if(n<50)return no();const g=k=>(c[k]||0)/n,o={preto:g('preto'),branco:g('branco'),prata:g('prata'),cinza:g('cinza')+.35*g('c2'),vermelho:g('vermelho'),azul:g('azul'),verde:g('verde'),roxo:g('roxo'),bege:g('bege'),laranja:g('laranja'),amarelo:g('amarelo'),rosa:g('rosa')};
+  o.grafite=o.cinza;o.dourado=o.bege;o.tricolor=.9*[o.vermelho,o.azul,o.verde,o.roxo,o.laranja].sort((a,b)=>b-a).slice(0,3).reduce((a,b)=>a+b,0);ok(o)}catch(e){no(e)}};im.src=u})}
+async function corDetecta(m){const c=(m.cores||[]).filter(Boolean),f=m.fotos||[];
+  if(CORDET[m.id]!==undefined)return CORDET[m.id]||null;if(c.length<2||!f.length){CORDET[m.id]=false;return null}
+  const key='cordet1:'+c.join(',')+'|'+f.join(',');try{const s=localStorage.getItem(key);if(s){CORDET[m.id]=JSON.parse(s);return CORDET[m.id]}}catch(e){}
+  try{const F=await Promise.all(f.slice(0,8).map(corFeats));let best=-1,bm=null;const used=[],cur=[];
+    (function rec(i,sum){if(i===c.length){if(sum>best){best=sum;bm=cur.slice()}return}cur[i]=-1;rec(i+1,sum);for(let j=0;j<F.length;j++){if(used[j])continue;used[j]=1;cur[i]=j;rec(i+1,sum+(F[j][corKey(c[i])]||0));used[j]=0}})(0,0);
+    const out={};c.forEach((n,i)=>{if(bm[i]>=0&&(F[bm[i]][corKey(n)]||0)>.04)out[n]=bm[i]});CORDET[m.id]=out;try{localStorage.setItem(key,JSON.stringify(out))}catch(e){}return out}catch(e){CORDET[m.id]=false;return null}}
+function gBadge(m,k){const host=document.getElementById('gc');if(!host)return;let b=document.getElementById('gcn');if(!b){host.insertAdjacentHTML('afterend','<span class="gcn" id="gcn" aria-hidden="true"></span>');b=document.getElementById('gcn')}
+  const sure=corTemMapa(m)||!!CORDET[m.id],n=sure?corDe(m,k):'';b.innerHTML=n?'<i style="background:'+corHex(n)+'"></i>'+esc(n):'';b.style.display=n?'':'none'}
+function corInit(m){if(!m)return;try{gBadge(m,G)}catch(e){}if(corTemMapa(m))return;corDetecta(m).then(()=>{const b=document.getElementById('corbox');if(b&&L[cur]===m){b.outerHTML=corPick(m);try{gBadge(m,G)}catch(e){}}})}
+function corPick(m){const c=Array.isArray(m.cores)?m.cores.filter(Boolean):[];if(!c.length)return'';const s=COR_SEL[m.id]||'',pronto=corTemMapa(m)||CORDET[m.id]!==undefined||c.length===(m.fotos||[]).length;
+  const semFoto=s&&pronto&&corFoto(m,s)<0;
+  return `<div class="cores" id="corbox"><b>Escolha a cor${s?': <span class="cor-sel">'+esc(s)+'</span>':''}</b><div>${c.map((n,i)=>{const nf=pronto&&corFoto(m,n)<0;return `<button type="button" class="cor ${s===n?'on':''} ${nf?'semfoto':''}" aria-pressed="${s===n}" ${nf?'title="Cor disponível, ainda sem foto"':''} onclick="corSel(${i})"><i style="background:${corHex(n)}"></i>${esc(n)}</button>`}).join('')}</div>${semFoto?`<small class="mu cor-nf">Ainda não temos foto na cor <b>${esc(s)}</b>: a imagem mostrada é de outra cor, só para ilustrar. Sua preferência já vai para o vendedor.</small>`:(s?'':'<small class="mu">Toque numa cor para ver a foto e já informar sua preferência ao vendedor.</small>')}</div>`}
+async function corSel(i){const m=L[cur];if(!m)return;const c=(m.cores||[]).filter(Boolean),n=c[i];
+  COR_SEL[m.id]=COR_SEL[m.id]===n?'':n;
+  if(COR_SEL[m.id]&&!corTemMapa(m)&&CORDET[m.id]===undefined)await corDetecta(m);
+  if(COR_SEL[m.id]){const k=corFoto(m,n);if(k>=0&&k!==G)gShow(k)}
+  const b=document.getElementById('corbox');if(b)b.outerHTML=corPick(m);
+  document.querySelectorAll('.dt-cta a.wa,.dt-bar a.wa').forEach(a=>a.href=wa('Olá! Tenho interesse na '+hn(m)+corTxt(m)+'. Gostaria de saber mais sobre as condições.'))}
+function corSync(m,k){const s=COR_SEL[m.id];if(!s)return;const n=corDe(m,k);if(n&&n!==s){COR_SEL[m.id]=n;const b=document.getElementById('corbox');if(b)b.outerHTML=corPick(m);document.querySelectorAll('.dt-cta a.wa,.dt-bar a.wa').forEach(a=>a.href=wa('Olá! Tenho interesse na '+hn(m)+corTxt(m)+'. Gostaria de saber mais sobre as condições.'))}}
+
+function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visTrack('moto',m.nome)}catch(e){}setTimeout(()=>corInit(m),60)}let b='';
   const how=t=>`<div id="hw" class="hw" style="display:none">${t}</div>`;
   if(v==='det'){const pl=(m.planos||[]).filter(x=>x.valor>0),mn=pl.slice().sort((a,c)=>a.valor-c.valor)[0];
   b=`<div class="dt"><div class="dt-g"><div class="gal"><div class="gw"><div id="gmain">${f[0]?`<img id="gm" ${IMGA(f[0],'det')} onclick="zoom()" alt="${esc(m.nome)} - foto 1 de ${f.length}" decoding="async">`:'<span class="nof" style="display:block;padding:90px 0;text-align:center">Fotos em breve</span>'}</div>${f.length>1?`<button type="button" class="ga l" onclick="gal(-1)" aria-label="Foto anterior">‹</button><button type="button" class="ga r" onclick="gal(1)" aria-label="Próxima foto">›</button><span class="gc" id="gc" aria-hidden="true">1/${f.length}</span>`:''}</div>
@@ -1943,7 +2006,7 @@ function fm(){
     ${cs.length?`<div class="fld"><label class="l">Cores disponíveis <small>(definidas pelo catálogo geral)</small></label><div class="cor-row">${cs.map(n=>`<span class="cor"><i style="background:${corHex(n)}"></i>${esc(n)}</span>`).join('')}</div></div>`:''}</section>
   <section class="card2"><h3>Fotos e vídeo</h3><p class="mu fm-h">A primeira foto é a capa. Toque numa foto para torná-la a capa e no × para remover.</p>
     <label class="upl">📷 Adicionar fotos<input type="file" accept="image/*" multiple onchange="upF(this)" hidden></label>
-    <div class="ph">${E.fotos.map((u,i)=>`<div class="${i?'':'cv'}"><img ${IMGA(u,'th')} alt="Foto ${i+1}" onclick="E.fotos.unshift(E.fotos.splice(${i},1)[0]);fm()"><i onclick="E.fotos.splice(${i},1);fm()" aria-label="Remover foto">×</i></div>`).join('')}</div>
+    <div class="ph">${E.fotos.map((u,i)=>`<div class="${i?'':'cv'}"><img ${IMGA(u,'th')} alt="Foto ${i+1}" onclick="E.fotos.unshift(E.fotos.splice(${i},1)[0]);fm()"><i onclick="E.fotos.splice(${i},1);fm()" aria-label="Remover foto">×</i></div>`).join('')}</div> ${cs.length&&E.fotos.length?`<div class="fcor"><div class="fcor-h"><label class="l">Foto de cada cor</label><button type="button" class="btn sm" onclick="fcAuto()">✨ Detectar automaticamente</button></div><p class="mu fm-h">Escolha qual foto mostra cada cor. Assim, quando o cliente toca em “Vermelho”, ele vê a moto vermelha. Cor sem foto avisa o cliente que a imagem é ilustrativa.</p>${cs.map((n,ci)=>{const cu=(E.fotos_cor||{})[n]||'';return `<div class="fc-row"><span class="cor"><i style="background:${corHex(n)}"></i>${esc(n)}</span><div class="fc-opts">${E.fotos.map((u,i)=>`<button type="button" class="fc-th ${u===cu?'on':''}" aria-label="Usar a foto ${i+1} para ${esc(n)}" aria-pressed="${u===cu}" onclick="fcSet(${ci},${i})"><img ${IMGA(u,'th')} alt="Foto ${i+1}"></button>`).join('')}<button type="button" class="fc-no ${cu?'':'on'}" aria-pressed="${!cu}" onclick="fcSet(${ci},-1)">Sem foto</button></div></div>`}).join('')}</div>`:''}
     <div class="fld"><label class="l">Vídeo (link do YouTube) ou envie o arquivo</label><input value="${esc(E.video_url)}" placeholder="https://youtube.com/watch?v=..." oninput="E.video_url=this.value"><label class="upl" style="margin-top:10px">🎬 Enviar vídeo<input type="file" accept="video/*" onchange="upVid(this)" hidden></label></div></section>
   <section class="card2"><h3>Descrição e ficha técnica</h3><p class="mu fm-h">Uma linha por item (ex.: Cilindrada: 109,5 cc). Dica: pesquise no Google, copie e cole aqui.</p>
     <textarea rows="7" oninput="E.descricao=this.value">${esc(E.descricao)}</textarea>
@@ -1955,9 +2018,12 @@ function fm(){
   <div class="fm-bar"><button type="button" class="btn" onclick="adm('motos')">Cancelar</button><button type="button" class="btn red" onclick="saveM()">Salvar moto</button></div></div>`}
 async function upF(el){try{toast('Enviando fotos...');for(const f of el.files)E.fotos.push(await up(f));fm()}catch(e){toast('Erro: '+e.message)}}
 async function upVid(el){try{toast('Enviando vídeo...');E.video_url=await up(el.files[0]);fm();toast('Vídeo enviado')}catch(e){toast('Erro: '+e.message)}}
+function fcSet(ci,i){const cs=(E.cores||[]).filter(Boolean),n=cs[ci];if(!n)return;E.fotos_cor=Object.assign({},E.fotos_cor||{});if(i<0)delete E.fotos_cor[n];else E.fotos_cor[n]=E.fotos[i];fm()}
+async function fcAuto(){const cs=(E.cores||[]).filter(Boolean);toast('Analisando as fotos…');const k='_ed';const tmp={id:k,cores:cs,fotos:E.fotos};delete CORDET[k];const r=await corDetecta(tmp);delete CORDET[k];try{Object.keys(localStorage).filter(x=>x.indexOf('cordet1:')===0).forEach(x=>localStorage.removeItem(x))}catch(e){}
+  if(!r){toast('Não consegui analisar as fotos. Escolha manualmente.');return}E.fotos_cor={};Object.keys(r).forEach(n=>{if(E.fotos[r[n]])E.fotos_cor[n]=E.fotos[r[n]]});fm();toast('Pronto! Confira se cada cor está com a foto certa.')}
 async function saveM(){
   if(!E.nome.trim())return toast('Informe o nome da moto');
-  const{error}=await sb.from('motos').upsert(E);if(error)return toast('Erro: '+error.message);
+  if(E.fotos_cor){E.fotos_cor=Object.fromEntries(Object.entries(E.fotos_cor).filter(([k,u])=>(E.cores||[]).includes(k)&&(E.fotos||[]).includes(u)))} const{error}=await sb.from('motos').upsert(E);if(error)return toast('Erro: '+error.message);
   toast('Moto salva!');await init();adm('motos');
 }
 async function del(id){if(!confirm('Excluir esta moto?'))return;await sb.from('motos').delete().eq('id',id);await init();adm('motos')}
@@ -1991,7 +2057,7 @@ function msk(e,t){let v=e.value.replace(/\D/g,'');
   if(t==='dt')v=v.slice(0,8).replace(/(\d{2})(\d)/,'$1/$2').replace(/(\d{2})(\d)/,'$1/$2');
   if(t==='rs')v=v?brl(v/100):'';
   e.value=v}
-function gShow(k){const m=L[cur],f=m.fotos||[];G=k;$('#gmain').innerHTML=`<img id="gm" ${IMGA(f[k]||'','det')} alt="${esc(m.nome)} - foto ${k+1} de ${f.length}" onclick="zoom()" decoding="async">`;const c=$('#gc');if(c)c.textContent=(k+1)+'/'+f.length;document.querySelectorAll('.th img[data-k]').forEach(t=>t.classList.toggle('on',+t.dataset.k===k));bindSwipe()}
+function gShow(k){const m=L[cur],f=m.fotos||[];G=k;$('#gmain').innerHTML=`<img id="gm" ${IMGA(f[k]||'','det')} alt="${esc(m.nome)} - foto ${k+1} de ${f.length}" onclick="zoom()" decoding="async">`;const c=$('#gc');if(c)c.textContent=(k+1)+'/'+f.length;document.querySelectorAll('.th img[data-k]').forEach(t=>t.classList.toggle('on',+t.dataset.k===k));bindSwipe();try{corSync(m,k);gBadge(m,k)}catch(e){}}
 function gal(d){const f=L[cur].fotos||[];if(f.length)gShow((G+d+f.length)%f.length)}
 function gVid(){$('#gmain').innerHTML=vid(L[cur].video_url)}
 function bindSwipe(){const g=$('#gm');if(!g)return;let x0=0;g.ontouchstart=e=>x0=e.touches[0].clientX;g.ontouchend=e=>{const d=e.changedTouches[0].clientX-x0;if(Math.abs(d)>40)gal(d<0?1:-1)}}
@@ -2642,7 +2708,7 @@ async function saveSite(){const config={...CF()};['titulo','sub','aviso','horari
 /*cache-fotos*/ try{if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!DEMO)addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})})}catch(e){}
 init();
 </script>
-<style id="v39">/*v39-painel-claro*/
+<style id="v39">/*v41-cores-selo*/
 body.pn-on .mn.ent>#pn{animation:pnIn .55s cubic-bezier(.2,.8,.2,1) both}body.pn-on .mn.ent .mt2{animation:pnIn .5s cubic-bezier(.2,.8,.2,1) both}
 @keyframes pnIn{from{opacity:0;transform:translateY(14px)}}
 body.pn-on .pn-k{flex:1 1 280px;max-width:420px;margin-left:auto;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #e3e6f2;color:#6a6a78;font:500 14px inherit;font-family:inherit;cursor:pointer;transition:.2s;text-align:left;box-shadow:0 1px 2px #1b1b3a0f}
@@ -2662,13 +2728,5 @@ body.pn-on kbd,.cmd kbd{font:600 11px ui-monospace,SFMono-Regular,Menlo,monospac
 @media(max-width:860px){body.pn-on .pn-k{order:3;flex:1 1 100%;max-width:none;margin:0}body.pn-on .pn-k kbd{display:none}.cmd{padding-top:6vh}}
 @media(prefers-reduced-motion:reduce){body.pn-on .mn.ent>#pn,body.pn-on .mn.ent .mt2,.cmd.on,.cmd-b{animation-duration:.001ms!important}}
 body.pn-on,body.pn-on .shell,body.pn-on .mn,body.pn-on .mn:has(.ini-card){background:#fff}
-/* fix: a pré-visualização dos efeitos no painel sempre anima, mesmo com "reduzir movimento" ligado no aparelho */
-@media(prefers-reduced-motion:reduce){
-.pmb-brilho .p1:before{animation:efShine 3.2s ease-in-out infinite!important}
-.pmb-pulso .p1{animation:efPulso 2.2s infinite!important}
-.pmm-anel .pm-ava{animation:efAnel 3s ease-in-out infinite!important}
-.pmm-gradiente .pm-ava{animation:efGira 4s linear infinite!important}
-.pmc-levantar .pm-cd>div,.pmc-brilho .pm-cd>div{transition-duration:.28s!important}
-}
 </style></body>
 </html>
