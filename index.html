@@ -1085,7 +1085,7 @@ html.ho-videos #videos,html.ho-videos .tn-l a[href="#videos"],html.ho-entregas #
 .btn,.cta,button.cor,.fc-th,.fc-no{-webkit-tap-highlight-color:transparent}
 .btn:not(:disabled):active,.cta:not(:disabled):active,button.cor:active{transform:scale(.975)}
 @media(prefers-reduced-motion:reduce){.gcn{animation:none}.btn:active,.cta:active,button.cor:active{transform:none}}
-</style></head>
+</style><style id="v42">.upcor{margin:4px 0 10px}.upcor .l{display:block;font-weight:700;font-size:13px;margin-bottom:6px}.upcor small{font-weight:400;color:#777}.upcor select{width:100%;max-width:380px;padding:10px 12px;border:1px solid #dcdde6;border-radius:10px;background:#fff;font:inherit}</style></head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -2005,7 +2005,7 @@ function fm(){
     <div class="fld"><label class="l">Categoria</label><select onchange="E.categoria=this.value">${['Street','Adventure','Off Road','Big Trail','Scooter','Esportiva','Motores e Máquinas'].map(c=>`<option ${E.categoria===c?'selected':''}>${c}</option>`).join('')}</select></div></div>
     ${cs.length?`<div class="fld"><label class="l">Cores disponíveis <small>(definidas pelo catálogo geral)</small></label><div class="cor-row">${cs.map(n=>`<span class="cor"><i style="background:${corHex(n)}"></i>${esc(n)}</span>`).join('')}</div></div>`:''}</section>
   <section class="card2"><h3>Fotos e vídeo</h3><p class="mu fm-h">A primeira foto é a capa. Toque numa foto para torná-la a capa e no × para remover.</p>
-    <label class="upl">📷 Adicionar fotos<input type="file" accept="image/*" multiple onchange="upF(this)" hidden></label>
+    ${cs.length?`<div class="upcor"><label class="l" for="upcor">Esta foto é de qual cor? <small>(escolha antes de enviar: a foto já fica ligada ao botão da cor)</small></label><select id="upcor"><option value="">Sem cor específica (foto extra)</option>${cs.map(n=>`<option value="${esc(n)}">${esc(n)}</option>`).join('')}</select></div>`:''}<label class="upl">📷 Adicionar fotos<input type="file" accept="image/*" multiple onchange="upF(this)" hidden></label>
     <div class="ph">${E.fotos.map((u,i)=>`<div class="${i?'':'cv'}"><img ${IMGA(u,'th')} alt="Foto ${i+1}" onclick="E.fotos.unshift(E.fotos.splice(${i},1)[0]);fm()"><i onclick="E.fotos.splice(${i},1);fm()" aria-label="Remover foto">×</i></div>`).join('')}</div> ${cs.length&&E.fotos.length?`<div class="fcor"><div class="fcor-h"><label class="l">Foto de cada cor</label><button type="button" class="btn sm" onclick="fcAuto()">✨ Detectar automaticamente</button></div><p class="mu fm-h">Escolha qual foto mostra cada cor. Assim, quando o cliente toca em “Vermelho”, ele vê a moto vermelha. Cor sem foto avisa o cliente que a imagem é ilustrativa.</p>${cs.map((n,ci)=>{const cu=(E.fotos_cor||{})[n]||'';return `<div class="fc-row"><span class="cor"><i style="background:${corHex(n)}"></i>${esc(n)}</span><div class="fc-opts">${E.fotos.map((u,i)=>`<button type="button" class="fc-th ${u===cu?'on':''}" aria-label="Usar a foto ${i+1} para ${esc(n)}" aria-pressed="${u===cu}" onclick="fcSet(${ci},${i})"><img ${IMGA(u,'th')} alt="Foto ${i+1}"></button>`).join('')}<button type="button" class="fc-no ${cu?'':'on'}" aria-pressed="${!cu}" onclick="fcSet(${ci},-1)">Sem foto</button></div></div>`}).join('')}</div>`:''}
     <div class="fld"><label class="l">Vídeo (link do YouTube) ou envie o arquivo</label><input value="${esc(E.video_url)}" placeholder="https://youtube.com/watch?v=..." oninput="E.video_url=this.value"><label class="upl" style="margin-top:10px">🎬 Enviar vídeo<input type="file" accept="video/*" onchange="upVid(this)" hidden></label></div></section>
   <section class="card2"><h3>Descrição e ficha técnica</h3><p class="mu fm-h">Uma linha por item (ex.: Cilindrada: 109,5 cc). Dica: pesquise no Google, copie e cole aqui.</p>
@@ -2016,7 +2016,7 @@ function fm(){
     <button type="button" class="btn sm" style="margin-top:10px" onclick="E.planos.push({parcelas:80,valor:0});fm()">+ Adicionar plano</button>`}</section>
   <section class="card2"><label class="sw"><input type="checkbox" ${E.ativo?'checked':''} onchange="E.ativo=this.checked"><span class="sw-t"></span><span><b>Mostrar no site</b><small>Desligue para ocultar esta moto dos clientes sem apagá-la.</small></span></label></section>
   <div class="fm-bar"><button type="button" class="btn" onclick="adm('motos')">Cancelar</button><button type="button" class="btn red" onclick="saveM()">Salvar moto</button></div></div>`}
-async function upF(el){try{toast('Enviando fotos...');for(const f of el.files)E.fotos.push(await up(f));fm()}catch(e){toast('Erro: '+e.message)}}
+async function upF(el){const cor=(document.getElementById('upcor')||{}).value||'';if(cor&&(E.fotos_cor||{})[cor]&&!confirm('A cor “'+cor+'” já tem foto. Trocar pela que você vai enviar?')){el.value='';return} try{toast('Enviando fotos...');const novas=[];for(const f of el.files){const u=await up(f);E.fotos.push(u);novas.push(u)} if(cor&&novas.length){E.fotos_cor=Object.assign({},E.fotos_cor||{});E.fotos_cor[cor]=novas[0];toast(novas.length>1?'Foto da cor “'+cor+'” é a primeira enviada; as outras ficaram sem cor. Para várias cores, envie uma de cada vez.':'Foto ligada à cor “'+cor+'”.')} fm()}catch(e){toast('Erro: '+e.message)}}
 async function upVid(el){try{toast('Enviando vídeo...');E.video_url=await up(el.files[0]);fm();toast('Vídeo enviado')}catch(e){toast('Erro: '+e.message)}}
 function fcSet(ci,i){const cs=(E.cores||[]).filter(Boolean),n=cs[ci];if(!n)return;E.fotos_cor=Object.assign({},E.fotos_cor||{});if(i<0)delete E.fotos_cor[n];else E.fotos_cor[n]=E.fotos[i];fm()}
 async function fcAuto(){const cs=(E.cores||[]).filter(Boolean);toast('Analisando as fotos…');const k='_ed';const tmp={id:k,cores:cs,fotos:E.fotos};delete CORDET[k];const r=await corDetecta(tmp);delete CORDET[k];try{Object.keys(localStorage).filter(x=>x.indexOf('cordet1:')===0).forEach(x=>localStorage.removeItem(x))}catch(e){}
@@ -2708,7 +2708,7 @@ async function saveSite(){const config={...CF()};['titulo','sub','aviso','horari
 /*cache-fotos*/ try{if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!DEMO)addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})})}catch(e){}
 init();
 </script>
-<style id="v39">/*v41-cores-selo*/
+<style id="v39">/*v42-upload-cor*/
 body.pn-on .mn.ent>#pn{animation:pnIn .55s cubic-bezier(.2,.8,.2,1) both}body.pn-on .mn.ent .mt2{animation:pnIn .5s cubic-bezier(.2,.8,.2,1) both}
 @keyframes pnIn{from{opacity:0;transform:translateY(14px)}}
 body.pn-on .pn-k{flex:1 1 280px;max-width:420px;margin-left:auto;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #e3e6f2;color:#6a6a78;font:500 14px inherit;font-family:inherit;cursor:pointer;transition:.2s;text-align:left;box-shadow:0 1px 2px #1b1b3a0f}
