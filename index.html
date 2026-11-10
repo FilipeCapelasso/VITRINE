@@ -1106,6 +1106,12 @@ html.ho-videos #videos,html.ho-videos .tn-l a[href="#videos"],html.ho-entregas #
 @media(max-width:980px){.hf-ofs .hf-s{aspect-ratio:1/1.16;max-height:540px}.hf-ofs .hf-img{inset:0 0 196px}}
 @media(max-width:420px){.hf-ofs .hf-s{aspect-ratio:1/1.3}.hf-ofs .hf-img{inset:0 0 206px}.hf-c.of{padding:14px 14px 12px}}
 @media(prefers-reduced-motion:reduce){.dt-of,.hf-sl.hf-of{animation:none}}
+</style><style id="v47">
+.en-w .en-ap{position:absolute;top:10px;right:10px;z-index:7;width:40px;height:40px;border-radius:50%;border:0;cursor:pointer;background:#fffffff2;color:#14141b;font-size:16px;line-height:1;box-shadow:0 10px 22px -10px #000a;display:grid;place-items:center;-webkit-tap-highlight-color:transparent}
+.en-w .en-ap:active{transform:scale(.92)}
+.en-s{scroll-snap-type:x proximity;overscroll-behavior-x:contain;touch-action:pan-x pan-y;scroll-padding:0 4px}
+.en-s.slow{scroll-snap-type:none}
+.en-mp video{pointer-events:none}
 </style></head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -1675,13 +1681,14 @@ var COR_SEL={};
 const corTxt=m=>COR_SEL[m.id]?' na cor '+COR_SEL[m.id]:'';
 const lojaH=()=>{const lj=(CFG.lojas||[]).find(x=>x.id===V.loja_id),e=lj?lj.endereco:(CF().endereco||CFG.loja_endereco),t=CFG.loja_telefone,h=CF().horario||CFG.loja_horario;if(!e)return'';const mp=lj?('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(lj.nome+' '+e)):(CFG.loja_maps||('https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(e)));
   return `<section class="loja" id="loja" aria-label="Loja"><div class="loja-i"><h2>Visite ${(lj?lj.nome:CFG.loja_nome)?'a '+esc(lj?lj.nome:CFG.loja_nome):'nossa loja'}</h2><p>📍 ${esc(e)}</p>${h?`<p>🕒 ${esc(h)}</p>`:''}${t?`<p>📞 <a href="tel:${esc(String(t).replace(/[^+\d]/g,''))}">${esc(t)}</a></p>`:''}</div><div class="loja-a"><a class="btn red" target="_blank" rel="noopener" href="${esc(mp)}">📍 Como chegar</a>${V.whatsapp?`<a class="btn wa" target="_blank" rel="noopener" href="${wa('Olá! Vou visitar a loja e gostaria de saber mais.')}">Falar antes de ir</a>`:''}</div></section>`};
+function chipsRe(ch){const sl=ch.scrollLeft;ch.innerHTML=chipsH();ch.scrollLeft=sl}
 const chipsH=()=>K.map((c,i)=>`<button class="chip ${c===C?'on':''}" aria-pressed="${c===C}" onclick="setC(${i})">${esc(c)}</button>`).join('');
 const FVC='♥ Favoritas';
 function mkK(){K=['Todas',...(FV.length?[FVC]:[]),...new Set(A.map(m=>m.categoria).filter(Boolean))]}
 function fav(id,b){const i=FV.indexOf(id);i<0?FV.push(id):FV.splice(i,1);try{localStorage.setItem('fv',JSON.stringify(FV))}catch(e){}
   b.classList.toggle('on',i<0);b.setAttribute('aria-pressed',i<0);toast(i<0?'Salva nos favoritos':'Removida dos favoritos');
-  const rl=C===FVC;if(rl&&!FV.length)C='Todas';mkK();{const ch=$('#chips');if(ch)ch.innerHTML=chipsH()};if(rl)lista()}
-function setC(i){C=K[i];{const ch=$('#chips');if(ch)ch.innerHTML=chipsH()};lista(1)}
+  const rl=C===FVC;if(rl&&!FV.length)C='Todas';mkK();{const ch=$('#chips');if(ch)chipsRe(ch)};if(rl)lista()}
+function setC(i){C=K[i];{const ch=$('#chips');if(ch)chipsRe(ch)};lista(1)}
 function cnt(){const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;document.querySelectorAll('[data-n]').forEach(e=>{const n=+e.dataset.n,m=e.dataset.m,t0=performance.now();
   const f=t=>{const k=rm?1:Math.min(1,(t-t0)/1400),v=n*(1-Math.pow(1-k,3));e.textContent=m?brl(v):Math.round(v);k<1&&requestAnimationFrame(f)};requestAnimationFrame(f)})}
 
@@ -1777,19 +1784,32 @@ function enEsc(e){if(e.key==='Escape')enFecha()}
 function enFecha(){const o=document.getElementById('vm');if(o)o.remove();document.removeEventListener('keydown',enEsc);const f=window.__enBig;window.__enBig=null;if(f)enOff(f)}
 document.addEventListener('click',e=>{const b=e.target.closest&&e.target.closest('.en-big');if(!b)return;const f=b.closest('.en-mp');if(f&&f._held){f._held=false;return}enBig(b)});
 /* rolagem lenta e automática das fotos e vídeos (vai até o fim e volta); pausa ao tocar/passar o mouse */
+/* ===== v47: rolagem das fotos e vídeos (Clientes felizes) ===== */
+const enAutoOn=()=>{try{return localStorage.getItem('en_auto')!=='0'}catch(e){return true}};
+function enToggle(){const on=!enAutoOn();try{localStorage.setItem('en_auto',on?'1':'0')}catch(e){}document.querySelectorAll('.en-w').forEach(w=>{if(w._ap)w._ap(true)});try{toast(on?'Rolagem automática ligada.':'Rolagem automática desligada. Arraste com o dedo para ver tudo.')}catch(e){}}
 function enSlow(){document.querySelectorAll('.en-w').forEach(w=>{const s=w.querySelector('.en-s');if(!s||w.dataset.slow)return;w.dataset.slow='1';
-  if(matchMedia('(prefers-reduced-motion:reduce)').matches||window.__enManual||document.documentElement.classList.contains('an-off'))return; s.classList.add('slow');let pos=s.scrollLeft,dir=1,pausa=0,vis=false,last=0,setv=-1;const VEL=14;
-  const para=ms=>{pausa=Date.now()+ms;pos=s.scrollLeft;setv=-1};
-  ['focusin'].forEach(ev=>w.addEventListener(ev,()=>para(120000),{passive:true}));
-  ['pointerdown','touchstart','wheel'].forEach(ev=>w.addEventListener(ev,()=>para(7000),{passive:true}));
-  ['pointerleave','mouseleave'].forEach(ev=>w.addEventListener(ev,()=>para(400),{passive:true}));
-  function tick(t){if(!vis||!s.isConnected)return;requestAnimationFrame(tick);if(!last){last=t;return}const dt=Math.min(.1,(t-last)/1000);last=t;
-    if(setv>=0&&Math.abs(s.scrollLeft-setv)>1.5){para(4000);return}
-    if(Date.now()<pausa)return;if(matchMedia('(hover:hover)').matches&&w.querySelector('.en-mp:hover,.en:hover,.en-nv:hover')){pausa=Date.now()+400;pos=s.scrollLeft;setv=-1;return}const max=s.scrollWidth-s.clientWidth;if(max<20)return;
+  const reduz=matchMedia('(prefers-reduced-motion:reduce)').matches||window.__enManual||document.documentElement.classList.contains('an-off');
+  if(!reduz&&!w.querySelector('.en-ap'))w.insertAdjacentHTML('beforeend','<button type="button" class="en-ap" onclick="enToggle()"></button>');
+  let pos=s.scrollLeft,dir=1,pausa=0,vis=false,last=0,setv=-1;const VEL=14;
+  const ligado=()=>!reduz&&enAutoOn();
+  /* qualquer toque, arrasto, roda do mouse ou tecla pausa; o tempo conta a partir da ÚLTIMA interação */
+  const para=ms=>{pausa=Math.max(pausa,Date.now()+ms)};
+  ['pointerdown','touchstart','touchmove','wheel','keydown'].forEach(ev=>w.addEventListener(ev,e=>{if(e.target&&e.target.closest&&e.target.closest('.en-ap'))return;para(ev==='wheel'||ev==='keydown'?6000:10000)},{passive:true}));
+  /* rolagem que NÃO foi a automática (arrasto, embalo depois de soltar o dedo, setas): estende a pausa */
+  s.addEventListener('scroll',()=>{if(setv<0||Math.abs(s.scrollLeft-setv)>1.5)para(9000)},{passive:true});
+  w.addEventListener('focusin',()=>para(120000),{passive:true});
+  ['mouseleave','pointerleave'].forEach(ev=>w.addEventListener(ev,e=>{if(e.pointerType==='touch')return;para(400)},{passive:true}));
+  function tick(t){if(!vis||!s.isConnected||!ligado())return;requestAnimationFrame(tick);if(!last){last=t;return}const dt=Math.min(.1,(t-last)/1000);last=t;
+    if(Date.now()<pausa){pos=s.scrollLeft;setv=-1;return}
+    if(document.getElementById('vm')||w.querySelector('.en-mp.playing')){pausa=Date.now()+1500;pos=s.scrollLeft;setv=-1;return}   // vídeo tocando: não mexe
+    if(matchMedia('(hover:hover)').matches&&w.querySelector('.en-mp:hover,.en:hover,.en-nv:hover,.en-ap:hover')){pausa=Date.now()+400;pos=s.scrollLeft;setv=-1;return}
+    if(setv<0)pos=s.scrollLeft;   /* voltou de uma pausa: continua de ONDE O CLIENTE DEIXOU, nunca de uma posição antiga */
+    const max=s.scrollWidth-s.clientWidth;if(max<20)return;
     pos=Math.max(0,Math.min(max,pos+dir*VEL*dt));s.scrollLeft=pos;setv=s.scrollLeft;
     if(dir>0&&pos>=max-1){dir=-1;pausa=Date.now()+2500}else if(dir<0&&pos<=0){dir=1;pausa=Date.now()+2500}}
-  if(window.IntersectionObserver)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis){last=0;requestAnimationFrame(tick)}},{threshold:.1}).observe(w);else{vis=true;requestAnimationFrame(tick)}})}
-function enNav(btn,d){const s=btn.parentElement.querySelector('.en-s');if(s)s.scrollBy({left:d*Math.max(260,s.clientWidth*.8),behavior:'smooth'})}
+  w._ap=reset=>{if(reset)pausa=0;const on=ligado(),b=w.querySelector('.en-ap');s.classList.toggle('slow',on);if(b){b.setAttribute('aria-pressed',on?'false':'true');b.setAttribute('aria-label',on?'Pausar a rolagem automática':'Ligar a rolagem automática');b.title=b.getAttribute('aria-label');b.textContent=on?'⏸':'▶'}if(on&&vis){last=0;requestAnimationFrame(tick)}};
+  if(window.IntersectionObserver)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis&&ligado()){last=0;requestAnimationFrame(tick)}},{threshold:.1}).observe(w);else{vis=true;if(ligado())requestAnimationFrame(tick)}
+  w._ap()})} function enNav(btn,d){const s=btn.parentElement.querySelector('.en-s');if(s)s.scrollBy({left:d*Math.max(260,s.clientWidth*.8),behavior:'smooth'})}
 const entH=()=>{const all=(CF().entregas||[]).filter(enOk),en=enOrd(all.filter(x=>x.t!=='c')),ct=enOrd(all.filter(x=>x.t==='c'));let h='';
   if(en.length)h+=`<section class="ent" id="entregas"><div class="sec"><div><span class="eyb ey2">CLIENTES FELIZES</span><h2>Mais um sonho realizado</h2><p class="mu" style="margin:4px 0 0;font-size:14px">Quem já saiu de moto nova com a gente.</p></div></div><div class="en-w"><div class="en-s">${en.map(entCard).join('')}</div><button type="button" class="en-nv l" aria-label="Anterior" onclick="enNav(this,-1)">‹</button><button type="button" class="en-nv r" aria-label="Próximo" onclick="enNav(this,1)">›</button></div></section>`;
   if(ct.length)h+=`<section class="ent" id="contemplacoes"><div class="sec"><div><span class="eyb ey2">REGISTROS DE CONTEMPLAÇÃO</span><h2>Conquistas compartilhadas</h2><p class="mu" style="margin:4px 0 0;font-size:14px">Confira os registros compartilhados.</p></div></div><div class="en-w"><div class="en-s">${ct.map(entCard).join('')}</div><button type="button" class="en-nv l" aria-label="Anterior" onclick="enNav(this,-1)">‹</button><button type="button" class="en-nv r" aria-label="Próximo" onclick="enNav(this,1)">›</button></div></section>`;
@@ -2186,12 +2206,37 @@ av_troca:{q:()=>'Tem moto para dar na troca?',opts:()=>['Sim','Não'],run(v){con
 troca:{q:()=>'Qual moto e de que ano ela é?',ph:'Ex.: CG 160 2020',run(v){if(norm(v).length<2)return{err:'Me diga qual moto é 🙂'};return{show:v,set:{troca:v.trim()},next:'fim'}}},
 cc_parc:{q:()=>'Em quantas vezes você pretende parcelar?',opts:()=>['1x','Até 6x','Até 12x','Mais de 12x'],run(v){const o=['1x','Até 6x','Até 12x','Mais de 12x'],i=opt(v,o);if(i<0)return{err:'Toque em uma das opções abaixo 👇'};return{show:o[i],set:{cartao:o[i]},next:'fim'}}},
 cor:{q:()=>`Qual cor você prefere para ${CH.ans.moto?'a '+CH.ans.moto:'a moto'}?`,ph:'Digite a cor',opts:()=>{const c=corMoto();return c.length?[...c,'Sem preferência']:['Sem preferência']},run(v){const c=corMoto(),t=cap(v);if(/^sem prefer/i.test(norm(v)))return{show:'Sem preferência',set:{cor:'Sem preferência'},next:PG()};if(c.length){const h=c.find(x=>norm(x)===norm(v))||c.find(x=>norm(x).includes(norm(v))&&norm(v).length>2);if(!h)return{err:'Essa moto vem nas cores: '+c.join(', ')+'. Toque em uma delas 👇'};return{show:h,set:{cor:h},next:PG()}}if(t.length<3||/\d/.test(t))return{err:'Me diga a cor, por exemplo Vermelha 🙂'};return{show:t,set:{cor:t},next:PG()}}},
-nomec:{q:()=>'Qual é o seu nome completo?',ph:'Nome e sobrenome',run(v){const n=cap(v);if(n.split(' ').length<2||/\d/.test(n))return{err:'Preciso do nome completo (nome e sobrenome).'};return{show:n,set:{nomec:n},next:'cpf'}}},
-cpf:{q:()=>'Agora me informe seu CPF, somente os números.',ph:'000.000.000-00',mode:'numeric',mask:'cpf',run(v){const d=dg(v);if(!okCpf(d))return{err:'Esse CPF não parece válido. Confere e digita de novo, só os números.'};return{show:fCpf(d),set:{cpf:d},next:'nasc'}}},
-nasc:{q:()=>'Qual é a sua data de nascimento, no formato DD/MM/AAAA?',ph:'DD/MM/AAAA',mode:'numeric',mask:'nas',run(v){const r=nasc(v);if(r.err)return r;r.next=CH.ans.pag==='financiamento'?'hab':'fim';return r}},
+nomec:{q:()=>'Qual é o seu nome completo?',ph:'Nome e sobrenome',run(v){const n=cap(v);if(n.split(' ').length<2||/\d/.test(n))return{err:'Preciso do nome completo (nome e sobrenome).'};return{show:n,set:{nomec:n},next:CH.ans.pag==='consorcio'?'nasc':'cpf'}}},
+cpf:{q:()=>'Agora me informe seu CPF, somente os números.',ph:'000.000.000-00',mode:'numeric',mask:'cpf',run(v){const d=dg(v);if(!okCpf(d))return{err:'Esse CPF não parece válido. Confere e digita de novo, só os números.'};return{show:fCpf(d),set:{cpf:d},next:CH.ans.pag==='consorcio'?'c_rg':'nasc'}}},
+nasc:{q:()=>'Qual é a sua data de nascimento, no formato DD/MM/AAAA?',ph:'DD/MM/AAAA',mode:'numeric',mask:'nas',run(v){const r=nasc(v);if(r.err)return r;r.next=CH.ans.pag==='financiamento'?'hab':(CH.ans.pag==='consorcio'?'cpf':'fim');return r}},
 hab:{q:()=>'Você já tem CNH (habilitação)?',opts:()=>['Tenho CNH','Estou tirando','Ainda não tenho'],run(v){const o=['Tenho CNH','Estou tirando','Ainda não tenho'],i=opt(v,o);if(i<0)return{err:'Toque em uma das opções abaixo 👇'};return{show:o[i],set:{hab:o[i]},next:'fim'}}}
 };
 
+/* ===== v46: CONSÓRCIO no chat: todos os dados da pré-análise + débito automático ===== */
+const fCep=d=>d.slice(0,5)+(d.length>5?'-'+d.slice(5,8):'');
+const UFS='ac al ap am ba ce df es go ma mt ms mg pa pb pr pe pi rj rn rs ro rr sc sp se to'.split(' ');
+const capLoc=s=>{const t=cap(s).split(/(\s*[-,\/]\s*|\s+)/);for(let i=t.length-1;i>=0;i--){if(t[i].trim()&&!/^[\s\-,\/]+$/.test(t[i])){if(t.length>2&&UFS.includes(t[i].toLowerCase())){t[i]=t[i].toUpperCase();if(i>0&&/^\s+$/.test(t[i-1]))t[i-1]=' - '}break}}return t.join('')};
+const locOk=s=>{const t=String(s).trim();return t.length>=3&&/[a-zà-ú]{2}/i.test(t)&&!/^\d+$/.test(t)};
+const nomeOk=s=>{const n=cap(s);return(n.split(' ').length>=2&&!/\d/.test(n)&&n.length>=5)?n:''};
+const dtBR=(v,nasc)=>{const d=dg(v);if(d.length!==8)return{err:'Digite a data no formato DD/MM/AAAA, por exemplo 10/05/2015.'};const dd=+d.slice(0,2),mo=+d.slice(2,4),y=+d.slice(4),t=new Date(y,mo-1,dd);if(t.getMonth()!==mo-1||t.getDate()!==dd||y<1940||t>new Date())return{err:'Essa data não parece válida. Confere no documento e digita de novo (DD/MM/AAAA).'};if(nasc){const p=String(nasc).split('/'),b=new Date(+p[2],+p[1]-1,+p[0]);if(t<=b)return{err:'A data de emissão precisa ser depois da sua data de nascimento. Confere no documento.'}}return{show:fNas(d),val:`${d.slice(0,2)}/${d.slice(2,4)}/${y}`}};
+Object.assign(ST,{
+ c_rg:{q:()=>'Para a pré-análise do consórcio preciso de mais alguns dados pessoais (usados só para a análise, conforme a Política de Privacidade). Qual o número do seu RG? Se não tiver, toque em “Não tenho RG”.',ph:'Número do RG',opts:()=>['Não tenho RG'],run(v){if(opt(v,['Não tenho RG'])===0)return{show:'Não tenho RG',set:{rg:'',rgdt:''},next:'c_nat'};const s=v.trim().toUpperCase();if(dg(s).length<5||s.length>20||/[^0-9A-Z.\-\/ ]/.test(s))return{err:'Digite só o número do RG, com pelo menos 5 números (ou toque em “Não tenho RG” 👇).'};return{show:s,set:{rg:s},next:'c_rgdt'}}},
+ c_rgdt:{q:()=>'Qual a data de expedição (emissão) do RG? Ela está escrita no documento.',ph:'DD/MM/AAAA',mode:'numeric',mask:'nas',run(v){const r=dtBR(v,CH.ans.nasc);if(r.err)return r;return{show:r.show,set:{rgdt:r.val},next:'c_nat'}}},
+ c_nat:{q:()=>'Qual a sua naturalidade? Informe a cidade e o estado onde você nasceu.',ph:'Ex.: Rio Branco - AC',run(v){if(!locOk(v))return{err:'Digite a cidade e o estado onde você nasceu, por exemplo Rio Branco - AC.'};const n=capLoc(v);return{show:n,set:{nat:n},next:'c_mae'}}},
+ c_mae:{q:()=>'Qual o nome completo da sua mãe?',ph:'Nome e sobrenome',run(v){const n=nomeOk(v);if(!n)return{err:'Preciso do nome completo da sua mãe (nome e sobrenome).'};return{show:n,set:{mae:n},next:'c_pai'}}},
+ c_pai:{q:()=>'Qual o nome completo do seu pai?',ph:'Nome e sobrenome',opts:()=>['Pai não declarado'],run(v){if(opt(v,['Pai não declarado'])===0)return{show:'Pai não declarado',set:{pai:'Não declarado'},next:'c_email'};const n=nomeOk(v);if(!n)return{err:'Preciso do nome completo do seu pai. Se o documento não traz o nome do pai, toque em “Pai não declarado” 👇'};return{show:n,set:{pai:n},next:'c_email'}}},
+ c_email:{q:()=>'Qual o seu e-mail?',ph:'nome@email.com',mode:'email',run(v){const e=v.trim().toLowerCase();if(!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e)||e.length>160)return{err:'Esse e-mail não parece válido. Confere e digita de novo (exemplo: nome@email.com).'};return{show:e,set:{email:e},next:'c_cep'}}},
+ c_cep:{q:()=>'Agora o seu endereço. Qual o CEP?',ph:'00000-000',mode:'numeric',mask:'cep',opts:()=>['Não sei o CEP'],run(v){if(opt(v,['Não sei o CEP'])===0)return{show:'Não sei o CEP',set:{cep:''},next:'c_rua'};const d=dg(v);if(d.length!==8)return{err:'O CEP tem 8 números. Confere e digita de novo, ou toque em “Não sei o CEP” 👇'};return{show:fCep(d),set:{cep:fCep(d)},next:'c_rua'}}},
+ c_rua:{q:()=>'Qual a rua e o número da sua casa?',ph:'Ex.: Rua das Flores, 123',run(v){const t=v.trim();if(t.length<5||!/[a-zà-ú]{3}/i.test(t))return{err:'Digite a rua e o número, por exemplo Rua das Flores, 123.'};const n=cap(t);return{show:n,set:{rua:n},next:'c_bairro'}}},
+ c_bairro:{q:()=>'Qual o seu bairro?',ph:'Bairro',run(v){const t=v.trim();if(t.length<2||!/[a-zà-ú]{2}/i.test(t))return{err:'Digite o nome do seu bairro.'};const n=cap(t);return{show:n,set:{bairro:n},next:'c_cid'}}},
+ c_cid:{q:()=>'Em qual cidade e estado você mora?',ph:'Ex.: Rio Branco - AC',run(v){if(!locOk(v))return{err:'Digite a cidade e o estado, por exemplo Rio Branco - AC.'};const n=capLoc(v);return{show:n,set:{cid:n},next:'c_prof'}}},
+ c_prof:{q:()=>'Qual a sua profissão?',ph:'Ex.: Mecânico',run(v){const t=v.trim();if(t.length<3||!/[a-zà-ú]{3}/i.test(t))return{err:'Me diga a sua profissão, por exemplo Mecânico ou Professora.'};const n=cap(t);return{show:n,set:{prof:n},next:'c_renda'}}},
+ c_renda:{q:()=>'Qual a sua renda mensal aproximada?',ph:'Ex.: 2500',mode:'decimal',opts:()=>['Não tenho renda fixa'],run(v){if(opt(v,['Não tenho renda fixa'])===0)return{show:'Não tenho renda fixa',set:{renda:'Sem renda fixa'},next:'c_deb'};const n=money(v);if(n<=0||n>1e7)return{err:'Digite só o valor mensal, por exemplo 2500.'};const rv=brl(n).replace(/\u00a0/g,' ');return{show:rv,set:{renda:rv},next:'c_deb'}}},
+ c_deb:{q:()=>'Você pretende pagar as parcelas do consórcio em débito automático?',opts:()=>['Sim','Não'],run(v){const i=opt(v,['Sim','Não']);if(i<0)return{err:'Toque em Sim ou Não 👇'};return i===0?{show:'Sim',set:{deb:'Sim'},next:'c_conta'}:{show:'Não',set:{deb:'Não'},next:'fim'}}},
+ c_conta:{q:()=>'Qual o número da conta (com o dígito)?',ph:'Ex.: 12345-6',run(v){const t=v.trim();if(dg(t).length<3||t.length>20||/[^0-9xX.\-\/ ]/.test(t))return{err:'Digite o número da conta com o dígito, por exemplo 12345-6.'};return{show:t,set:{conta:t},next:'c_ag'}}},
+ c_ag:{q:()=>'Qual o número da agência?',ph:'Ex.: 1234',mode:'numeric',run(v){const t=v.trim();if(dg(t).length<3||t.length>12||/[^0-9xX.\-\/ ]/.test(t))return{err:'Digite o número da agência, por exemplo 1234.'};return{show:t,set:{ag:t},next:'c_banco'}}},
+ c_banco:{q:()=>'Qual o banco?',ph:'Ex.: Banco do Brasil',run(v){const t=v.trim();if(t.length<2||!/[a-zà-ú]{2}/i.test(t)||t.length>60)return{err:'Digite o nome do banco, por exemplo Banco do Brasil.'};const n=cap(t);return{show:n,set:{banco:n},next:'fim'}}}
+});
 const $c=s=>document.getElementById(s);
 const avH=()=>V.foto_url?`<img class="cha" ${IMGA(V.foto_url,'ava')} alt="">`:`<div class="cha">${esc((V.nome||'?')[0])}</div>`;
 const bot=()=>$c('chl').scrollTo({top:1e6,behavior:'smooth'});
@@ -2215,13 +2260,13 @@ const T={financiamento:'FINANCIAMENTO',consorcio:'CONSÓRCIO',avista:'COMPRA À 
 function resumo(){const a=CH.ans,l=[];a.moto&&l.push('Moto: '+a.moto);a.pag&&l.push('Pagamento: '+T[a.pag]);a.entrada&&l.push('Entrada: '+a.entrada);a.parcela&&l.push('Parcela desejada: '+a.parcela);a.forma&&l.push('Forma: '+a.forma);a.troca&&l.push('Troca: '+a.troca);a.cartao&&l.push('Cartão: '+a.cartao);return l.join('\n')}
 function msg(){const a=CH.ans,nd=a.pag==='financiamento'||a.pag==='consorcio',l=[`Olá, vim do seu site e quero as condições de ${T[a.pag]} da ${(a.moto||'moto').toUpperCase()} que vi no seu site.`,nd?'Seguem os dados para APROVACAO:':'Seguem meus dados:'];
  if(a.pag==='financiamento')l.push('Entrada: '+(a.entrada||'Sem entrada'));if(a.pag==='consorcio'&&a.parcela)l.push('Parcela desejada: '+a.parcela);if(a.pag==='avista'){l.push('Forma de pagamento: '+a.forma);if(a.troca)l.push('Moto na troca: '+a.troca)}if(a.pag==='cartao')l.push('Parcelamento: '+a.cartao);
- if(nd){l.push('Data de nascimento: '+a.nasc);l.push('CPF: '+a.cpf)}l.push('Nome: '+(a.nomec||a.nome));l.push('Celular: +'+a.tel);if(a.cor)l.push('Cor da moto: '+a.cor);if(a.hab)l.push('Habilitação: '+a.hab);l.push('IA VENDEDOR VIRTUAL');return l.join('\n')}
+ if(nd){l.push('Data de nascimento: '+a.nasc);l.push('CPF: '+a.cpf);if(a.pag==='consorcio'){a.rg&&l.push('RG: '+a.rg);a.rgdt&&l.push('Emissão do RG: '+a.rgdt);a.nat&&l.push('Naturalidade: '+a.nat);a.mae&&l.push('Mãe: '+a.mae);a.pai&&l.push('Pai: '+a.pai);a.email&&l.push('E-mail: '+a.email);const en=[a.rua,a.bairro,a.cid,a.cep&&('CEP '+a.cep)].filter(Boolean).join(', ');en&&l.push('Endereço: '+en);a.prof&&l.push('Profissão: '+a.prof);a.renda&&l.push('Renda mensal: '+a.renda);if(a.deb==='Sim'){l.push('Débito automático: Sim');l.push('Conta: '+a.conta);l.push('Agência: '+a.ag);l.push('Banco: '+a.banco)}}}l.push('Nome: '+(a.nomec||a.nome));l.push('Celular: +'+a.tel);if(a.cor)l.push('Cor da moto: '+a.cor);if(a.hab)l.push('Habilitação: '+a.hab);l.push('IA VENDEDOR VIRTUAL');return l.join('\n')}
 const uid=()=>window.crypto&&crypto.randomUUID?crypto.randomUUID():'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g,c=>{const r=Math.random()*16|0;return(c==='x'?r:r&3|8).toString(16)});
 async function sync(done){
   const a=CH.ans;if(!sb||!CH.id||!(a.nome||a.nomec||a.tel))return;
   chRasc(!!done);                      /* 1) a cada resposta, desde a 1ª: cópia instantânea para o vendedor (painel em tempo real) */
   if(!a.tel)return;                    /* 2) com o telefone, vira pedido do chat */
-  const p={id:CH.id,completo:!!done,moto_id:a.motoId||'',moto_nome:a.moto,pagamento:a.pag,nome:a.nome,nome_completo:a.nomec,telefone:'+'+a.tel,cpf:a.cpf,nascimento:a.nasc,entrada:a.entrada,parcela:a.parcela,forma_pagamento:a.forma,troca:a.troca,parcelamento_cartao:a.cartao,habilitacao:a.hab,cor:a.cor};
+  const p={id:CH.id,completo:!!done,moto_id:a.motoId||'',moto_nome:a.moto,pagamento:a.pag,nome:a.nome,nome_completo:a.nomec,telefone:'+'+a.tel,cpf:a.cpf,nascimento:a.nasc,entrada:a.entrada,parcela:a.parcela,forma_pagamento:a.forma,troca:a.troca,parcelamento_cartao:a.cartao,habilitacao:a.hab,cor:a.cor,rg:a.rg,rg_emissao:a.rgdt,cidade_nascimento:a.nat,mae:a.mae,pai:a.pai,email:a.email,cep:a.cep,rua:a.rua,bairro:a.bairro,cidade:a.cid,profissao:a.prof,renda:a.renda,debito_automatico:a.deb==='Sim'?'Sim':undefined,conta:a.conta,agencia:a.ag,banco:a.banco};
   if(done)p.mensagem=msg();Object.keys(p).forEach(k=>(p[k]===undefined||p[k]===null)&&delete p[k]);if(done&&!CH.cf){CH.cf=1;try{confete()}catch(e){}}
   let err=null;try{const r=await sb.rpc('registrar_pedido_chat',{p});if(r&&r.error)err=r.error}catch(e){err=e}
   if(!err){if(!CH.pedOk)chRascFim();return}
@@ -2231,7 +2276,7 @@ async function sync(done){
   if(done&&!CH.fbLead){CH.fbLead=1;try{await segSend('leads',{tipo:'chat',moto_id:p.moto_id||null,moto_nome:p.moto_nome,nome:p.nome_completo||p.nome,telefone:p.telefone,cpf:p.cpf,nascimento:p.nascimento,entrada:p.entrada,habilitacao:p.habilitacao,cor:p.cor,detalhes:(p.mensagem||'')+' [pedido do chat; falha ao gravar: '+((err&&err.message)||'erro')+']'})}catch(e){}}}
 function chRasc(done){
   const a=CH.ans;if(CH.pedOk||typeof sb==='undefined'||!sb||!CH.id)return;
-  const dd={nome:a.nomec||a.nome,telefone:a.tel?'+'+a.tel:'',moto_nome:a.moto,cor:a.cor,pagamento:a.pag,forma_pagamento:a.forma,troca:a.troca,cpf:a.cpf,nascimento:a.nasc,entrada:a.entrada,parcela:a.parcela,habilitacao:a.hab,etapa:CH.step||'',concluido:done?'sim':''};
+  const dd={nome:a.nomec||a.nome,telefone:a.tel?'+'+a.tel:'',moto_nome:a.moto,cor:a.cor,pagamento:a.pag,forma_pagamento:a.forma,troca:a.troca,cpf:a.cpf,nascimento:a.nasc,entrada:a.entrada,parcela:a.parcela,habilitacao:a.hab,rg:a.rg,rg_emissao:a.rgdt,cidade_nascimento:a.nat,mae:a.mae,pai:a.pai,email:a.email,cep:a.cep,rua:a.rua,bairro:a.bairro,cidade:a.cid,profissao:a.prof,renda:a.renda,debito_automatico:a.deb==='Sim'?'Sim':undefined,conta:a.conta,agencia:a.ag,banco:a.banco,etapa:CH.step||'',concluido:done?'sim':''};
   Object.keys(dd).forEach(k=>{if(!dd[k])delete dd[k];else dd[k]=String(dd[k])});
   const p={id:CH.id,origem:'chat',nome:dd.nome,telefone:dd.telefone,moto_nome:dd.moto_nome,cor:dd.cor,dados:dd},fila=()=>obxAdd({slug:SLUG,rpc:'registrar_rascunho',row:{p},ts:Date.now(),n:0});
   try{sb.rpc('registrar_rascunho',{p}).then(r=>{if(r&&r.error)fila();else CH.rascOk=true},()=>fila())}catch(e){fila()}}
@@ -2243,7 +2288,7 @@ function build(){if($c('ch'))return;document.body.insertAdjacentHTML('beforeend'
  $c('chq').onclick=e=>{const b=e.target.closest('button');if(!b)return;const v=CH.opts[+b.dataset.i];if(CH.step==='fim'){start();return}submit(v)};
  $c('chx').onclick=close;$c('chbd').onclick=close;$c('chrs').onclick=()=>{partial();start()};
  $c('chbk').onclick=()=>{if(CH.busy||CH.hist.length<2||CH.step==='fim')return;CH.tk++;CH.hist.pop();const h=CH.hist.pop(),l=$c('chl');while(l.children.length>h.n)l.lastChild.remove();CH.ans={...h.ans};CH.busy=false;ask(h.id)};
- $c('chi').oninput=function(){const s=ST[CH.step],k=s&&s.mask;if(!k)return;let d=dg(this.value);if(k==='tel'){if(d.length>11&&d.startsWith('55'))d=d.slice(2);this.value=fTel(d.slice(0,11))}else if(k==='cpf')this.value=fCpf(d.slice(0,11));else this.value=fNas(d.slice(0,8))};
+ $c('chi').oninput=function(){const s=ST[CH.step],k=s&&s.mask;if(!k)return;let d=dg(this.value);if(k==='tel'){if(d.length>11&&d.startsWith('55'))d=d.slice(2);this.value=fTel(d.slice(0,11))}else if(k==='cpf')this.value=fCpf(d.slice(0,11));else if(k==='cep')this.value=fCep(d.slice(0,8));else this.value=fNas(d.slice(0,8))};
  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&$c('ch').classList.contains('on'))close()});addEventListener('pagehide',partial)}
 function open(e,id){if(e&&e.preventDefault)e.preventDefault();build();$c('ch').classList.add('on');document.body.classList.add('chopen');if(innerWidth<=720)document.documentElement.style.overflow='hidden';if(id&&M.some(m=>m.id===id)){if(!CH.started||CH.step==='fim'||CH.ans.motoId!==id){CH.pre=id;start()}}else if(!CH.started)start();return false}
 function close(){const c=$c('ch');if(c)c.classList.remove('on');document.body.classList.remove('chopen');document.documentElement.style.overflow='';partial()}
@@ -2254,7 +2299,7 @@ window.chatOpen=open;window.chatClose=close;
 let FO=null;
 const nz=s=>String(s||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
 let _lt;const listaD=()=>{clearTimeout(_lt);_lt=setTimeout(lista,90)};
-function limpar(){Q='';C='Todas';SO='';const q=$('#q'),o=document.querySelector('.so');if(q)q.value='';if(o)o.value='';{const ch=$('#chips');if(ch)ch.innerHTML=chipsH()};lista(1)}
+function limpar(){Q='';C='Todas';SO='';const q=$('#q'),o=document.querySelector('.so');if(q)q.value='';if(o)o.value='';{const ch=$('#chips');if(ch)chipsRe(ch)};lista(1)}
 function imgErr(i){const p=i.parentNode;if(!p)return;p.classList.add('bk');p.insertAdjacentHTML('beforeend','<span class="nof">Foto indisponível</span>');i.remove()}
 const hn=m=>{const n=(m.nome||'')+(m.modelo&&!nz(m.nome).includes(nz(m.modelo))?' '+m.modelo:'');return soCon(m)||/^honda\b/i.test(n)?n:'Honda '+n};
 const CF=()=>V.config&&typeof V.config==='object'?V.config:{};
@@ -2311,7 +2356,7 @@ const VST={chat:{novo:'Novo',atendimento:'Em atendimento',concluido:'Concluído'
  contrato:{novo:'Novo',em_analise:'Em análise',contrato_enviado:'Contrato enviado',assinado:'Assinado',recusado:'Recusado'},
  contato:{novo:'Novo',atendido:'Atendido'},rascunho:{}};
 const VCL={novo:'s-novo',atendimento:'s-atendimento',em_analise:'s-atendimento',contrato_enviado:'s-atendimento',concluido:'s-concluido',atendido:'s-concluido',aprovado:'s-concluido',assinado:'s-concluido',cancelado:'s-cancelado',recusado:'s-cancelado'};
-const VLB={tipo:'Tipo',pagamento:'Modalidade',cor:'Cor da moto',telefone:'Telefone',email:'E-mail',cpf:'CPF',rg:'RG',rg_emissao:'Emissão do RG',nascimento:'Nascimento',cidade_nascimento:'Cidade de nascimento',pai:'Pai',mae:'Mãe',cep:'CEP',rua:'Rua',numero:'Número',bairro:'Bairro',cidade:'Cidade',estado:'Estado',telefone_recado:'Telefone de recado',ref_nome:'Referência',ref_telefone:'Tel. da referência',ocupacao:'Ocupação',renda:'Renda',entrada:'Entrada',parcela:'Parcela desejada',forma_pagamento:'Forma de pagamento',troca:'Moto na troca',parcelamento_cartao:'Parcelamento',habilitacao:'Habilitação',lance:'Lance',lance_valor:'Valor do lance'};
+const VLB={tipo:'Tipo',pagamento:'Modalidade',cor:'Cor da moto',telefone:'Telefone',email:'E-mail',cpf:'CPF',rg:'RG',rg_emissao:'Emissão do documento',nascimento:'Nascimento',cidade_nascimento:'Naturalidade',pai:'Pai',mae:'Mãe',cep:'CEP',rua:'Rua',numero:'Número',bairro:'Bairro',cidade:'Cidade',estado:'Estado',telefone_recado:'Telefone de recado',ref_nome:'Referência',ref_telefone:'Tel. da referência',profissao:'Profissão',ocupacao:'Vínculo de trabalho',renda:'Renda mensal',debito_automatico:'Débito automático',conta:'Número da conta',agencia:'Agência',banco:'Banco',entrada:'Entrada',parcela:'Parcela desejada',forma_pagamento:'Forma de pagamento',troca:'Moto na troca',parcelamento_cartao:'Parcelamento',habilitacao:'Habilitação',lance:'Lance',lance_valor:'Valor do lance'};
 const VPG={consorcio:'Consórcio',financiamento:'Financiamento',avista:'À vista',cartao:'Cartão de crédito'};
 const vdNovo=x=>(x.status||'novo')==='novo'&&(x._s!=='chat'||x.completo);
 async function vdLoad(){
@@ -2742,7 +2787,7 @@ async function saveSite(){const config={...CF()};['titulo','sub','aviso','horari
 /*cache-fotos*/ try{if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!DEMO)addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})})}catch(e){}
 init();
 </script>
-<style id="v39">/*v44-ofertas*/
+<style id="v39">/*v47-dados-consorcio-rolagem*/
 body.pn-on .mn.ent>#pn{animation:pnIn .55s cubic-bezier(.2,.8,.2,1) both}body.pn-on .mn.ent .mt2{animation:pnIn .5s cubic-bezier(.2,.8,.2,1) both}
 @keyframes pnIn{from{opacity:0;transform:translateY(14px)}}
 body.pn-on .pn-k{flex:1 1 280px;max-width:420px;margin-left:auto;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #e3e6f2;color:#6a6a78;font:500 14px inherit;font-family:inherit;cursor:pointer;transition:.2s;text-align:left;box-shadow:0 1px 2px #1b1b3a0f}
