@@ -1393,7 +1393,7 @@ async function pInicio(){ $('#pn').innerHTML='<div class="sk" style="height:150p
   INI={atu:Array.isArray(atu)?atu:[],vot:vot||{ativa:false},ren:ren||null};
   const hr=new Date().getHours(),sd=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',novos=VD.filter(vdNovo),hoje=VD.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()).length;
   const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length,link=siteUrl()+'/'+SLUG,nn=novos.length;
-  $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button><button class="btn" onclick="adm('playbook')">📚 Abrir o playbook</button></div></section>${renAvisoH()}<div id="ini_x">${iniPassosH()}${iniAtuH()}${iniVotH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
+  $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button></div></section>${renAvisoH()}<div id="ini_x">${iniPassosH()}${iniAtuH()}${iniVotH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
 /* --- renovar o plano (Pix) --- */
 async function renovaAbre(){document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">🔄</div><h3>Renovar plano</h3><p>Calculando…</p>');
   try{const r=await sb.rpc('meu_renovar_orcamento');if(r.error)throw r.error;const q=r.data||{};
@@ -2593,7 +2593,7 @@ async function pPers0(keep){
  <section class="ps-c"><h3>Seções do site</h3><p class="sub">Escolha o que aparece para o cliente.</p>${PS_SEC.map(s=>`<div class="ps-t"><span>${s[1]} ${esc(s[2])}<small>${esc(s[3])}</small></span><label class="ps-sy"><input type="checkbox" ${(S.ocultar||[]).includes(s[0])?'':'checked'} onchange="psSec('${s[0]}',this.checked)" aria-label="Mostrar ${esc(s[2])}"><i></i></label></div>`).join('')}</section> ${psSobreH()}${psPedidoH()}
  </div>
  <aside class="ps-pv"><h4>Prévia ao vivo</h4><div id="ps_pv"></div></aside>
- <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['playbook','📚','Playbook'],['motos','🏍️','Motos'],['conta','⚙️','Meu site'],['personalizar','🎨','Personalizar']];
+ <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['motos','🏍️','Motos'],['conta','⚙️','Meu site'],['personalizar','🎨','Personalizar']];
 let AC=null,PSS=null,PSAVED={},PSLIVE=false;
 async function acessoCarrega(){try{const r=await sb.rpc('meu_acesso');AC=(r&&r.data)||{}}catch(e){AC={}}}
 const ehPrem=()=>!!(AC&&AC.limites&&AC.limites.personalizar);
@@ -2614,7 +2614,7 @@ function enPre(){try{const c=navigator.connection;if(c&&(c.saveData||/(^|-)2g$/.
   vs.slice(0,4).forEach(carga);const ws=[...document.querySelectorAll('.en-w')];const todos=w=>w.querySelectorAll('.en-mp video').forEach(carga);
   if(window.IntersectionObserver){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){todos(e.target);io.unobserve(e.target)}}),{rootMargin:'1000px 0px'});ws.forEach(w=>io.observe(w))}else ws.forEach(todos)}
 function adm(t){ if(t)T=t; if(T!=='personalizar')psRevert(); if(T==='personalizar'&&AC&&AC.limites&&!ehPrem()){T='inicio';persLock()}
-  if(T==='resumo')T='inicio';
+  if(T==='resumo'||T==='playbook')T='inicio';
   if(T==='pedidos'||T==='leads')T='vendas';
   if(T==='site'||T==='perfil'){CTAB=T==='site'?'textos':'perfil';T='conta'}
   PNS='#pn';
@@ -2637,7 +2637,7 @@ async function pInicio0(){
   const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length;
   const cnt=Array(11).fill(0);VD.forEach(o=>cnt[faseDe(o)]++);const mx=Math.max(1,...cnt.slice(1)),link=siteUrl()+'/'+SLUG,nn=novos.length;
   $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div>
-    <div class="hero2-a"><button class="btn red" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button><button class="btn" onclick="adm('playbook')">📚 Abrir o playbook</button></div></section>
+    <div class="hero2-a"><button class="btn red" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button></div></section>
   
   <section class="card2"><div class="card2-h"><h3>Funil das 10 fases da venda</h3><small>Toque numa fase para ver os clientes</small></div><div class="fn">${PB.map(p=>`<button class="fn-r" style="--fc:${p.cor}" onclick="VFASE=${p.n};VF='todos';adm('vendas')"><span class="fn-n">${p.n}</span><span class="fn-t">${p.ic} ${esc(p.nome)}</span><span class="fn-b"><i style="width:${Math.round(cnt[p.n]/mx*100)}%"></i></span><b>${cnt[p.n]}</b></button>`).join('')}</div></section>
   <section class="card2"><div class="card2-h"><h3>Próximos contatos</h3><small>Clientes novos, do mais recente ao mais antigo</small></div>${novos.slice(0,5).map(o=>{const nm=o.nome_completo||o.nome||'Cliente',w=wlk(o.telefone);return `<div class="pc"><div class="cl-av" style="--fc:${PB[faseDe(o)-1].cor}">${esc(nm.trim().charAt(0).toUpperCase())}</div><div class="pc-m"><b>${esc(nm)}</b><small>${esc(o.moto_nome||'Moto não informada')} · ${ago(o.created_at)}</small></div><div class="pc-a">${w?`<a class="btn wa sm" target="_blank" rel="noopener" href="${w}">WhatsApp</a>`:''}<button class="btn sm" onclick="vdMsg('${o._s}','${o.id}','pb:${faseDe(o)}:0')">📚 Script</button></div></div>`}).join('')||'<p class="mu">Nenhum cliente novo no momento. 🎉</p>'}</section>
@@ -2799,7 +2799,7 @@ async function saveSite(){const config={...CF()};['titulo','sub','aviso','horari
 /*cache-fotos*/ try{if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!DEMO)addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})})}catch(e){}
 init();
 </script>
-<style id="v39">/*v48-painel-frases*/
+<style id="v39">/*v49-sem-playbook*/
 body.pn-on .mn.ent>#pn{animation:pnIn .55s cubic-bezier(.2,.8,.2,1) both}body.pn-on .mn.ent .mt2{animation:pnIn .5s cubic-bezier(.2,.8,.2,1) both}
 @keyframes pnIn{from{opacity:0;transform:translateY(14px)}}
 body.pn-on .pn-k{flex:1 1 280px;max-width:420px;margin-left:auto;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #e3e6f2;color:#6a6a78;font:500 14px inherit;font-family:inherit;cursor:pointer;transition:.2s;text-align:left;box-shadow:0 1px 2px #1b1b3a0f}
