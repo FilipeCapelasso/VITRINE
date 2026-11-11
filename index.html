@@ -1179,11 +1179,12 @@ function htmlLimpo(s){
     if(n.startsWith('on')||n==='srcdoc'||n==='formaction'||(['href','src','xlink:href','action','poster','background'].includes(n)&&/^(javascript|vbscript|data(?!:image\/(png|jpe?g|gif|webp);)):/.test(v)))e.removeAttribute(a.name)});
     if(e.tagName==='A'&&e.getAttribute('target')==='_blank')e.setAttribute('rel','noopener noreferrer')});
   return d.body.innerHTML}
+const corVerm=hx=>{const m=/^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(hx||'');if(!m)return true;const r=parseInt(m[1],16)/255,g=parseInt(m[2],16)/255,b=parseInt(m[3],16)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,l=(mx+mn)/2;if(d<.04)return false;const s=d/(1-Math.abs(2*l-1));let hu=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;hu=(hu*60+360)%360;return s>=.45&&l>=.18&&l<=.68&&(hu>=345||hu<=15)};
 function aplicaCustom(c){
   try{
     if(!c||typeof c!=='object'||Array.isArray(c))return;
     /* ISOLAMENTO: tema que declara ser de OUTRO endereço nunca é aplicado */ if(c._slug&&String(c._slug).toLowerCase()!==String(SLUG||'').toLowerCase())return; CUST=c;
-    if(/^#[0-9a-f]{6}$/i.test(c.cor||'')){const r=document.documentElement;r.style.setProperty('--r',c.cor);r.classList.add('tm')}
+    if(/^#[0-9a-f]{6}$/i.test(c.cor||'')){const r=document.documentElement;r.style.setProperty('--r',c.cor);r.classList.add('tm');if(!corVerm(c.cor))r.classList.add('ho-nvm')}
     const R=document.documentElement.classList;if(['reto','suave','redondo'].includes(c.cantos))R.add('cn-'+c.cantos);if(c.fonte==='elegante')R.add('fn-el');if(c.fonte==='arredondada')R.add('fn-ar');if(c.estilo_topo==='cor')R.add('tp-cor');if(c.botoes==='degrade')R.add('bt-gr');if(c.botoes==='contorno')R.add('bt-ct');if(c.fundo==='suave')R.add('fd-su');if(c.fundo==='creme')R.add('fd-cr');if(c.cards==='compacto')R.add('cs-co');if(c.cards==='grande')R.add('cs-gr');if(c.animacoes==='nao')R.add('an-off');if(c.efeito_botao==='brilho')R.add('ef-bt-brilho');if(c.efeito_botao==='pulso')R.add('ef-bt-pulso');if(c.efeito_cartao==='levantar')R.add('ef-cd-levantar');if(c.efeito_cartao==='brilho')R.add('ef-cd-brilho');if(c.entrada==='subir'||c.entrada==='aparecer'){R.add('en-'+c.entrada);efEntrada()}if(c.moldura==='anel')R.add('mo-anel');if(c.moldura==='gradiente')R.add('mo-gradiente');(Array.isArray(c.ocultar)?c.ocultar:[]).forEach(k=>{if(['videos','entregas','porque','loja','duvidas'].includes(k))R.add('ho-'+k)});
     if(c.css){const s=document.createElement('style');s.id='cust-css';s.textContent=cssLimpo(c.css);document.head.appendChild(s)}
     if(c._previa){const m=document.createElement('meta');m.name='robots';m.content='noindex';document.head.appendChild(m)}
@@ -1280,7 +1281,7 @@ function upFecha(){clearInterval(UPT);UPT=null;const o=document.getElementById('
 async function upgradeAbre(){document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">⭐</div><h3>Melhoria de plano</h3><p>Calculando o valor…</p>');
   try{const r=await sb.rpc('meu_upgrade_orcamento');if(r.error)throw r.error;const q=r.data||{};
     if(!q.possivel){upModal(`<div class="lki">${q.motivo==='ja_premium'?'⭐':'ℹ️'}</div><h3>${q.motivo==='ja_premium'?'Você já é Premium':'Upgrade indisponível'}</h3><p>${esc(q.mensagem||'')}</p><button type="button" class="btn red" onclick="upFecha()">Entendi</button>`);return}
-    upModal(`<div class="lki">⭐</div><h3>Melhoria de plano</h3><p>Do <b>Essencial</b> para o <b>Premium</b>. Sua assinatura ${upPer(q.periodo)} vence em <b>${esc(fdhv(q.vence))}</b>. Restam <b>${String(q.restante_dias).replace('.',',')} dias</b> de contagem, de ${q.total_dias}.</p><div class="up-c"><div><span>Diferença entre os planos (${upPer(q.periodo)})</span><b>${upR(q.diferenca)}</b></div><div><span>Proporcional ao que ainda falta</span><b class="up-v">${upR(q.valor)}</b></div></div><p class="up-n">Você paga só a diferença pelo tempo que ainda tem. O seu vencimento <b>não muda</b>.</p><button type="button" class="btn red" id="up_b" onclick="upgradePix()">Gerar Pix de ${upR(q.valor)}</button><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Agora não</button>`)}
+    upModal(`<div class="lki">⭐</div><h3>Melhoria de plano</h3><p>Do <b>Essencial</b> para o <b>Premium</b>. Sua assinatura ${upPer(q.periodo)} vence em <b>${esc(fdhv(q.vence))}</b>. Restam <b>${String(q.restante_dias).replace('.',',')} dias</b> de contagem, de ${String(q.total_dias).replace('.',',')}.</p><div class="up-c"><div><span>Diferença entre os planos (${upPer(q.periodo)})</span><b>${upR(q.diferenca)}</b></div><div><span>Proporcional ao que ainda falta</span><b class="up-v">${upR(q.valor)}</b></div></div><p class="up-n">Você paga só a diferença pelo tempo que ainda tem. O seu vencimento <b>não muda</b>.</p><button type="button" class="btn red" id="up_b" onclick="upgradePix()">Gerar Pix de ${upR(q.valor)}</button><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Agora não</button>`)}
   catch(e){upModal(`<div class="lki">⚠️</div><h3>Não foi possível calcular</h3><p>${esc((e&&e.message)||e)}</p><button type="button" class="btn red" onclick="upFecha()">Fechar</button>`)}}
 async function upgradePix(){const b=document.getElementById('up_b');if(!b||b.disabled)return;b.disabled=true;b.textContent='Gerando o Pix…';
   try{const r=await sb.rpc('meu_upgrade_criar');if(r.error)throw r.error;const d=r.data||{};
@@ -2799,7 +2800,7 @@ async function saveSite(){const config={...CF()};['titulo','sub','aviso','horari
 /*cache-fotos*/ try{if('serviceWorker' in navigator&&(location.protocol==='https:'||location.hostname==='localhost')&&!DEMO)addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').catch(()=>{})})}catch(e){}
 init();
 </script>
-<style id="v39">/*v49-sem-playbook*/
+<style id="v39">/*v50-honda-sem-preto*/
 body.pn-on .mn.ent>#pn{animation:pnIn .55s cubic-bezier(.2,.8,.2,1) both}body.pn-on .mn.ent .mt2{animation:pnIn .5s cubic-bezier(.2,.8,.2,1) both}
 @keyframes pnIn{from{opacity:0;transform:translateY(14px)}}
 body.pn-on .pn-k{flex:1 1 280px;max-width:420px;margin-left:auto;display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:14px;background:#fff;border:1px solid #e3e6f2;color:#6a6a78;font:500 14px inherit;font-family:inherit;cursor:pointer;transition:.2s;text-align:left;box-shadow:0 1px 2px #1b1b3a0f}
@@ -2854,5 +2855,9 @@ html body .shell .sd-bot .lk{color:#b9caee}html body .shell .sd-bot .ver{color:#
  .shell .frase{padding-bottom:10px}
  html body .shell .mt2{flex-wrap:wrap}html body .shell .mt2 .pn-k{flex:1 1 100%;order:3;margin-top:4px;justify-content:space-between}
 }
+</style><style id="v50">/*v50-honda-sem-preto*/
+html.ho-nvm .hn::before,html.ho-nvm .hn::after{display:none!important}
+html.ho-nvm .hn{background:none!important;border:0!important;box-shadow:none!important}
+html.ho-nvm .hn-s,html.ho-nvm .hn-i{filter:drop-shadow(0 6px 16px #00000038)!important}
 </style></body>
 </html>
