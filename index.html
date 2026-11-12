@@ -1175,11 +1175,13 @@ const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&
 /* ===== imagens leves (WebP 320/640/1280 criadas no upload) — se a versão leve não existir, usa o original ===== */
 const OPT_RE=/^(https?:\/\/[^\/?#]+\/storage\/v1\/object\/public\/midia\/)([^?#]+)(?:[?#].*)?$/,OPT_SKIP=/\.(gif|svg|mp4|webm|mov)$/i;
 function optBase(p){const m=p.match(/^([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\/(.+)$/i),rest=m?m[2]:(p.indexOf('mestre/')===0?p.slice(7):p);return{dir:m?m[1]+'/opt/':'mestre/opt/',base:rest.replace(/\.[A-Za-z0-9]+$/,'').replace(/[^A-Za-z0-9_-]+/g,'_')}}
-function optU(u,w){const m=OPT_RE.exec(String(u||''));if(!m||OPT_SKIP.test(m[2]))return'';let p=m[2];try{p=decodeURIComponent(p)}catch(e){}if(/(^|\/)opt\//.test(p))return'';const o=optBase(p);return m[1]+o.dir+o.base+'-'+w+'.webp'}
+const OPT_BAD=(()=>{try{return new Set(JSON.parse(localStorage.getItem('optbad')||'[]'))}catch(e){return new Set()}})();
+function optBadAdd(u){try{OPT_BAD.add(u);localStorage.setItem('optbad',JSON.stringify([...OPT_BAD].slice(-400)))}catch(e){}}
+function optU(u,w){const m=OPT_RE.exec(String(u||''));if(!m||OPT_SKIP.test(m[2])||OPT_BAD.has(u))return'';let p=m[2];try{p=decodeURIComponent(p)}catch(e){}if(/(^|\/)opt\//.test(p))return'';const o=optBase(p);return m[1]+o.dir+o.base+'-'+w+'.webp'}
 const OPT_SZ={card:{w:[320,640],s:'(max-width:560px) 46vw,(max-width:1100px) 31vw,380px',d:640},hero:{w:[640,1280],s:'(max-width:700px) 92vw,600px',d:640},det:{w:[640,1280],s:'(max-width:900px) 96vw,620px',d:1280},th:{w:[320],s:'',d:320},ava:{w:[320],s:'',d:320},lb:{w:[1280],s:'',d:1280}};
 function IMGA(u,k){const c=OPT_SZ[k]||OPT_SZ.card,a=optU(u,c.d);if(!a)return `src="${esc(u)}" onerror="optErr(this)"`;
   return `src="${esc(a)}"${c.w.length>1?` srcset="${esc(c.w.map(w=>optU(u,w)+' '+w+'w').join(', '))}" sizes="${c.s}"`:''} data-o="${esc(u)}" onerror="optErr(this)"`}
-function optErr(el){const o=el.dataset.o;if(o&&!el.dataset.fb){el.dataset.fb='1';el.removeAttribute('srcset');el.removeAttribute('sizes');el.src=o;return}
+function optErr(el){const o=el.dataset.o;if(o&&!el.dataset.fb){el.dataset.fb='1';optBadAdd(o);el.removeAttribute('srcset');el.removeAttribute('sizes');el.src=o;return}
   if(el.closest('.im')&&typeof imgErr==='function')imgErr(el);else if(el.closest('.chm'))el.closest('.chm').remove()}
 const brl=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
 let V={nome:'Vendedor',whatsapp:''},M=[],L=[],A=[],K=[],Q='',C='Todas',G=0,cur=0,E={},T='resumo',SO='',FV=(()=>{try{return JSON.parse(localStorage.getItem('fv')||'[]')}catch(e){return[]}})();
