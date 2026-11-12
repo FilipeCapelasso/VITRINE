@@ -1143,7 +1143,107 @@ html.ho-videos #videos,html.ho-videos .tn-l a[href="#videos"],html.ho-entregas #
 #vdl .empty2{background:#fff;border:2px dashed #b9c4db}
 @media(max-width:600px){#vs_c{padding:10px;border-radius:16px}#vdl .cl-h,#vdl .cl-d{padding-left:14px;padding-right:14px}#vdl .cl-f,#vdl .cl-a{margin-left:14px;margin-right:14px}}
 </style>
-</head>
+<style id="alta-css">
+/* ===== CATEGORIA ALTA: tema de luxo (só quando vendedores.categoria = 'alta') ===== */
+body.alta{--ab:#09090a;--ap:#121316;--al:#26272c;--at:#f2eee6;--am:#9d998f;--ax:#d8c192;--ax2:#a8905d;
+ --paper:var(--ab);--cd:var(--ap);--tx:var(--at);--mu:var(--am);--bd:var(--al);--ink:var(--at);--sh:none;
+ background:var(--ab);color:var(--at)}
+body.alta .wrap{max-width:1360px}
+body.alta .tr{display:none}
+body.alta .sec{margin:54px 0 22px;align-items:flex-end;border-bottom:1px solid var(--al);padding-bottom:18px}
+body.alta .sec h2{font:800 clamp(28px,4.4vw,52px)/1 Archivo,Sora,sans-serif;font-stretch:118%;letter-spacing:-.01em;color:var(--at);margin:0}
+body.alta .sec .mu{color:var(--am)!important;font-size:15px!important;max-width:520px}
+body.alta .nc{color:var(--ax)}
+body.alta .btn{background:transparent;border-color:#3a3b41;color:var(--at)}
+body.alta .btn:hover{border-color:var(--ax);color:var(--ax)}
+body.alta .btn.red{background:var(--r);border-color:var(--r);color:#fff}
+body.alta .btn.red:hover{background:#ff1c3d;color:#fff}
+/* cartões */
+body.alta .grid{gap:18px}
+body.alta .cd{background:linear-gradient(180deg,#15161a,#0f1012);border:1px solid var(--al);border-radius:6px;box-shadow:none;color:var(--at)}
+body.alta .cd:hover{border-color:#4a4536;transform:translateY(-3px)}
+body.alta .im{background:radial-gradient(60% 60% at 50% 55%,#26272d,#0c0c0e 72%);border-radius:2px;margin:0;aspect-ratio:16/11}
+body.alta .cb small{color:var(--ax)}
+body.alta .cb h3{color:var(--at);font-family:Archivo,Sora,sans-serif;font-stretch:112%;font-weight:800;letter-spacing:.005em}
+body.alta .par{color:var(--am)}body.alta .par b{color:var(--at)}
+body.alta .av{color:var(--am)}
+body.alta .hrt{background:#0c0c0ecc;color:#fff;border:1px solid #ffffff22}
+body.alta .selo{background:var(--ax);color:#1a1409;border-radius:2px}
+body.alta .dvs{margin:44px 0 10px;color:var(--ax)}body.alta .dvs::before,body.alta .dvs::after{background:var(--al)}
+body.alta .dvs span{font:800 12px Archivo,Inter,sans-serif;letter-spacing:.2em}
+/* cilindrada: numeral gigante vazado atrás da moto */
+.cc{position:absolute;z-index:0;left:5%;bottom:-8%;font:900 clamp(96px,15vw,210px)/.8 Archivo,Sora,sans-serif;font-stretch:125%;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:1.4px #d8c19266;pointer-events:none;user-select:none;white-space:nowrap}
+.cc small{font-size:.22em;letter-spacing:.06em;margin-left:.2em;-webkit-text-stroke:1px #d8c19299}
+body.alta .cd:not(.big) .cc{left:auto;right:8px;top:8px;bottom:auto;font-size:34px;line-height:1;letter-spacing:0;-webkit-text-stroke:0;color:#d8c192;background:#0c0c0ecc;border:1px solid #d8c19244;padding:5px 9px;border-radius:2px;font-stretch:100%;z-index:3}
+body.alta .cd:not(.big) .cc small{font-size:.5em;-webkit-text-stroke:0}
+body.alta .cd:not(.big) .cc{font-size:15px;font-weight:800}
+/* destaque: ≥500cc ocupa a largura toda, imagem grande + texto ao lado */
+body.alta .cd.big{grid-column:1/-1;display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);border-radius:4px;min-height:420px;background:linear-gradient(100deg,#15161a 0,#0c0c0e 100%)}
+body.alta .cd.big .im{aspect-ratio:auto;height:100%;min-height:340px;overflow:hidden;background:radial-gradient(55% 60% at 45% 55%,#2a2b31,#0b0b0d 75%)}
+body.alta .cd.big .im img{width:94%;height:90%;filter:drop-shadow(0 30px 28px #000a)}
+body.alta .cd.big .cb{justify-content:center;padding:36px clamp(22px,3.2vw,56px);border-left:1px solid var(--al)}
+body.alta .cd.big .cb h3{font-size:clamp(26px,3vw,44px);line-height:1.02;margin:6px 0 14px}
+body.alta .cd.big .cb small{font:700 13px Archivo,Inter,sans-serif;letter-spacing:.14em;text-transform:uppercase}
+body.alta .cd.big .par{font-size:15px;margin:0 0 18px}
+body.alta .cd.big .par b{display:block;font:800 clamp(24px,2.6vw,34px)/1.1 Archivo,Sora,sans-serif;color:var(--ax);margin-top:4px}
+body.alta .cd.big:nth-of-type(even){grid-template-columns:minmax(0,1fr) minmax(0,1.35fr)}
+body.alta .cd.big:nth-of-type(even) .im{order:2}body.alta .cd.big:nth-of-type(even) .cb{border-left:0;border-right:1px solid var(--al)}
+body.alta .cd.big:nth-of-type(even) .cc{left:auto;right:5%}
+/* herói exclusivo */
+.ah{position:relative;overflow:hidden;background:#070708;color:#f2eee6;isolation:isolate}
+.ah::before{content:'';position:absolute;inset:0;z-index:-2;background:radial-gradient(900px 520px at 78% 38%,#2c2a24 0,transparent 62%),radial-gradient(600px 400px at 0 100%,#1a0b0e 0,transparent 70%)}
+.ah::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,#d8c192 30%,#d8c192 70%,transparent)}
+.ah-in{max-width:1360px;margin:0 auto;padding:clamp(34px,6vw,84px) clamp(18px,3vw,32px) clamp(40px,6vw,76px);display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:clamp(20px,4vw,64px);align-items:center;min-height:min(78vh,720px)}
+.ah-id{display:flex;align-items:center;gap:14px;margin-bottom:clamp(22px,3.4vw,40px)}
+.ah-id .ava{width:64px;height:64px;border:2px solid #d8c192;box-shadow:0 0 0 5px #d8c19214;flex:none}
+.ah-id b{display:flex;align-items:center;gap:8px;font:700 18px Inter,sans-serif}
+.ah-id small{display:block;color:#9d998f;font-size:13.5px;margin-top:2px;max-width:340px}
+.ah h1{margin:0;font:900 clamp(40px,6.4vw,92px)/.94 Archivo,Sora,sans-serif;font-stretch:122%;letter-spacing:-.025em;text-transform:uppercase;display:block}
+.ah h1 em{font-style:normal;display:block;color:transparent;-webkit-text-stroke:1.6px #d8c192}
+.ah-sub{margin:clamp(16px,2vw,26px) 0 0;max-width:470px;color:#b4b0a6;font-size:clamp(15px,1.4vw,18px);line-height:1.55}
+.ah-cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:clamp(22px,3vw,36px)}
+.ah-cta a{display:inline-flex;align-items:center;gap:9px;padding:16px 26px;border-radius:2px;font:700 15px Inter,sans-serif;text-decoration:none;color:#fff;background:var(--r);transition:background .25s,transform .25s}
+.ah-cta a:hover{background:#ff1c3d;transform:translateY(-2px)}
+.ah-cta a.g{background:transparent;border:1px solid #d8c19288;color:#d8c192}.ah-cta a.g:hover{background:#d8c1921a}
+.ah-cta svg{width:19px;height:19px;flex:none}
+.ah-st{display:flex;gap:clamp(22px,4vw,56px);margin-top:clamp(26px,4vw,48px);padding-top:22px;border-top:1px solid #26272c}
+.ah-st b{display:block;font:800 clamp(26px,3vw,40px)/1 Archivo,Sora,sans-serif;font-stretch:115%;color:#f2eee6}
+.ah-st span{display:block;margin-top:6px;color:#8d897f;font-size:13px}
+.ah-show{position:relative;display:grid;place-items:center;aspect-ratio:1/.86;cursor:pointer;border:0;background:none;padding:0;color:inherit;text-align:left;width:100%}
+.ah-show .cc{left:50%;bottom:auto;top:50%;transform:translate(-50%,-52%);font-size:clamp(130px,23vw,340px);-webkit-text-stroke:1.6px #d8c19255}
+.ah-show img{position:relative;z-index:1;width:112%;max-width:none;margin-left:-6%;filter:drop-shadow(0 40px 34px #000c);transition:transform .8s cubic-bezier(.2,.8,.2,1);transform:translateY(0) rotate(-1.5deg)}
+.ah-show:hover img{transform:translateY(-8px) rotate(-.5deg) scale(1.03)}
+.ah-show .nof{color:#8d897f;z-index:1}
+.ah-cap{position:absolute;z-index:2;left:0;bottom:0;display:flex;flex-direction:column;gap:3px;padding:12px 16px;background:#0b0b0dcc;border-left:2px solid #d8c192;backdrop-filter:blur(6px)}
+.ah-cap small{color:#d8c192;font-size:12px;font-weight:700;letter-spacing:.1em}.ah-cap b{font:800 17px Archivo,Sora,sans-serif;font-stretch:112%}
+.ah-st-in{animation:ahIn .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ahIn{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@media (max-width:860px){
+ .ah-in{grid-template-columns:1fr;min-height:0;gap:6px}
+ .ah-show{order:-1;aspect-ratio:1/.72;margin-top:-6px}
+ .ah-show img{width:104%;margin-left:-2%}
+ .ah-show .cc{font-size:44vw}
+ body.alta .cd.big,body.alta .cd.big:nth-of-type(even){grid-template-columns:1fr}
+ body.alta .cd.big .im,body.alta .cd.big:nth-of-type(even) .im{order:0;min-height:0;aspect-ratio:16/11}
+ body.alta .cd.big .cb,body.alta .cd.big:nth-of-type(even) .cb{border:0;border-top:1px solid var(--al);padding:22px 18px 24px}
+ body.alta .cc{font-size:34vw}
+ body.alta .cd:not(.big) .cc{font-size:14px}
+ body.alta .sec{margin-top:38px}
+}
+@media (prefers-reduced-motion:reduce){.ah-show img,.ah-st-in{transition:none;animation:none}}
+/* áreas de rodapé e seções no tema escuro */
+body.alta .foot2{background:#070708;color:#9d998f;border-top:1px solid var(--al)}
+body.alta .foot2 b{color:var(--at)}
+body.alta .how li,body.alta .why-c,body.alta .faq,body.alta .sobre-b,body.alta .loja,body.alta .loja-a{background:var(--ap);border:1px solid var(--al);box-shadow:none;border-radius:4px;color:var(--am)}
+body.alta .how li::before{background:var(--ax);color:#15110a;border-radius:2px}
+body.alta .how b,body.alta .why-c b,body.alta .faq summary,body.alta .sobre-b p,body.alta .loja b,body.alta .loja h3{color:var(--at)}
+body.alta .why-c p,body.alta .faq p{color:var(--am)}
+body.alta .why-c i{background:#1d1e22;border:1px solid var(--al);border-radius:2px}
+body.alta .why-c:hover{transform:translateY(-3px);box-shadow:none;border-color:#4a4536}
+body.alta .eyb.ey2{color:var(--ax)}
+body.alta .sobre-f{border-color:var(--ax)}
+body.alta .ent,body.alta .why{margin-top:70px}
+</style></head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -1860,7 +1960,8 @@ function home(){
   mkK();
   const AM=A.filter(m=>!soCon(m)),vs=AM.flatMap(m=>(m.planos||[]).map(p=>p.valor)).filter(v=>v>0),mn=vs.length?Math.min(...vs):0;
   const bxd=(()=>{try{return sessionStorage.getItem('bx')}catch(e){return''}})();
-  $('#app').innerHTML=`${tnavH()}${celular()?`<header class="hero"><span class="glow"></span><div class="spd"><i></i><i></i><i></i><i></i></div>
+  if(ALTA())altaFonte();document.body.classList.toggle('alta',ALTA());
+  $('#app').innerHTML=`${tnavH()}${ALTA()?heroAltaH():celular()?`<header class="hero"><span class="glow"></span><div class="spd"><i></i><i></i><i></i><i></i></div>
   ${marcaCelH()}<div class="hin nl">${av(V.foto_url)}
   <div class="idt"><h1>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>${V.bio?`<p>${esc(V.bio)}</p>`:''}</div>
   <h2 class="hhead"><span class="eyb">ENCONTRE A SUA HONDA</span>${hhead()}</h2>${heroExtra()}
@@ -1870,7 +1971,7 @@ function home(){
   <h2 class="hhead"><span class="eyb">ENCONTRE A SUA HONDA</span>${hhead()}</h2>${heroExtra(1)}
   <div class="ctas"><a class="cta w" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site e quero uma moto.')}" onclick="return chatOpen(event)">${IC.wa}${esc(CUSTV('cta','Fale comigo'))}</a>${(V.instagram||V.facebook)?`<div class="soc">${V.instagram?`<a class="cta" target="_blank" rel="noopener" href="https://instagram.com/${esc(V.instagram)}">${IC.ig}Instagram</a>`:''}${V.facebook?`<a class="cta" target="_blank" rel="noopener" href="${esc(fbu(V.facebook))}">${IC.fb}Facebook</a>`:''}</div>`:''}</div>
   <div class="stats"><div><b data-n="${AM.length}">${AM.length}</b><span>modelos para escolher</span></div>${statP2(mn)}</div><div class="hmk">${marcaH()}</div></div>${heroDir()}</header>`}
-  ${AVISO()}${faixaH()}${blocoC('topo')}<main class="wrap" id="catalogo"><ul class="tr"><li>${CK}Atendimento personalizado</li><li>${CK}Simulação rápida</li><li>${CK}Fale diretamente comigo</li></ul><div class="sec"><div><h2>${esc(CF().titulo||"Encontre sua próxima Honda")}</h2><p class="mu" style="margin:4px 0 0;font-size:14px">${esc(CF().sub||"Consórcio, financiamento e condições especiais diretamente com seu vendedor.")}</p></div><span class="nc" id="nc" aria-live="polite"></span></div>
+  ${AVISO()}${faixaH()}${blocoC('topo')}<main class="wrap" id="catalogo"><ul class="tr"><li>${CK}Atendimento personalizado</li><li>${CK}Simulação rápida</li><li>${CK}Fale diretamente comigo</li></ul><div class="sec"><div><h2>${esc(CF().titulo||(ALTA()?"Do topo da linha ao dia a dia":"Encontre sua próxima Honda"))}</h2><p class="mu" style="margin:4px 0 0;font-size:14px">${esc(CF().sub||(ALTA()?"As motos de maior cilindrada primeiro, em ordem decrescente de potência.":"Consórcio, financiamento e condições especiais diretamente com seu vendedor."))}</p></div><span class="nc" id="nc" aria-live="polite"></span></div>
   <div class="cat"><div id="ls" class="grid"></div></div>${blocoC('meio')}${sobreH()}${vidsH()}${entH()}${porqueH()}${INFO}${lojaH()}${blocoC('fim')}</main>
   ${MB()}${prevC()}<footer class="foot2"><b>${esc(V.nome)}</b><br>${tel()}${V.instagram?' · @'+esc(V.instagram):''}${CF().horario?`<br>Atendimento: ${esc(CF().horario)}`:''}${CF().endereco?`<br>${esc(CF().endereco)}`:''}
   <div class="fl"><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cdc||FICHA_CDC_URL,'cdc')}">Ficha CDC<small>Financiamento</small></a><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cnh||FICHA_CNH_URL,'cnh')}">Ficha CNH<small>Consórcio</small></a></div><p class="disc2 frs">${fraseH(V&&V.frase_n,15,'fr-f')}${catSelo()}</p><div class="ful"><a target="_blank" rel="noopener" href="https://consorcionacionalhonda.com.br/atendimento/pagamento/sobre-o-pagamento">Como pagar com segurança ↗</a><a target="_blank" rel="noopener" href="https://www.bcb.gov.br/meubc/faqs/p/cuidados-na-hora-de-contratar-uma-operacao-de-credito">Cuidados ao contratar crédito ↗</a><a href="#" onclick="priv();return false">Política de Privacidade</a></div><div class="criar-w"><a class="criar" target="_blank" rel="noopener" href="${esc(CFG.url_comercial||'https://sitevendedorhonda.vercel.app/')}">Crie seu site vendedor</a></div></footer>
@@ -2119,15 +2220,41 @@ async function del(id){if(!confirm('Excluir esta moto?'))return;await sb.from('m
 const wlk=t=>{const d=String(t||'').replace(/\D/g,'').replace(/^55(?=\d{10,11}$)/,'');return d.length>=10?'https://wa.me/55'+d:''};
 async function delL(id){if(!confirm('Excluir este contato?'))return;await sb.from('leads').delete().eq('id',id);pLeads()}
 const minP=m=>(m.planos||[]).filter(p=>p.valor>0).sort((a,b)=>a.valor-b.valor)[0];
+
+/* ===== CATEGORIA ALTA (definida só pelo Admin Geral) ===== */
+const ALTA=()=>{try{return !!(V&&V.categoria==='alta')}catch(e){return false}};
+const ALTA_MIN=500;
+function ccOf(m){const t=((m.nome||'')+' '+(m.modelo||'')).toUpperCase();if(soCon(m))return 0;
+ if(/GOLD\s*WING/.test(t))return 1800;if(/X-?ADV/.test(t))return 750;if(/AFRICA/.test(t)&&!/\d{3}/.test(t.replace(/\d+\s*%/g,'')))return 1100;
+ const c=t.replace(/\d+\s*%/g,' ').replace(/4X4/g,' ').replace(/\b20\d\d\b/g,' ').match(/(\d{3,4})/);if(c)return +c[1];
+ if(/\b(PCX|ADV|SH\b)/.test(t))return 160;return 0}
+const ccTag=m=>{const c=ccOf(m);return c?`<span class="cc" aria-hidden="true">${c}<small>cc</small></span>`:''};
+function altaFonte(){if(document.getElementById('alta-font'))return;const l=document.createElement('link');l.id='alta-font';l.rel='stylesheet';l.href='https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,500..900&display=swap';document.head.appendChild(l)}
+function altaTop(){const l=A.filter(m=>!soCon(m)&&img0(m)).sort((a,b)=>ccOf(b)-ccOf(a));return l[0]||null}
+function altaAbre(id){const i=L.findIndex(x=>x.id===id);if(i>=0)openM(i,'det');else{const el=document.getElementById('catalogo');if(el)el.scrollIntoView({behavior:'smooth'})}}
+function heroAltaH(){
+ const t=altaTop(),AM=A.filter(m=>!soCon(m)),nb=AM.filter(m=>ccOf(m)>=ALTA_MIN).length,mx=AM.reduce((a,m)=>Math.max(a,ccOf(m)),0),vs=AM.flatMap(m=>(m.planos||[]).map(p=>p.valor)).filter(v=>v>0),mn=vs.length?Math.min(...vs):0;
+ const wl=wa('Olá! Vim pelo seu site e quero conhecer as motos de alta cilindrada.');
+ return `<header class="ah"><div class="ah-in">
+ <div class="ah-tx ah-st-in"><div class="ah-id">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img" width="20" height="20"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></b>${V.bio?`<small>${esc(V.bio)}</small>`:''}</div></div>
+ <h1>${esc(CUSTV('altaT','Alta cilindrada'))}<em>Honda</em></h1>
+ <p class="ah-sub">${esc(CUSTV('altaS','Atendimento exclusivo para quem busca potência, tecnologia e presença. Consórcio e financiamento sob medida, direto comigo.'))}</p>
+ <div class="ah-cta"><a target="_blank" rel="noopener" href="${wl}" onclick="return chatOpen(event)">${IC.wa}Falar comigo agora</a>${V.instagram?`<a class="g" target="_blank" rel="noopener" href="https://instagram.com/${esc(V.instagram)}">${IC.ig}@${esc(V.instagram)}</a>`:''}</div>
+ <div class="ah-st"><div><b>${nb||AM.length}</b><span>${nb?'motos acima de 500cc':'modelos'}</span></div>${mx?`<div><b>${mx}cc</b><span>a maior do catálogo</span></div>`:''}${mn?`<div><b>${brl(mn)}</b><span>menor parcela de consórcio</span></div>`:''}</div></div>
+ ${t?`<button type="button" class="ah-show" onclick="altaAbre('${t.id}')" aria-label="Ver ${esc(t.nome)}">${ccTag(t)}<img ${IMGA(img0(t),'card')} alt="${esc(t.nome)}" decoding="async" fetchpriority="high"><span class="ah-cap"><small>${esc(t.categoria||'Destaque')}</small><b>${esc(t.nome)}</b></span></button>`:''}
+ </div></header>`}
+function altaDiv(i){if(!ALTA()||SO)return '';const m=L[i],a=ccOf(m)>=ALTA_MIN,p=i>0?ccOf(L[i-1])>=ALTA_MIN:null;if(i===0&&!a)return '';if(!a&&p&&!soCon(m))return '<div class="dvs" role="separator"><span>Mais motos Honda</span></div>';return ''}
+
 function lista(an){
   const q=nz(Q);
   L=A.filter(m=>(C==='Todas'||(C===FVC?FV.includes(m.id):m.categoria===C))&&(!FP||((minP(m)||{}).valor||1e12)<=FP)&&nz((m.nome||'')+' '+(m.modelo||'')+' '+(m.categoria||'')+' '+(m.selo||'')).includes(q));
   if(SO)L.sort((a,b)=>SO==='az'?a.nome.localeCompare(b.nome):SO==='mx'?(minP(b)?.valor||0)-(minP(a)?.valor||0):SO==='pn'?(a.preco>0?a.preco:1e12)-(b.preco>0?b.preco:1e12):SO==='px'?(b.preco||0)-(a.preco||0):(minP(a)?.valor||1e9)-(minP(b)?.valor||1e9));
   L=[...L.filter(m=>!soCon(m)),...L.filter(soCon)];
+  if(ALTA()&&!SO)L=[...L.filter(m=>!soCon(m)).sort((a,b)=>ccOf(b)-ccOf(a)),...L.filter(soCon)];
   const fm=L.findIndex(soCon),dv=fm>0;
   const g=$('#ls');g.className='grid'+(an?' an':'');
-  g.innerHTML=!L.length?`<div class="vz"><b>Nenhuma moto disponível no momento.</b><span>Fale com o vendedor para conhecer as opções.</span></div>`:L.map((m,i)=>{const p=minP(m),sc=soCon(m),vw=sc?'con':'det';return `${dv&&i===fm?'<div class="dvs" role="separator"><span>Motores e Máquinas</span></div>':''}<article class="cd" style="--i:${Math.min(i,11)}"><button class="hrt${FV.includes(m.id)?' on':''}" aria-label="Favoritar ${esc(m.nome)}" aria-pressed="${FV.includes(m.id)}" onclick="fav('${m.id}',this)">♥</button>${m.selo?`<span class="selo">${esc(m.selo)}</span>`:''}
-   <div class="im${sc?' mm':''}" onclick="openM(${i},'${vw}')">${ofTagH(m)}${img0(m)?`<img ${IMGA(img0(m),'card')} alt="${esc(m.nome)}" ${i<2?'fetchpriority="high"':'loading="lazy"'} decoding="async" onload="this.classList.add('ok')">`:'<span class="nof">Foto em breve</span>'}${m.video_url?`<button type="button" class="vchip" onclick="event.stopPropagation();playVideoM(${i})" aria-label="Assistir vídeo de ${esc(m.nome)}">▶ Vídeo</button>`:''}</div>
+  g.innerHTML=!L.length?`<div class="vz"><b>Nenhuma moto disponível no momento.</b><span>Fale com o vendedor para conhecer as opções.</span></div>`:L.map((m,i)=>{const p=minP(m),sc=soCon(m),vw=sc?'con':'det';return `${dv&&i===fm?'<div class="dvs" role="separator"><span>Motores e Máquinas</span></div>':''}${altaDiv(i)}<article class="cd${ALTA()&&!sc&&ccOf(m)>=ALTA_MIN?' big':''}" style="--i:${Math.min(i,11)}"><button class="hrt${FV.includes(m.id)?' on':''}" aria-label="Favoritar ${esc(m.nome)}" aria-pressed="${FV.includes(m.id)}" onclick="fav('${m.id}',this)">♥</button>${m.selo?`<span class="selo">${esc(m.selo)}</span>`:''}
+   <div class="im${sc?' mm':''}" onclick="openM(${i},'${vw}')">${ofTagH(m)}${ALTA()?ccTag(m):''}${img0(m)?`<img ${IMGA(img0(m),'card')} alt="${esc(m.nome)}" ${i<2?'fetchpriority="high"':'loading="lazy"'} decoding="async" onload="this.classList.add('ok')">`:'<span class="nof">Foto em breve</span>'}${m.video_url?`<button type="button" class="vchip" onclick="event.stopPropagation();playVideoM(${i})" aria-label="Assistir vídeo de ${esc(m.nome)}">▶ Vídeo</button>`:''}</div>
    <div class="cb"><small>${esc(m.categoria)}</small><h3>${esc(m.nome)}</h3>${cdots(m)}
    <p class="par">${p?`Consórcio a partir de<b>${p.parcelas}x ${brl(p.valor)}</b>`:'Consulte as condições'}${ofCardH(m)||(m.preco>0?`<span class="av">À vista ${brl(m.preco)}</span>`:'')}</p>
    ${sc?`<button class="btn red" onclick="openM(${i},'con')">Planos de consórcio</button>`:`<button class="btn red" onclick="openM(${i},'det')">Detalhes da moto</button>
