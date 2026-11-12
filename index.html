@@ -1259,6 +1259,14 @@ body.alta .ch .chh{background:#0b0b0d;border-bottom:1px solid #26272c}
  body.alta .sec{margin-top:38px}
 }
 @media (prefers-reduced-motion:reduce){.ah-show img,.ah-st-in{transition:none;animation:none}}
+
+.ah-id{gap:clamp(16px,2vw,26px)}
+.ah-id .ava{width:clamp(88px,9.5vw,136px);height:clamp(88px,9.5vw,136px);border-width:3px;box-shadow:0 0 0 7px #d8c19214,0 18px 40px -14px #000}
+.ah-id b{font:800 clamp(26px,3.2vw,42px)/1.05 Archivo,Inter,sans-serif;font-stretch:112%;gap:10px}
+.ah-id b svg{width:clamp(20px,2vw,28px);height:clamp(20px,2vw,28px)}
+.ah-id small{font-size:clamp(15.5px,1.45vw,19px);line-height:1.45;margin-top:6px;max-width:560px;color:#b4b0a6}
+.ah h1.ct{text-transform:none;font-size:clamp(36px,5.6vw,80px);line-height:1;letter-spacing:-.02em;font-stretch:112%}
+.ah h1.ct.lg{font-size:clamp(30px,4.2vw,60px)}
 </style></head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -1987,7 +1995,7 @@ function home(){
   <h2 class="hhead"><span class="eyb">ENCONTRE A SUA HONDA</span>${hhead()}</h2>${heroExtra(1)}
   <div class="ctas"><a class="cta w" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site e quero uma moto.')}" onclick="return chatOpen(event)">${IC.wa}${esc(CUSTV('cta','Fale comigo'))}</a>${(V.instagram||V.facebook)?`<div class="soc">${V.instagram?`<a class="cta" target="_blank" rel="noopener" href="https://instagram.com/${esc(V.instagram)}">${IC.ig}Instagram</a>`:''}${V.facebook?`<a class="cta" target="_blank" rel="noopener" href="${esc(fbu(V.facebook))}">${IC.fb}Facebook</a>`:''}</div>`:''}</div>
   <div class="stats"><div><b data-n="${AM.length}">${AM.length}</b><span>modelos para escolher</span></div>${statP2(mn)}</div><div class="hmk">${marcaH()}</div></div>${heroDir()}</header>`}
-  ${AVISO()}${faixaH()}${blocoC('topo')}<main class="wrap" id="catalogo"><ul class="tr"><li>${CK}Atendimento personalizado</li><li>${CK}Simulação rápida</li><li>${CK}Fale diretamente comigo</li></ul><div class="sec"><div><h2>${esc(CF().titulo||(ALTA()?"Do topo da linha ao dia a dia":"Encontre sua próxima Honda"))}</h2><p class="mu" style="margin:4px 0 0;font-size:14px">${esc(CF().sub||(ALTA()?"As motos de maior cilindrada primeiro, em ordem decrescente de potência.":"Consórcio, financiamento e condições especiais diretamente com seu vendedor."))}</p></div><span class="nc" id="nc" aria-live="polite"></span></div>
+  ${AVISO()}${faixaH()}${blocoC('topo')}<main class="wrap" id="catalogo"><ul class="tr"><li>${CK}Atendimento personalizado</li><li>${CK}Simulação rápida</li><li>${CK}Fale diretamente comigo</li></ul><div class="sec"><div><h2>${esc(ALTA()?"Do topo da linha ao dia a dia":(CF().titulo||"Encontre sua próxima Honda"))}</h2><p class="mu" style="margin:4px 0 0;font-size:14px">${esc(ALTA()?"As motos de maior cilindrada primeiro, em ordem decrescente de potência.":(CF().sub||"Consórcio, financiamento e condições especiais diretamente com seu vendedor."))}</p></div><span class="nc" id="nc" aria-live="polite"></span></div>
   <div class="cat"><div id="ls" class="grid"></div></div>${blocoC('meio')}${sobreH()}${vidsH()}${entH()}${porqueH()}${INFO}${lojaH()}${blocoC('fim')}</main>
   ${MB()}${prevC()}<footer class="foot2"><b>${esc(V.nome)}</b><br>${tel()}${V.instagram?' · @'+esc(V.instagram):''}${CF().horario?`<br>Atendimento: ${esc(CF().horario)}`:''}${CF().endereco?`<br>${esc(CF().endereco)}`:''}
   <div class="fl"><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cdc||FICHA_CDC_URL,'cdc')}">Ficha CDC<small>Financiamento</small></a><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cnh||FICHA_CNH_URL,'cnh')}">Ficha CNH<small>Consórcio</small></a></div><p class="disc2 frs">${fraseH(V&&V.frase_n,15,'fr-f')}${catSelo()}</p><div class="ful"><a target="_blank" rel="noopener" href="https://consorcionacionalhonda.com.br/atendimento/pagamento/sobre-o-pagamento">Como pagar com segurança ↗</a><a target="_blank" rel="noopener" href="https://www.bcb.gov.br/meubc/faqs/p/cuidados-na-hora-de-contratar-uma-operacao-de-credito">Cuidados ao contratar crédito ↗</a><a href="#" onclick="priv();return false">Política de Privacidade</a></div><div class="criar-w"><a class="criar" target="_blank" rel="noopener" href="${esc(CFG.url_comercial||'https://sitevendedorhonda.vercel.app/')}">Crie seu site vendedor</a></div></footer>
@@ -2254,8 +2262,8 @@ function heroAltaH(){
  const wl=wa('Olá! Vim pelo seu site e quero conhecer as motos de alta cilindrada.');
  return `<header class="ah"><div class="ah-in">
  <div class="ah-tx ah-st-in"><div class="ah-id">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img" width="20" height="20"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></b>${V.bio?`<small>${esc(V.bio)}</small>`:''}</div></div>
- <h1>${esc(CUSTV('altaT','Alta cilindrada'))}<em>Honda</em></h1>
- <p class="ah-sub">${esc(CUSTV('altaS','Atendimento exclusivo para quem busca potência, tecnologia e presença. Consórcio e financiamento sob medida, direto comigo.'))}</p>
+ ${(()=>{const ti=String(CF().titulo||'').trim();return ti?`<h1 class="ct${ti.length>28?' lg':''}">${esc(ti)}</h1>`:`<h1>${esc(CUSTV('altaT','Alta cilindrada'))}<em>Honda</em></h1>`})()}
+ <p class="ah-sub">${esc(String(CF().sub||'').trim()||CUSTV('altaS','Atendimento exclusivo para quem busca potência, tecnologia e presença. Consórcio e financiamento sob medida, direto comigo.'))}</p>
  <div class="ah-cta"><a target="_blank" rel="noopener" href="${wl}" onclick="return chatOpen(event)">${IC.wa}Falar comigo agora</a>${V.instagram?`<a class="g" target="_blank" rel="noopener" href="https://instagram.com/${esc(V.instagram)}">${IC.ig}@${esc(V.instagram)}</a>`:''}</div>
  <div class="ah-st"><div><b>${nb||AM.length}</b><span>${nb?'motos acima de 500cc':'modelos'}</span></div>${mx?`<div><b>${mx}cc</b><span>a maior do catálogo</span></div>`:''}${mn?`<div><b>${brl(mn)}</b><span>menor parcela de consórcio</span></div>`:''}</div></div>
  ${t?`<button type="button" class="ah-show" onclick="altaAbre('${t.id}')" aria-label="Ver ${esc(t.nome)}">${ccTag(t)}<img ${IMGA(img0(t),'card')} alt="${esc(t.nome)}" decoding="async" fetchpriority="high"><span class="ah-cap"><small>${esc(t.categoria||'Destaque')}</small><b>${esc(t.nome)}</b></span></button>`:''}
@@ -2971,7 +2979,8 @@ function pConta(){
 function pSite(){
   if(!('config' in V)){$(PNS).innerHTML='<p class="mu">Para personalizar os textos do site, rode o SQL opcional (coluna config) no Supabase e recarregue a página.</p>';return}
   const c=CF(),f=(k,l,ph)=>`<label class="l" for="c_${k}">${l}</label><input id="c_${k}" value="${esc(c[k]||'')}" placeholder="${ph}" maxlength="160">`;
-  $(PNS).innerHTML=`<p class="mu" style="font-size:13px">Estes textos aparecem no site. Campos em branco não aparecem.</p>${f('titulo','Título principal','Encontre sua próxima Honda')}${f('sub','Frase abaixo do título','Consórcio, financiamento e condições especiais diretamente com seu vendedor.')}${f('aviso','Aviso no topo do catálogo','')}${f('horario','Horário de atendimento','')}${f('endereco','Endereço','')}<button class="btn red" onclick="saveSite()">Salvar site</button>`}
+  $(PNS).innerHTML=`<p class="mu" style="font-size:13px">Estes textos aparecem no site. Campos em branco não aparecem.</p>${f('titulo','Título principal',ALTA()?'Alta cilindrada Honda':'Encontre sua próxima Honda')}${f('sub','Frase abaixo do título',ALTA()?'Atendimento exclusivo para quem busca potência, tecnologia e presença.':'Consórcio, financiamento e condições especiais diretamente com seu vendedor.')}${ALTA()?'<p class="mu" style="font-size:12.5px;margin:-4px 0 12px">Deixe o título em branco para mostrar o padrão <b>Alta cilindrada Honda</b>. Se escrever algo aqui, o seu texto aparece no lugar.</p><button type="button" class="btn" style="margin-bottom:14px" onclick="altaPadrao()">↺ Voltar ao padrão Alta cilindrada</button>':''}${f('aviso','Aviso no topo do catálogo','')}${f('horario','Horário de atendimento','')}${f('endereco','Endereço','')}<button class="btn red" onclick="saveSite()">Salvar site</button>`}
+function altaPadrao(){const a=$('#c_titulo'),b=$('#c_sub');if(a)a.value='';if(b)b.value='';saveSite()}
 async function saveSite(){const config={...CF()};['titulo','sub','aviso','horario','endereco'].forEach(k=>{const v=$('#c_'+k).value.trim();v?config[k]=v:delete config[k]});
   const{error}=await sb.from('vendedores').update({config}).eq('id',V.id);if(!error)V.config=config;toast(error?'Erro: '+error.message:'Site atualizado!')}
 
