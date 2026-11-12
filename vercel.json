@@ -11,14 +11,13 @@
       ],
       "destination": "/:slug",
       "permanent": false
-    },
-    {
-      "source": "/",
-      "destination": "https://sitevendedorhonda.vercel.app/",
-      "permanent": false
     }
   ],
   "rewrites": [
+    {
+      "source": "/",
+      "destination": "https://sitevendedor.vercel.app/"
+    },
     {
       "source": "/comercial",
       "destination": "https://sitevendedor.vercel.app/"
