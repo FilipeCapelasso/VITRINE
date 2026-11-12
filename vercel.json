@@ -20,6 +20,14 @@
   ],
   "rewrites": [
     {
+      "source": "/comercial",
+      "destination": "https://sitevendedor.vercel.app/"
+    },
+    {
+      "source": "/comercial/:path*",
+      "destination": "https://sitevendedor.vercel.app/:path*"
+    },
+    {
       "source": "/:slug/cdc",
       "destination": "https://sitecdc.vercel.app/:slug"
     },
