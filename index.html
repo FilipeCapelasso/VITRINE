@@ -1312,7 +1312,9 @@ let V={nome:'Vendedor',whatsapp:''},M=[],L=[],A=[],K=[],Q='',C='Todas',G=0,cur=0
 const toast=t=>{const e=$('#toast');e.textContent=t;e.style.display='block';setTimeout(()=>e.style.display='none',2800)};
 const ORIG=(()=>{try{const q=new URLSearchParams(location.search),o=['utm_source','utm_medium','utm_campaign','utm_content'].map(k=>q.get(k)).filter(Boolean);if(!o.length&&q.get('fbclid'))o.push('facebook');if(o.length){sessionStorage.setItem('orig',o.join(' / '));return o.join(' / ')}return sessionStorage.getItem('orig')||''}catch(e){return''}})();
 const origTxt=()=>ORIG?'\n\n(origem: '+ORIG.slice(0,80)+')':'';
-const wa=t=>{const n=waNum(V.whatsapp);return n.length>=12?`https://api.whatsapp.com/send?phone=${n}&text=${encodeURIComponent(t+origTxt())}`:'#chat'};
+const wa=t=>{const n=waNum(V.whatsapp);if(n.length<12)return '#chat';const q=`phone=${n}&text=${encodeURIComponent(t+origTxt())}`,web=`https://api.whatsapp.com/send?${q}`;
+ /* Android: abre direto o WhatsApp comum (sem o aviso do Business); se não houver, cai no link universal */
+ return /Android/i.test(navigator.userAgent)?`intent://send/?${q}#Intent;scheme=whatsapp;package=com.whatsapp;S.browser_fallback_url=${encodeURIComponent(web)};end`:web};
 document.addEventListener('click',e=>{const a=e.target&&e.target.closest&&e.target.closest('a[href="#chat"]');if(a){e.preventDefault();e.stopPropagation();if(window.chatOpen)window.chatOpen(e)}},true);
 const tel=()=>{const n=(V.whatsapp||'').replace(/^55/,'');return n.length>=10?`(${n.slice(0,2)}) ${n.slice(2,-4)}-${n.slice(-4)}`:n};
 const av=(u,c)=>u?`<img class="ava ${c||''}" ${IMGA(u,'ava')} alt="${esc(V.nome)}" decoding="async" data-foto="1" title="Ver foto" tabindex="0" role="button">`:`<div class="ava ${c||''}">${esc((V.nome||'?')[0])}</div>`;
