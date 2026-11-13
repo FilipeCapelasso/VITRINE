@@ -2861,7 +2861,12 @@ const vdOpts=()=>`<optgroup label="Mensagens prontas">${VAS.map(a=>`<option valu
    Usa só dados reais do catálogo do vendedor (motos.planos). Nada de valor inventado.
    Histórico fica em public.simulacoes (RLS: só o vendedor dono do cliente). */
 const CALC_REGA=['AC','AM','RO','RR'];
-const calcTabela=()=>CALC_REGA.includes(String(V.uf||'').toUpperCase())?'Acre, Amazonas, Rondônia e Roraima':'Tabela unificada';
+let CALC_RG=null;
+/* a tabela vem da região do próprio vendedor (ufs.regiao_preco no banco); se o banco não responder, cai na lista de UFs da região A */
+(async()=>{try{const r=await sb.rpc('minha_regiao_preco');if(r&&r.data&&r.data.regiao)CALC_RG=r.data.regiao}catch(e){}})();
+const CALC_UFN={AC:'Acre',AL:'Alagoas',AP:'Amapá',AM:'Amazonas',BA:'Bahia',CE:'Ceará',DF:'Distrito Federal',ES:'Espírito Santo',GO:'Goiás',MA:'Maranhão',MT:'Mato Grosso',MS:'Mato Grosso do Sul',MG:'Minas Gerais',PA:'Pará',PB:'Paraíba',PR:'Paraná',PE:'Pernambuco',PI:'Piauí',RJ:'Rio de Janeiro',RN:'Rio Grande do Norte',RS:'Rio Grande do Sul',RO:'Rondônia',RR:'Roraima',SC:'Santa Catarina',SP:'São Paulo',SE:'Sergipe',TO:'Tocantins'};
+/* mostra só o estado do vendedor (os preços já vêm da tabela oficial da região dele) */
+const calcTabela=()=>{const uf=String(V&&V.uf||'').toUpperCase();return uf?(CALC_UFN[uf]||uf):'Região do vendedor não definida'};
 const cSp=t=>String(t==null?'':t).replace(/[  ]/g,' ');
 const cBrl=n=>cSp(brl(n));
 const cPct=n=>(isFinite(n)?n:0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
