@@ -449,6 +449,7 @@ button.vt-o:hover{border-color:#6d28d9;background:#f2edff;transform:translateY(-
 .at-ini{display:flex;gap:12px;flex-wrap:wrap}.at-ini .btn{width:auto;padding:14px 22px;font-size:15.5px;font-weight:700;background:#fff;color:#14141c;border:2px solid #d9dcec;border-radius:14px}.at-ini .btn:hover{border-color:#d90f24;color:#d90f24}
 .rn-t{font-size:16px}.rn-av .rn-b{font-size:16px;padding:14px 24px}
 @media(max-width:640px){.ini-hd{padding:16px 18px}.card2.ini-card .ini-hd h3{font-size:22px!important}.ini-bd{padding:18px}.ini-card .pl-b .btn{width:100%}}
+.rn-lv{display:flex;flex-direction:column;gap:4px;cursor:default}.rn-mz{display:flex;align-items:center;gap:12px;margin:6px 0}.rn-mz button{width:42px;height:42px;border-radius:50%;border:2px solid #4338ca;background:#fff;color:#4338ca;font-size:22px;font-weight:800;cursor:pointer;line-height:1}.rn-mz button:disabled{opacity:.35;cursor:default}.rn-mz strong{font-size:20px;min-width:96px;text-align:center}.rn-pg{margin-top:8px;width:100%}
 /*v24-acessos*/
 .ac{background:#fff;border:1px solid #e6e6f0;border-radius:22px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,40,.04)}
 .ac-hd{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:22px 24px;background:linear-gradient(135deg,#4338ca,#8b5cf6);color:#fff}
@@ -1457,7 +1458,7 @@ function paintPlano(){clearInterval(mpT);if(!document.getElementById('plc'))retu
     const now=Date.now(),vm=new Date(MP.vence).getTime(),fim=now>=vm,s=fim?0:expRestante(vm,now),cong=!fim&&expCongelado(now);
     const d=Math.floor(s/86400),h=Math.floor(s%86400/3600),m=Math.floor(s%3600/60),sg=s%60,pd=n=>String(n).padStart(2,'0');
     el.className='plc'+(fim?' fim':d<3?' alerta':'')+(cong?' cong':'');
-    el.innerHTML=`<div class="plc-i"><b>Plano completo · ${MP.periodo==='anual'?'anual':MP.periodo==='semestral'?'6 meses':'mensal'}</b><small>Comprado em ${fdhv(MP.inicio)} · suspensão automática prevista em ${fdhv(MP.vence)}</small></div><div class="plc-t">${fim?'<b>Prazo encerrado</b>':`<span><b>${d}</b>dias</span><span><b>${pd(h)}</b>h</span><span><b>${pd(m)}</b>min</span><span><b>${pd(sg)}</b>seg</span>`}<span class="plc-x">${cong?`<em class="plc-c">⏸ Pausada · volta às ${EXPD.ini}h</em>`:''}${expInfo()}</span></div>${renBtn()}`};
+    el.innerHTML=`<div class="plc-i"><b>Plano completo · ${rnPer(MP.periodo)}</b><small>Comprado em ${fdhv(MP.inicio)} · suspensão automática prevista em ${fdhv(MP.vence)}</small></div><div class="plc-t">${fim?'<b>Prazo encerrado</b>':`<span><b>${d}</b>dias</span><span><b>${pd(h)}</b>h</span><span><b>${pd(m)}</b>min</span><span><b>${pd(sg)}</b>seg</span>`}<span class="plc-x">${cong?`<em class="plc-c">⏸ Pausada · volta às ${EXPD.ini}h</em>`:''}${expInfo()}</span></div>${renBtn()}`};
   tick();mpT=setInterval(tick,1000)}
 
 /* ===== proteção contra conta errada no painel (vários logins no mesmo navegador) ===== */
@@ -1485,7 +1486,7 @@ if(sb){
 /*final-v*/(function(){const f=()=>{document.querySelectorAll('input:not([type=hidden]),select,textarea').forEach(e=>{if(e.getAttribute('aria-label')||e.getAttribute('aria-labelledby')||(e.id&&document.querySelector('label[for="'+e.id+'"]'))||e.closest('label'))return;let t='',p=e.previousElementSibling;while(p&&!t){if(p.tagName==='LABEL')t=p.textContent.trim();p=p.previousElementSibling}if(!t)t=e.placeholder||e.title||'';if(t)e.setAttribute('aria-label',t.replace(/\s+/g,' ').slice(0,80))})};let tm;try{new MutationObserver(()=>{clearTimeout(tm);tm=setTimeout(f,250)}).observe(document.body,{childList:true,subtree:true})}catch(e){}f()})();
 /* ===== upgrade Essencial → Premium: valor proporcional ao que falta, vencimento mantido ===== */
 const upR=n=>'R$ '+Number(n).toFixed(2).replace('.',',');
-const upPer=p=>p==='anual'?'anual':p==='semestral'?'de 6 meses':'mensal';
+const upPer=p=>/^meses_\d+$/.test(p||'')?'de '+p.slice(6)+' meses':p==='anual'?'anual':p==='semestral'?'de 6 meses':'mensal';
 let UPT=null;
 function upModal(html){let o=document.getElementById('upm');if(!o){o=document.createElement('div');o.id='upm';o.className='lkm';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.onclick=e=>{if(e.target===o)upFecha()};document.body.appendChild(o)}o.innerHTML=`<div class="lkb">${html}</div>`}
 function upFecha(){clearInterval(UPT);UPT=null;const o=document.getElementById('upm');if(o)o.remove()}
@@ -1579,7 +1580,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden&&T==='pers
 let INI={atu:[],vot:{ativa:false},ren:null},INIALL=false;
 const iniData=d=>{const s=String(d||'');return /^\d{4}-\d{2}-\d{2}/.test(s)?s.slice(8,10)+'/'+s.slice(5,7)+'/'+s.slice(0,4):s};
 const rnDias=()=>{if(!MP||!MP.vence)return null;const t=new Date(MP.vence).getTime();return isNaN(t)?null:(t-Date.now())/864e5};
-const rnPer=p=>p==='anual'?'anual':p==='semestral'?'6 meses':'mensal';
+const rnPer=p=>/^meses_\d+$/.test(p||'')?p.slice(6)+' meses':p==='anual'?'anual':p==='semestral'?'6 meses':'mensal';
 const rnN=d=>d<1?'menos de 1 dia':Math.ceil(d)+(Math.ceil(d)>1?' dias':' dia');
 const renBtn=()=>{const d=rnDias();return d!==null&&d<=7?'<button type="button" class="plc-up plc-rn" onclick="renovaAbre()">🔄 Renovar plano</button>':''};
 function renAvisoH(){const r=INI.ren;if(!r||!r.possivel)return'';const d=r.dias_restantes;if(!(r.vencido||d<=7))return'';const crit=r.vencido||d<=3;
@@ -1607,11 +1608,13 @@ async function pInicio(){ $('#pn').innerHTML='<div class="sk" style="height:150p
   const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length,link=siteUrl()+'/'+SLUG,nn=novos.length;
   $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button></div></section>${renAvisoH()}<div id="ini_x">${iniPassosH()}${iniVotH()}${iniAtuH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
 /* --- renovar o plano (Pix) --- */
-async function renovaAbre(){document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">🔄</div><h3>Renovar plano</h3><p>Calculando…</p>');
-  try{const r=await sb.rpc('meu_renovar_orcamento');if(r.error)throw r.error;const q=r.data||{};
+let RNM=2;
+async function renovaAbre(n){if(typeof n==='number')RNM=Math.min(24,Math.max(2,n));else{document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">🔄</div><h3>Renovar plano</h3><p>Calculando…</p>')}
+  try{const r=await sb.rpc('meu_renovar_orcamento',{p_meses:RNM});if(r.error)throw r.error;const q=r.data||{};
     if(!q.possivel){upModal(`<div class="lki">ℹ️</div><h3>Renovação indisponível</h3><p>${esc(q.mensagem||'')}</p><button type="button" class="btn red" onclick="upFecha()">Entendi</button>`);return}
-    const nm=String(q.plano).charAt(0).toUpperCase()+String(q.plano).slice(1);
-    upModal(`<div class="lki">🔄</div><h3>Renovar plano</h3><p>${q.vencido?'Seu plano venceu em':'Seu plano vence em'} <b>${esc(fdhv(q.vence))}</b>. ${q.vencido?'Ao pagar, o seu site volta ao ar.':'O novo prazo <b>soma ao que ainda falta</b>.'}</p><div class="rn-ops">${(q.opcoes||[]).map(o=>`<button type="button" class="rn-op${o.periodo===q.periodo_atual?' atual':''}" onclick="renovaPix('${esc(o.periodo)}')"><b>${esc(o.rotulo)}</b><span>${upR(o.preco)}</span><small>Novo vencimento: ${esc(fdhv(o.novo_vence))}</small></button>`).join('')}</div><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Agora não</button>`)}
+    const op=o=>o.livre?`<div class="rn-op rn-lv${/^meses_/.test(q.periodo_atual||'')?' atual':''}"><b>Escolher meses</b><div class="rn-mz" role="group" aria-label="Quantos meses"><button type="button" onclick="renovaAbre(RNM-1)" aria-label="Menos um mês" ${RNM<=2?'disabled':''}>−</button><strong>${RNM} meses</strong><button type="button" onclick="renovaAbre(RNM+1)" aria-label="Mais um mês" ${RNM>=24?'disabled':''}>+</button></div><span>${upR(o.preco)}</span><small>${RNM} × ${upR(q.mensal||o.preco/RNM)}, sem desconto · de 2 a 24 meses</small><small>Novo vencimento: ${esc(fdhv(o.novo_vence))}</small><button type="button" class="btn red rn-pg" onclick="renovaPix('${esc(o.periodo)}')">Renovar ${RNM} meses por ${upR(o.preco)}</button></div>`
+      :`<button type="button" class="rn-op${o.periodo===q.periodo_atual?' atual':''}" onclick="renovaPix('${esc(o.periodo)}')"><b>${esc(o.rotulo)}</b><span>${upR(o.preco)}</span><small>Novo vencimento: ${esc(fdhv(o.novo_vence))}</small></button>`;
+    upModal(`<div class="lki">🔄</div><h3>Renovar plano</h3><p>${q.vencido?'Seu plano venceu em':'Seu plano vence em'} <b>${esc(fdhv(q.vence))}</b>. ${q.vencido?'Ao pagar, o seu site volta ao ar.':'O novo prazo <b>soma ao que ainda falta</b>.'}</p><div class="rn-ops">${(q.opcoes||[]).map(op).join('')}</div><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Agora não</button>`)}
   catch(e){upModal(`<div class="lki">⚠️</div><h3>Não foi possível calcular</h3><p>${esc((e&&e.message)||e)}</p><button type="button" class="btn red" onclick="upFecha()">Fechar</button>`)}}
 async function renovaPix(per){upModal('<div class="lki">💸</div><h3>Gerando o Pix…</h3><p>Aguarde um instante.</p>');
   try{const r=await sb.rpc('meu_renovar_criar',{p_periodo:per});if(r.error)throw r.error;const d=r.data||{};
