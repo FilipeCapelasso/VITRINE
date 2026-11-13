@@ -2535,7 +2535,7 @@ function ldView(){
   $('#pn').innerHTML=`<div class="pdf">${fl.map(o=>`<button class="${LF===o[0]?'on':''}" onclick="LF='${o[0]}';ldView()">${esc(o[1])}</button>`).join('')}</div>`+
   (f.map(l=>{const k=l.status||'novo',w=wlk(l.telefone);return `<div class="pd"><div class="pdh"><div><b>${esc(l.nome||'Cliente')}</b><small>${esc(l.moto_nome||'Moto não informada')} · ${new Date(l.created_at).toLocaleString('pt-BR')}</small></div><span class="pdb ${st?(k==='novo'?'s-novo':'s-concluido'):''}">${esc(TL[l.tipo]||l.tipo||'')}${st?' · '+(k==='novo'?'Novo':'Atendido'):''}</span></div>
   <div class="pdg">${dr('Telefone',l.telefone)}${dr('CPF',l.cpf)}${dr('Nascimento',l.nascimento)}${dr('Entrada',l.entrada)}${dr('Habilitação',l.habilitacao)}</div>${l.detalhes?`<details><summary>Detalhes</summary><pre>${esc(l.detalhes)}</pre></details>`:''}
-  <div class="pda">${w?`<a class="btn red" target="_blank" rel="noopener" href="${w}">WhatsApp</a>`:''}${st?`<button class="btn" onclick="ldSt('${l.id}','${k==='novo'?'atendido':'novo'}')">${k==='novo'?'Marcar como atendido':'Reabrir'}</button>`:''}<button class="btn" onclick="delL('${l.id}')">Excluir</button></div></div>`}).join('')||'<p class="mu">Nenhum contato aqui ainda.</p>')}
+  <div class="pda">${w?`<a class="btn red" target="_blank" rel="noopener" href="${w}">WhatsApp</a>`:''}${ccBtns('contato',l.id)}${st?`<button class="btn" onclick="ldSt('${l.id}','${k==='novo'?'atendido':'novo'}')">${k==='novo'?'Marcar como atendido':'Reabrir'}</button>`:''}<button class="btn" onclick="delL('${l.id}')">Excluir</button></div></div>`}).join('')||'<p class="mu">Nenhum contato aqui ainda.</p>')}
 async function ldSt(id,v){const{error}=await sb.from('leads').update({status:v}).eq('id',id);if(error)return toast('Erro: '+error.message);const l=LD.find(x=>x.id===id);if(l)l.status=v;ldView()}
 /* ===== VENDAS: tudo que os clientes preencheram NESTE site (o banco só entrega as linhas deste vendedor) ===== */
 let VD=[],VF='todos',VQ='';
@@ -2853,9 +2853,307 @@ function vdCard(x){
   const s=x._s,k=x.status||'novo',stl=VST[s],nm=x.nome_completo||x.nome||'Cliente',w=wlk(x.telefone),f=faseDe(x),ph=PB[f-1],novo=vdNovo(x),pg=vdPagTxt(x),rasc=s==='rascunho'||(s==='chat'&&!x.completo);
   return `<article class="cl ${novo?'is-new':''}" style="--fc:${ph.cor}"><div class="cl-h"><div class="cl-av">${esc(nm.trim().charAt(0).toUpperCase())}</div><div class="cl-m"><b>${esc(nm)}${novo?'<span class="nw">novo</span>':''}</b><small>${esc(x.moto_nome||'Moto não informada')}${x.cor?' · '+esc(x.cor):''}${pg?' · '+esc(pg):''}</small><small class="t">${esc(VSRC[s])} · ${ago(x.created_at)}${rasc?(x.concluido==='sim'?' · <u class="okc">terminou o chat</u>':' · <u>não concluiu o envio</u>'):''}</small></div></div>
   <div class="cl-f"><label>Fase da venda<select class="fs" onchange="vdFase('${s}','${x.id}',this.value)">${PB.map(p=>`<option value="${p.n}" ${p.n===f?'selected':''}>${p.n}. ${p.nome}</option>`).join('')}</select></label>${('status' in x&&Object.keys(stl).length)?`<label>Situação<select onchange="vdSt('${s}','${x.id}',this.value)">${Object.keys(stl).map(o=>`<option value="${o}" ${k===o?'selected':''}>${stl[o]}</option>`).join('')}</select></label>`:''}</div>
-  <div class="cl-a">${w?`<a class="btn wa sm" target="_blank" rel="noopener" href="${w}">WhatsApp</a>`:''}<button class="btn red sm" onclick="vdMsg('${s}','${x.id}')">✉ Mensagem</button></div>
+  <div class="cl-a">${w?`<a class="btn wa sm" target="_blank" rel="noopener" href="${w}">WhatsApp</a>`:''}<button class="btn red sm" onclick="vdMsg('${s}','${x.id}')">✉ Mensagem</button>${ccBtns(s,x.id)}</div>
   <details class="cl-d" data-k="${s}:${x.id}:d"${VOPEN.has(s+':'+x.id+':d')?' open':''}><summary>Ver todos os dados</summary><div class="pdg">${vdCampos(x).map(a=>dr(a[0],a[1])).join('')}</div>${x.detalhes?`<details data-k="${s}:${x.id}:t"${VOPEN.has(s+':'+x.id+':t')?' open':''}><summary>Detalhes</summary><pre>${esc(x.detalhes)}</pre></details>`:''}${x.mensagem?`<details data-k="${s}:${x.id}:m"${VOPEN.has(s+':'+x.id+':m')?' open':''}><summary>Mensagem enviada ao WhatsApp</summary><pre>${esc(x.mensagem)}</pre></details>`:''}<div class="cl-x"><button class="btn sm" onclick="vdCp('${s}','${x.id}')">Copiar dados</button><button class="btn sm" onclick="vdDel('${s}','${x.id}')">Excluir</button></div></details></article>`}
 const vdOpts=()=>`<optgroup label="Mensagens prontas">${VAS.map(a=>`<option value="${a[0]}">${esc(a[1])}</option>`).join('')}</optgroup>`;
+
+/* ===== CALCULADORA DE CONSÓRCIO + COMPARAR PLANOS (por cliente) =====
+   Usa só dados reais do catálogo do vendedor (motos.planos). Nada de valor inventado.
+   Histórico fica em public.simulacoes (RLS: só o vendedor dono do cliente). */
+const CALC_REGA=['AC','AM','RO','RR'];
+const calcTabela=()=>CALC_REGA.includes(String(V.uf||'').toUpperCase())?'Acre, Amazonas, Rondônia e Roraima':'Tabela unificada';
+const cSp=t=>String(t==null?'':t).replace(/[  ]/g,' ');
+const cBrl=n=>cSp(brl(n));
+const cPct=n=>(isFinite(n)?n:0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+const cDec=n=>(isFinite(n)?n:0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+/* número digitado ("21.570,00", "R$ 1.500", "12,5"): vazio ou inválido vira NaN (nunca quebra o cálculo) */
+function cNum(v){let s=String(v==null?'':v).replace(/[R$\s%]/g,'');if(!s)return NaN;
+  if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');
+  const n=Number(s);return isFinite(n)?n:NaN}
+/* regra de cálculo, em centavos para não perder precisão. Retorna {ok:false,erros} ou {ok:true,...} sem NaN/Infinity */
+function calcCore(o){
+  const E=[],cr=+o.credito,pa=+o.parcela,pz=Math.trunc(+o.prazo),rs=Math.trunc(+o.restantes);
+  const lance=o.lance==null||o.lance===''||!isFinite(+o.lance)?0:+o.lance;
+  if(!(cr>0))E.push('Escolha a moto: o valor do crédito vem do catálogo.');
+  if(!(pa>0))E.push('Escolha o plano e o prazo para ver o valor da parcela.');
+  if(!(pz>=2))E.push('Escolha o prazo original.');
+  else if(!(rs>=2)||rs>pz)E.push('As parcelas restantes devem ficar entre 2 e o prazo original.');
+  if(lance<0)E.push('O lance não pode ser negativo.');
+  if(cr>0&&lance>cr)E.push('O lance não pode passar do valor do crédito.');
+  if(E.length)return{ok:false,erros:E};
+  const lc=Math.round(lance*100),pc=Math.round(pa*100),demais=rs-2;
+  let q=0,red=0,sobra=0;
+  if(lc>0){
+    if(o.quitar){q=Math.min(Math.floor(lc/pc),demais);sobra=(lc-q*pc)/100}
+    else if(demais>0){red=Math.min(Math.floor(lc/demais),pc)/100}
+  }
+  const dm=demais-q,val=Math.max(0,Math.round(pc-Math.round(red*100)))/100;
+  return{ok:true,credito:cr,parcela:pa,prazo:pz,restantes:rs,lance:lc/100,pct:Math.round(lc*10000/Math.round(cr*100))/100,quitar:!!o.quitar&&lc>0,
+    p1:pa,p2:pa,demais:dm,demaisValor:val,quitadas:q,reducao:red,sobra,aviso:(o.quitar&&lc>0&&q===0)?'O lance é menor que uma parcela: não quita parcelas do final.':''}}
+/* dados do catálogo */
+const cPlanos=m=>((m&&m.planos)||[]).filter(p=>p&&+p.parcelas>=2&&+p.valor>0).sort((a,b)=>a.parcelas-b.parcelas);
+const cMotosOk=()=>M.filter(m=>cPlanos(m).length);
+const cNm=t=>nzs(t).replace(/\bhonda\b/g,' ').replace(/[^a-z0-9]+/g,' ').trim();
+const cMotoDe=x=>{const L=cMotosOk();if(x.moto_id){const a=L.find(m=>m.id===x.moto_id);if(a)return a}
+  const n=cNm(x.moto_nome||'');if(!n)return null;
+  return L.find(m=>cNm(m.nome)===n)||L.find(m=>{const k=cNm(m.nome);return k.length>=3&&(n.startsWith(k+' ')||k.startsWith(n+' '))})||null};
+const cCredito=m=>{const p=cPlanos(m).find(p=>+p.credito>0);return p?+p.credito:0};
+const cTemSS=m=>cPlanos(m).some(p=>+p.valor_sem_seguro>0);
+const cParcela=(m,prazo,ss)=>{const p=cPlanos(m).find(p=>+p.parcelas===+prazo);if(!p)return 0;const v=ss&&+p.valor_sem_seguro>0?+p.valor_sem_seguro:+p.valor;return v>0?v:0};
+const cCliente=(s,id)=>(typeof VD!=='undefined'&&VD.find(o=>o.id===id&&o._s===s))||(s==='contato'&&typeof LD!=='undefined'?(LD.find(o=>o.id===id)&&{...LD.find(o=>o.id===id),_s:'contato'}):null)||null;
+const cNomeCli=x=>(x.nome_completo||x.nome||'').trim();
+const cHoje=()=>new Date().toLocaleDateString('pt-BR');
+const cPlanoTxt=ss=>ss?'Sem seguro prestamista':'Com seguro prestamista';
+/* ---------- estilo (reaproveita o modal .vdm/.cmp das mensagens) ---------- */
+(function(){if(document.getElementById('calc-css'))return;const s=document.createElement('style');s.id='calc-css';s.textContent=`
+.cl-a .cc-b{display:inline-flex;align-items:center;gap:6px}
+.cmp.calc{font-size:15px;letter-spacing:0;line-height:1.4}.calc .cmp-l{display:block}.calc .cmp-h b{letter-spacing:0;font-size:16px;color:#17171c}.calc .cmp-h small{letter-spacing:0;font-size:12.5px;margin:2px 0 0}
+.cl-a .cc-b svg{width:15px;height:15px;flex:none}
+.cmp.calc{width:min(760px,100%)}.cmp.cc-w{width:min(1040px,100%)}
+.calc .cc-g{display:grid;grid-template-columns:1fr 1fr;gap:6px 14px}.calc .cc-g .full{grid-column:1/-1}
+.calc input[type=text],.calc input[type=tel]{width:100%;box-sizing:border-box;border:1px solid #dcdce6;border-radius:13px;padding:12px 13px;font:15px/1.4 Inter,system-ui,sans-serif;background:#fff;color:#17171c}
+.calc input[readonly]{background:#f4f5f9;color:#3a3a48}
+.calc input:focus{outline:0;border-color:var(--r);box-shadow:0 0 0 3px color-mix(in srgb,var(--r) 12%,transparent)}
+.calc select:disabled{background:#f4f5f9;color:#7a7a88}
+.calc .cc-ck{display:flex;gap:10px;align-items:flex-start;margin:10px 0 2px;font-size:14px;line-height:1.4}.calc .cc-ck input{width:20px;height:20px;margin-top:1px;flex:none}
+.calc .cc-er{background:#fff4f4;border:1px solid #f5c2c2;color:#8a1c1c;border-radius:12px;padding:10px 12px;font-size:13.5px;margin-top:10px}.calc .cc-er ul{margin:4px 0 0 18px;padding:0}
+.calc .cc-av{background:#fff9e8;border:1px solid #f1dd9b;color:#6b5200;border-radius:12px;padding:9px 12px;font-size:13px;margin-top:8px}
+.calc .cc-rs{margin-top:14px;border:1px solid #e6e6ee;border-radius:16px;overflow:hidden}
+.calc .cc-rs>div{display:flex;justify-content:space-between;gap:14px;padding:10px 14px;border-bottom:1px solid #f0f0f5;font-size:14.5px}.calc .cc-rs>div:last-child{border-bottom:0}
+.calc .cc-rs b{text-align:right}.calc .cc-rs .hl{background:#fafafc}.calc .cc-rs .ef{display:block;color:#3a3a48;background:#f4f8f4}
+.calc .cc-hs{margin-top:14px}.calc .cc-hs summary{cursor:pointer;font-weight:700;font-size:13.5px}
+.calc .cc-hi{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f0f0f5;font-size:13px}.calc .cc-hi small{display:block;color:#6a6a78}
+.calc .cc-ld{display:inline-block;width:14px;height:14px;border:2px solid #cfd2dc;border-top-color:var(--r);border-radius:50%;animation:ccsp .7s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes ccsp{to{transform:rotate(1turn)}}
+.calc .cc-cols{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:12px}
+.calc .cc-col{border:1px solid #e3e3ec;border-radius:16px;padding:12px;background:#fcfcfe;display:flex;flex-direction:column;gap:4px}
+.calc .cc-col h4{margin:0 0 4px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.calc .cc-col .cmp-l{margin:6px 0 1px}.calc .cc-col select,.calc .cc-col input{padding:9px 10px;font-size:14px;border-radius:11px}
+.calc .cc-tb{margin-top:14px;overflow:auto;border:1px solid #e6e6ee;border-radius:16px}
+.calc table.cc-t{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.calc .cc-t th,.calc .cc-t td{padding:9px 12px;border-bottom:1px solid #f0f0f5;text-align:right;vertical-align:top}
+.calc .cc-t th:first-child,.calc .cc-t td:first-child{text-align:left;position:sticky;left:0;background:#fff;font-weight:600;color:#4a4a58;min-width:150px}
+.calc .cc-t thead th{background:#fafafc;font-size:13px}.calc .cc-t tr:last-child td{border-bottom:0}
+.calc .cc-t td.df{background:#fff8e6}.calc .cc-t td.bt{background:#eefaf0;font-weight:700}.calc .cc-t td small{display:block;color:#7a6200;font-weight:500;font-size:11.5px}.calc .cc-t td.bt small{color:#1c7a34}
+.calc .cc-x{margin-top:12px}.calc .cc-x textarea{min-height:200px}
+@media(max-width:700px){.calc .cc-g{grid-template-columns:1fr}.calc .cc-cols{grid-template-columns:1fr}}
+`;document.head.appendChild(s)})();
+const CC_IC={calc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 7h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg>',cmp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M17 4v16M3 8l4-4 4 4M13 16l4 4 4-4"/></svg>'};
+const ccBtns=(s,id)=>`<button type="button" class="btn sm cc-b" onclick="calcAbre('${s}','${id}')" title="Calcular o consórcio deste cliente">${CC_IC.calc}Calcular</button><button type="button" class="btn sm cc-b" onclick="cmpAbre('${s}','${id}')" title="Comparar planos para este cliente">${CC_IC.cmp}Comparar</button>`;
+/* ---------- histórico ---------- */
+async function ccHist(s,id,el,onOpen){
+  if(!el)return;try{const r=await sb.from('simulacoes').select('id,tipo,dados,created_at').eq('origem',s).eq('cliente_id',id).order('created_at',{ascending:false}).limit(8);
+    if(r.error||!r.data||!r.data.length){el.innerHTML='';return}
+    el.innerHTML=`<details class="cc-hs"><summary>Propostas anteriores deste cliente (${r.data.length})</summary>${r.data.map((h,i)=>{const d=h.dados||{},c=d.cols||[d];const t=h.tipo==='comparacao'?`Comparação · ${c.length} opções`:`${esc(d.motoNome||'Simulação')} · ${esc(d.plano||'')} ${d.prazo?d.prazo+'x':''}`;
+      return `<div class="cc-hi"><div><b>${t}</b><small>${new Date(h.created_at).toLocaleString('pt-BR')}${d.parcela?' · parcela '+cBrl(d.parcela):''}${d.lance>0?' · lance '+cBrl(d.lance):''}</small></div>${onOpen?`<button type="button" class="btn sm" onclick="${onOpen}(${i})">Reabrir</button>`:''}</div>`}).join('')}</details>`;
+    el._h=r.data}catch(e){el.innerHTML=''}}
+async function ccSalva(s,x,tipo,dados){
+  try{const r=await sb.from('simulacoes').insert({vendedor_id:V.id,origem:s,cliente_id:x.id,cliente_nome:cNomeCli(x)||null,tipo,dados}).select('id').single();
+    if(r.error)throw r.error;return true}catch(e){toast('Cálculo feito, mas não consegui guardar no histórico: '+((e&&e.message)||e));return false}}
+/* ---------- texto da proposta ---------- */
+function ccObs(ss){return `*Observações:*\n*Valor da parcela pode variar de acordo com o aumento do bem.\n**Este orçamento pode sofrer alterações sem aviso prévio, conforme alteração na tabela de consórcio e/ou disponibilidade de cotas.\n***Oferta de lance não garante a contemplação.\n****Este é o plano ${ss?'sem':'com'} seguro prestamista, consulte opções ${ss?'com':'sem'} seguro prestamista.`}
+function ccAssin(){const l=[(V.nome||'').trim(),V.whatsapp?cdZap(V.whatsapp):'',V.instagram?'@'+String(V.instagram).replace(/^@|.*instagram\.com\//g,'').replace(/\/$/,''):'',(V.concessionaria||V.empresa||'').trim()].filter(Boolean);return l.join('\n')}
+function ccEfeito(r){if(r.lance<=0)return'Sem lance informado.';if(r.quitar)return r.quitadas>0?`Seu lance quitará ${r.quitadas} parcela(s) do final do plano.`:'O lance é menor que uma parcela: não quita parcelas do final.';return r.reducao>0?`Seu lance reduzirá ${cBrl(r.reducao)} de cada parcela.`:'Seu lance não altera o valor das parcelas.'}
+function ccTexto(S,r){
+  const nome=(S.nome||'').trim().split(' ')[0];
+  return [`Olá${nome?', '+nome:''}! Confira as condições para sua ${S.motoNome}:`,'',
+   `*Moto:* ${S.motoNome}`,`*Valor do crédito:* ${cBrl(r.credito)}`,`*Plano:* ${S.cota} · ${cPlanoTxt(S.ss)} · ${r.prazo}x${r.restantes!==r.prazo?` (${r.restantes} restantes)`:''}`,
+   `*Lance:* ${r.lance>0?cBrl(r.lance)+' ('+cPct(r.pct)+')':'sem lance'}`,
+   `*1ª parcela/HOJE:* ${cBrl(r.p1)}`,`*2ª parcela/Próximo vencimento:* ${cBrl(r.p2)}`,
+   ...(r.demais>0?[`*${r.demais} parcelas de* ${cBrl(r.demaisValor)}`]:[]),'',ccEfeito(r),'',ccObs(S.ss),'','Agora me diz, esse é o plano ideal pra você, certo?','',ccAssin(),`Data: ${cHoje()}`].join('\n')}
+/* ---------- imagem da proposta ---------- */
+function cWrap(x,t,w){const out=[];let l='';String(t).split(/\s+/).forEach(p=>{const n=l?l+' '+p:p;if(x.measureText(n).width>w&&l){out.push(l);l=p}else l=n});if(l)out.push(l);return out}
+async function ccCabeca(x,W){
+  const ft=await cdImg(V.foto_url,300);
+  const g=x.createLinearGradient(0,0,W,200);g.addColorStop(0,'#15151d');g.addColorStop(1,'#5a0d14');x.fillStyle=g;x.fillRect(0,0,W,200);x.fillStyle='#d90f24';x.fillRect(0,200,W,8);
+  x.beginPath();x.arc(130,100,72,0,Math.PI*2);x.fillStyle='#fff';x.fill();
+  x.save();x.beginPath();x.arc(130,100,66,0,Math.PI*2);x.clip();
+  if(ft){const s=Math.max(132/ft.width,132/ft.height);x.drawImage(ft,130-ft.width*s/2,100-ft.height*s/2,ft.width*s,ft.height*s)}else{x.fillStyle='#d90f24';x.fillRect(60,30,140,140);x.fillStyle='#fff';x.font=`800 64px ${cdFam}`;x.textAlign='center';x.fillText((V.nome||'V').trim().charAt(0).toUpperCase(),130,124);x.textAlign='left'}
+  x.restore();
+  x.fillStyle='#fff';cdFit(x,(V.nome||'').trim(),760,52,800,30);x.fillText((V.nome||'').trim(),230,88);
+  x.fillStyle='#ffd9dc';x.font=`600 30px ${cdFam}`;const sub=[V.whatsapp?cdZap(V.whatsapp):'',(V.concessionaria||V.empresa||'').trim()].filter(Boolean).join('  ·  ');cdFit(x,sub,800,30,600,22);x.fillText(sub,230,134)}
+async function ccImgProposta(S,r){
+  const cv=document.createElement('canvas'),W=1080,H=1350;cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  const m=M.find(o=>o.id===S.motoId),im=await cdImg(m?img0(m):'',1000);try{if(document.fonts&&document.fonts.ready)await document.fonts.ready}catch(e){}
+  x.fillStyle='#f4f5f9';x.fillRect(0,0,W,H);await ccCabeca(x,W);
+  x.textAlign='center';x.fillStyle='#14141c';x.font=`800 44px ${cdFam}`;x.fillText('Proposta de consórcio',W/2,282);
+  x.fillStyle='#5a5a68';x.font=`600 30px ${cdFam}`;const nm=(S.nome||'').trim();x.fillText(nm?`Preparada para ${nm}`:'Condições para a sua moto',W/2,326);
+  if(im){const bw=560,bh=330,s=Math.min(bw/im.width,bh/im.height);x.drawImage(im,W/2-im.width*s/2,350+(bh-im.height*s)/2,im.width*s,im.height*s)}
+  x.fillStyle='#14141c';cdFit(x,S.motoNome,940,52,800,30);x.fillText(S.motoNome,W/2,730);
+  x.fillStyle='#5a5a68';x.font=`600 30px ${cdFam}`;x.fillText(`Valor do crédito: ${cBrl(r.credito)}`,W/2,776);x.textAlign='left';
+  const rows=[['Plano',`${S.cota} · ${r.prazo}x · ${S.ss?'sem':'com'} seguro`],['Lance',r.lance>0?`${cBrl(r.lance)} (${cPct(r.pct)})`:'Sem lance'],['1ª parcela / hoje',cBrl(r.p1)],['2ª parcela / próximo vencimento',cBrl(r.p2)]];
+  if(r.demais>0)rows.push([`${r.demais} parcelas de`,cBrl(r.demaisValor)]);
+  const rh=62,y0=806;x.fillStyle='#fff';cdRr(x,60,y0,960,rows.length*rh+16,22);x.fill();
+  rows.forEach((a,i)=>{const y=y0+8+i*rh;if(i){x.fillStyle='#eeeef3';x.fillRect(90,y,900,2)}x.fillStyle='#5a5a68';x.font=`600 28px ${cdFam}`;x.fillText(a[0],90,y+40);x.fillStyle='#14141c';x.font=`800 30px ${cdFam}`;x.textAlign='right';x.fillText(a[1],990,y+40);x.textAlign='left'});
+  let y=y0+rows.length*rh+52;x.fillStyle='#14141c';x.font=`700 28px ${cdFam}`;x.textAlign='center';cWrap(x,ccEfeito(r),900).forEach(l=>{x.fillText(l,W/2,y);y+=36});
+  x.fillStyle='#6a6a78';x.font=`500 21px ${cdFam}`;y+=6;cWrap(x,`Valor da parcela pode variar de acordo com o aumento do bem. Este orçamento pode sofrer alterações sem aviso prévio, conforme alteração na tabela de consórcio e/ou disponibilidade de cotas. Oferta de lance não garante a contemplação. Este é o plano ${S.ss?'sem':'com'} seguro prestamista, consulte opções ${S.ss?'com':'sem'} seguro prestamista.`,940).forEach(l=>{if(y<H-40){x.fillText(l,W/2,y);y+=28}});
+  x.fillStyle='#14141c';x.font=`700 24px ${cdFam}`;x.fillText(`${(V.nome||'').trim()} · ${V.whatsapp?cdZap(V.whatsapp):''} · ${cHoje()}`,W/2,H-30);x.textAlign='left';
+  return cv}
+const ccBlob=cv=>new Promise((ok,no)=>cv.toBlob(b=>b?ok(b):no(new Error('imagem vazia')),'image/png'));
+async function ccBaixa(tipo){
+  const g=window.CCX;if(!g||!g.build)return;toast('Gerando a imagem…');
+  try{const cv=await g.build(),b=await ccBlob(cv),nome=`${tipo}-${(g.nome||'cliente').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'cliente'}.png`;
+    const f=new File([b],nome,{type:'image/png'});
+    if(CD_SH&&g.share){try{await navigator.share({files:[f],text:''});return}catch(e){if(e&&e.name==='AbortError')return}}
+    const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);toast('Imagem baixada: '+nome)}
+  catch(e){toast('Não consegui gerar a imagem: '+((e&&e.message)||e))}}
+/* ====================== CALCULAR ====================== */
+let CS=null;
+function calcAbre(s,id){
+  const x=cCliente(s,id);if(!x)return toast('Cliente não encontrado');
+  if(typeof vdFecha==='function')vdFecha();
+  const m=cMotoDe(x),lv=cNum(x.lance_valor);
+  CS={s,x,motoId:m?m.id:'',nome:cNomeCli(x),tel:x.telefone||'',cota:'Nova',ss:false,prazo:0,restantes:0,lanceR:lv>0?cDec(lv):'',lanceP:'',quitar:false,res:null};
+  /* prazo: se a parcela do pedido bate com um plano do catálogo, já vem selecionado */
+  if(m){const pv=cNum(x.parcela);if(pv>0){const p=cPlanos(m).find(p=>Math.abs(+p.valor-pv)<.011||Math.abs(+p.valor_sem_seguro-pv)<.011);if(p){CS.prazo=+p.parcelas;CS.restantes=+p.parcelas;CS.ss=!(Math.abs(+p.valor-pv)<.011)}}}
+  ccPctDeR();CS.hist=1;
+  const d=document.createElement('div');d.id='vdm';d.className='vdm';d.onclick=e=>{if(e.target===d)vdFecha()};
+  d.innerHTML=`<div class="cmp calc" role="dialog" aria-label="Calculadora de consórcio"><header class="cmp-h"><div class="cl-av" style="--fc:#d90f24">${esc((CS.nome||'C').charAt(0).toUpperCase())}</div><div><b>Calculadora de consórcio</b><small>${esc(CS.nome||'Cliente')} · ${esc(x.moto_nome||'moto não informada')}</small></div></header><div class="cmp-b" id="cc_b"></div><footer class="cmp-f"><button type="button" class="btn red" id="cc_go" onclick="calcRoda()">Calcular</button><button type="button" class="btn" onclick="vdFecha()">Fechar</button><p class="cmp-n">Valores do catálogo do seu site (${esc(calcTabela())}).</p></footer></div>`;
+  document.body.appendChild(d);calcForm();ccHist(s,x.id,document.getElementById('cc_hist'),'calcReabre')}
+function ccPctDeR(){const m=M.find(o=>o.id===CS.motoId),c=m?cCredito(m):0,r=cNum(CS.lanceR);CS.lanceP=c>0&&r>0?cDec(r*100/c):''}
+function calcForm(){
+  const m=M.find(o=>o.id===CS.motoId),L=cMotosOk(),pls=m?cPlanos(m):[],c=m?cCredito(m):0,ss=m&&cTemSS(m);
+  const prazos=[...new Set(pls.map(p=>+p.parcelas))],rest=CS.cota==='Reposição'&&CS.prazo?Array.from({length:CS.prazo-1},(_,i)=>CS.prazo-i):[];
+  const par=m&&CS.prazo?cParcela(m,CS.prazo,CS.ss):0;
+  document.getElementById('cc_b').innerHTML=`<div class="cc-g">
+  <div class="full"><label class="cmp-l">Tabela</label><input type="text" readonly value="${esc(calcTabela())}"></div>
+  <div><label class="cmp-l" for="cc_n">Nome do cliente</label><input type="text" id="cc_n" value="${esc(CS.nome)}" oninput="CS.nome=this.value" autocomplete="off"></div>
+  <div><label class="cmp-l" for="cc_t">WhatsApp do cliente</label><input type="tel" id="cc_t" value="${esc(CS.tel)}" oninput="CS.tel=this.value" autocomplete="off"></div>
+  <div><label class="cmp-l" for="cc_m">Moto</label><select id="cc_m" onchange="CS.motoId=this.value;CS.prazo=0;CS.restantes=0;CS.ss=false;CS.res=null;ccPctDeR();calcForm()"><option value="">Selecione uma moto:</option>${L.map(o=>`<option value="${o.id}" ${o.id===CS.motoId?'selected':''}>${esc(o.nome)}</option>`).join('')}</select></div>
+  <div><label class="cmp-l">Valor do crédito</label><input type="text" readonly value="${c>0?cBrl(c):''}" placeholder="Escolha a moto"></div>
+  <div><label class="cmp-l" for="cc_c">Tipo de cota</label><select id="cc_c" onchange="CS.cota=this.value;CS.restantes=CS.prazo;CS.res=null;calcForm()"><option ${CS.cota==='Nova'?'selected':''}>Nova</option><option ${CS.cota==='Reposição'?'selected':''}>Reposição</option></select></div>
+  <div><label class="cmp-l" for="cc_p">Plano</label><select id="cc_p" ${m?'':'disabled'} onchange="CS.ss=this.value==='1';CS.res=null;calcForm()"><option value="0" ${CS.ss?'':'selected'}>Com seguro prestamista</option>${ss?`<option value="1" ${CS.ss?'selected':''}>Sem seguro prestamista</option>`:''}</select></div>
+  <div><label class="cmp-l" for="cc_z">Prazo original</label><select id="cc_z" ${m?'':'disabled'} onchange="CS.prazo=+this.value;CS.restantes=+this.value;CS.res=null;calcForm()"><option value="">Selecione um prazo</option>${prazos.map(z=>`<option value="${z}" ${z===CS.prazo?'selected':''}>${z}</option>`).join('')}</select></div>
+  <div><label class="cmp-l" for="cc_r">Parcelas restantes</label><select id="cc_r" ${CS.cota==='Reposição'&&CS.prazo?'':'disabled'} onchange="CS.restantes=+this.value;CS.res=null;calcForm()">${CS.prazo?(CS.cota==='Reposição'?rest:[CS.prazo]).map(z=>`<option value="${z}" ${z===CS.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione um prazo</option>'}</select></div>
+  <div class="full"><label class="cmp-l">Valor da parcela</label><input type="text" readonly value="${par>0?cDec(par):''}" placeholder="Escolha o plano e o prazo"></div>
+  <div><label class="cmp-l" for="cc_lr">Valor do lance em R$ <small>(opcional)</small></label><input type="text" id="cc_lr" inputmode="decimal" value="${esc(CS.lanceR)}" placeholder="0,00" oninput="ccLr(this)" onblur="ccFmt(this)"></div>
+  <div><label class="cmp-l" for="cc_lp">Valor do lance em % <small>(opcional)</small></label><input type="text" id="cc_lp" inputmode="decimal" value="${esc(CS.lanceP)}" placeholder="0,00" oninput="ccLp(this)" onblur="ccFmt(this)"></div>
+  </div>
+  <label class="cc-ck"><input type="checkbox" id="cc_q" ${CS.quitar?'checked':''} onchange="CS.quitar=this.checked;CS.res=null;ccRes()"><span>Quero usar o lance para quitar as parcelas do final do plano.</span></label>
+  <div id="cc_res"></div><div id="cc_hist"></div>`;
+  ccRes();if(CS.hist)ccHist(CS.s,CS.x.id,document.getElementById('cc_hist'),'calcReabre')}
+function ccLr(el){CS.lanceR=el.value;const m=M.find(o=>o.id===CS.motoId),c=m?cCredito(m):0,r=cNum(el.value);const p=document.getElementById('cc_lp');if(p){p.value=c>0&&r>0?cDec(r*100/c):'';CS.lanceP=p.value}CS.res=null;ccRes()}
+function ccLp(el){CS.lanceP=el.value;const m=M.find(o=>o.id===CS.motoId),c=m?cCredito(m):0,p=cNum(el.value);const r=document.getElementById('cc_lr');if(r){r.value=c>0&&p>0?cDec(Math.round(c*p)/100):'';CS.lanceR=r.value}CS.res=null;ccRes()}
+function ccFmt(el){const n=cNum(el.value);if(isFinite(n)&&n>0)el.value=cDec(n)}
+function ccEntrada(){const m=M.find(o=>o.id===CS.motoId);if(!m)return null;return{credito:cCredito(m),parcela:CS.prazo?cParcela(m,CS.prazo,CS.ss):0,prazo:CS.prazo,restantes:CS.restantes||CS.prazo,lance:cNum(CS.lanceR),quitar:CS.quitar}}
+function ccRes(){
+  const el=document.getElementById('cc_res');if(!el)return;
+  if(!CS.res){el.innerHTML='';return}
+  if(!CS.res.ok){el.innerHTML=`<div class="cc-er"><b>Falta completar:</b><ul>${CS.res.erros.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></div>`;return}
+  const r=CS.res,S=CS.snap;
+  el.innerHTML=`<div class="cc-rs"><div class="hl"><span>Valor do crédito</span><b>${cBrl(r.credito)}</b></div><div><span>Lance</span><b>${r.lance>0?cBrl(r.lance)+' ('+cPct(r.pct)+')':'sem lance'}</b></div><div><span>1ª parcela / hoje</span><b>${cBrl(r.p1)}</b></div><div><span>2ª parcela / próximo vencimento</span><b>${cBrl(r.p2)}</b></div>${r.demais>0?`<div><span>${r.demais} parcelas de</span><b>${cBrl(r.demaisValor)}</b></div>`:''}<div class="ef"><span>${esc(ccEfeito(r))}</span></div>${r.quitar&&r.quitadas>0&&r.sobra>0?`<div><span>Sobra do lance (não completa outra parcela)</span><b>${cBrl(r.sobra)}</b></div>`:''}</div>
+  ${r.aviso?`<div class="cc-av">${esc(r.aviso)}</div>`:''}
+  <div class="cc-x"><label class="cmp-l" for="cc_tx">Proposta para enviar <small>(você pode editar antes de enviar)</small></label><textarea id="cc_tx"></textarea></div>
+  <div class="cmp-f" style="padding:10px 0 0;border:0;background:none"><button type="button" class="btn red" onclick="calcZap()">Enviar no WhatsApp</button><button type="button" class="btn" onclick="calcCopia()">Copiar</button><button type="button" class="btn" onclick="ccBaixa('proposta')">${CD_SH?'Compartilhar imagem':'Baixar imagem'}</button><button type="button" class="btn" onclick="cmpAbre('${CS.s}','${CS.x.id}')">Comparar planos</button></div>`;
+  document.getElementById('cc_tx').value=ccTexto(S,r)}
+async function calcRoda(){
+  const e=ccEntrada();const btn=document.getElementById('cc_go');
+  if(!e){CS.res={ok:false,erros:['Escolha a moto do cliente.']};return ccRes()}
+  const r=calcCore(e);CS.res=r;
+  if(r.ok){const m=M.find(o=>o.id===CS.motoId);CS.snap={nome:CS.nome,motoId:m.id,motoNome:m.nome,cota:CS.cota,ss:CS.ss};
+    window.CCX={nome:CS.nome,share:true,build:()=>ccImgProposta(CS.snap,CS.res)};
+    if(btn){btn.disabled=true;btn.innerHTML='<span class="cc-ld"></span>Calculando…'}
+    ccRes();
+    await ccSalva(CS.s,CS.x,'calculo',{motoId:m.id,motoNome:m.nome,cota:CS.cota,ss:CS.ss,plano:cPlanoTxt(CS.ss),nome:CS.nome,tel:CS.tel,prazo:r.prazo,restantes:r.restantes,credito:r.credito,parcela:r.parcela,lance:r.lance,pct:r.pct,quitar:r.quitar,quitadas:r.quitadas,reducao:r.reducao,demais:r.demais,demaisValor:r.demaisValor,tabela:calcTabela()});
+    if(btn){btn.disabled=false;btn.textContent='Calcular'}
+    ccHist(CS.s,CS.x.id,document.getElementById('cc_hist'),'calcReabre');toast('Simulação pronta e salva no histórico')}
+  else ccRes()}
+function calcReabre(i){const el=document.getElementById('cc_hist'),h=el&&el._h&&el._h[i];if(!h||h.tipo!=='calculo')return toast('Esta é uma comparação: abra em Comparar');const d=h.dados||{};
+  if(!M.find(o=>o.id===d.motoId))return toast('A moto desta simulação não está mais no catálogo');
+  Object.assign(CS,{motoId:d.motoId,cota:d.cota||'Nova',ss:!!d.ss,prazo:+d.prazo||0,restantes:+d.restantes||+d.prazo||0,lanceR:d.lance>0?cDec(d.lance):'',quitar:!!d.quitar,res:null});ccPctDeR();calcForm();toast('Simulação carregada: confira os valores atuais e calcule de novo')}
+function calcCopia(){const t=document.getElementById('cc_tx').value;navigator.clipboard.writeText(t).then(()=>toast('Proposta copiada!'),()=>toast('Não foi possível copiar'))}
+function calcZap(){const t=document.getElementById('cc_tx').value,w=wlk(CS.tel);if(!w)return toast('Informe um WhatsApp válido do cliente. Use Copiar.');window.open(w+'&text='+encodeURIComponent(t),'_blank')}
+/* ====================== COMPARAR ====================== */
+let CP=null;
+function cmpNovaCol(m,prazo,ss){return{motoId:m?m.id:'',cota:'Nova',ss:!!ss,prazo:prazo||0,restantes:prazo||0,lanceR:''}}
+function cmpAbre(s,id){
+  const x=cCliente(s,id);if(!x)return toast('Cliente não encontrado');if(typeof vdFecha==='function')vdFecha();
+  const m=cMotoDe(x),pz=m?cPlanos(m).map(p=>+p.parcelas).sort((a,b)=>b-a):[],lv=cNum(x.lance_valor);
+  const base=pz.slice(0,3);while(base.length&&base.length<2)base.push(base[0]);
+  CP={s,x,nome:cNomeCli(x),tel:x.telefone||'',cols:(base.length?base:[0,0]).slice(0,3).map(z=>cmpNovaCol(m,z,false))};
+  if(lv>0)CP.cols.forEach(c=>c.lanceR=cDec(lv));
+  CP.hist=1;const d=document.createElement('div');d.id='vdm';d.className='vdm';d.onclick=e=>{if(e.target===d)vdFecha()};
+  d.innerHTML=`<div class="cmp calc cc-w" role="dialog" aria-label="Comparar planos de consórcio"><header class="cmp-h"><div class="cl-av" style="--fc:#d90f24">${esc((CP.nome||'C').charAt(0).toUpperCase())}</div><div><b>Comparar planos</b><small>${esc(CP.nome||'Cliente')} · ${esc(x.moto_nome||'moto não informada')} · ${esc(calcTabela())}</small></div></header><div class="cmp-b" id="cp_b"></div><footer class="cmp-f"><button type="button" class="btn red" onclick="cmpZap()">Enviar proposta no WhatsApp</button><button type="button" class="btn" onclick="cmpCopia()">Copiar</button><button type="button" class="btn" onclick="ccBaixa('comparacao')">${CD_SH?'Compartilhar imagem':'Baixar imagem'}</button><button type="button" class="btn" onclick="vdFecha()">Fechar</button></footer></div>`;
+  document.body.appendChild(d);cmpForm();ccHist(s,x.id,document.getElementById('cp_hist'),'cmpReabre')}
+function cmpCol(i){const c=CP.cols[i],m=M.find(o=>o.id===c.motoId),pls=m?cPlanos(m):[],prazos=[...new Set(pls.map(p=>+p.parcelas))].sort((a,b)=>a-b),L=cMotosOk(),
+  rest=c.cota==='Reposição'&&c.prazo?Array.from({length:c.prazo-1},(_,k)=>c.prazo-k):[c.prazo].filter(Boolean);
+  return `<div class="cc-col"><h4>Opção ${i+1}${CP.cols.length>2?`<button type="button" class="btn sm" onclick="cmpRm(${i})" aria-label="Remover opção ${i+1}">Remover</button>`:''}</h4>
+  <label class="cmp-l">Moto</label><select onchange="cmpSet(${i},'motoId',this.value,1)"><option value="">Selecione</option>${L.map(o=>`<option value="${o.id}" ${o.id===c.motoId?'selected':''}>${esc(o.nome)}</option>`).join('')}</select>
+  <label class="cmp-l">Tipo de cota</label><select onchange="cmpSet(${i},'cota',this.value,1)"><option ${c.cota==='Nova'?'selected':''}>Nova</option><option ${c.cota==='Reposição'?'selected':''}>Reposição</option></select>
+  <label class="cmp-l">Plano</label><select ${m?'':'disabled'} onchange="cmpSet(${i},'ss',this.value==='1',1)"><option value="0" ${c.ss?'':'selected'}>Com seguro prestamista</option>${m&&cTemSS(m)?`<option value="1" ${c.ss?'selected':''}>Sem seguro prestamista</option>`:''}</select>
+  <label class="cmp-l">Prazo original</label><select ${m?'':'disabled'} onchange="cmpSet(${i},'prazo',+this.value,1)"><option value="">Selecione</option>${prazos.map(z=>`<option value="${z}" ${z===c.prazo?'selected':''}>${z}x</option>`).join('')}</select>
+  <label class="cmp-l">Parcelas restantes</label><select ${c.cota==='Reposição'&&c.prazo?'':'disabled'} onchange="cmpSet(${i},'restantes',+this.value)">${rest.length?rest.map(z=>`<option value="${z}" ${z===c.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione o prazo</option>'}</select>
+  <label class="cmp-l">Lance em R$ <small>(opcional)</small></label><input type="text" inputmode="decimal" value="${esc(c.lanceR)}" placeholder="0,00" onchange="cmpSet(${i},'lanceR',this.value);ccFmt(this)"></div>`}
+function cmpForm(){
+  document.getElementById('cp_b').innerHTML=`<div class="cc-g"><div><label class="cmp-l" for="cp_n">Nome do cliente</label><input type="text" id="cp_n" value="${esc(CP.nome)}" oninput="CP.nome=this.value"></div><div><label class="cmp-l" for="cp_t">WhatsApp do cliente</label><input type="tel" id="cp_t" value="${esc(CP.tel)}" oninput="CP.tel=this.value"></div></div>
+  <div class="cc-cols" style="--n:${CP.cols.length}">${CP.cols.map((_,i)=>cmpCol(i)).join('')}</div>
+  <div class="cmp-f" style="padding:10px 0 0;border:0;background:none;gap:8px">${CP.cols.length<3?'<button type="button" class="btn sm" onclick="cmpAdd()">+ Adicionar opção</button>':''}<label class="cmp-n" style="flex:none;display:flex;gap:8px;align-items:center">Mesmo lance (R$) para todas: <input type="text" inputmode="decimal" style="width:130px;padding:8px 10px;border:1px solid #dcdce6;border-radius:11px" placeholder="0,00" onchange="cmpLanceTodos(this.value)"></label></div>
+  <div id="cp_res"></div><div id="cp_hist"></div>`;cmpRes();if(CP.hist)ccHist(CP.s,CP.x.id,document.getElementById('cp_hist'),'cmpReabre')}
+function cmpSet(i,k,v,re){const c=CP.cols[i];c[k]=v;
+  if(k==='motoId'||k==='ss'||k==='cota'){if(k==='motoId'){c.prazo=0;c.restantes=0;c.ss=false}else if(k==='cota')c.restantes=c.prazo;else{const m=M.find(o=>o.id===c.motoId);if(m&&c.ss&&!cTemSS(m))c.ss=false}}
+  if(k==='prazo')c.restantes=v;
+  if(re)cmpForm();else cmpRes()}
+function cmpAdd(){const b=CP.cols[0]||{};if(CP.cols.length<3){CP.cols.push({...cmpNovaCol(M.find(o=>o.id===b.motoId),0,false),lanceR:b.lanceR||''});cmpForm()}}
+function cmpRm(i){if(CP.cols.length>2){CP.cols.splice(i,1);cmpForm()}}
+function cmpLanceTodos(v){const n=cNum(v),t=isFinite(n)&&n>0?cDec(n):'';CP.cols.forEach(c=>c.lanceR=t);cmpForm()}
+function cmpCalc(c){const m=M.find(o=>o.id===c.motoId);if(!m)return{ok:false,erros:['Escolha a moto.']};
+  const r=calcCore({credito:cCredito(m),parcela:c.prazo?cParcela(m,c.prazo,c.ss):0,prazo:c.prazo,restantes:c.restantes||c.prazo,lance:cNum(c.lanceR),quitar:false});
+  if(r.ok){const q=calcCore({credito:r.credito,parcela:r.parcela,prazo:r.prazo,restantes:r.restantes,lance:r.lance,quitar:true});r.alt=q.ok?q:null}return r}
+/* linhas da comparação (a mesma tabela alimenta a tela, o texto e a imagem) */
+function cmpLinhas(){
+  const R=CP.cols.map(c=>{const r=cmpCalc(c),m=M.find(o=>o.id===c.motoId);return{c,m,r}});
+  const okR=R.filter(o=>o.r.ok),min=okR.length>1?Math.min(...okR.map(o=>o.r.demaisValor||o.r.parcela)):null,ref=okR[0];
+  const ln=(rot,f,dif)=>({rot,cel:R.map((o,i)=>{if(!o.r.ok)return{t:'—'};const v=f(o);return{t:v}}),dif});
+  const L=[
+   ln('Moto',o=>o.m.nome,1),ln('Valor do crédito',o=>cBrl(o.r.credito),1),ln('Tipo de cota',o=>o.c.cota,1),ln('Plano',o=>cPlanoTxt(o.c.ss),1),
+   ln('Prazo original',o=>o.r.prazo+'x',1),ln('Parcelas restantes',o=>String(o.r.restantes),1),
+   ln('Valor da parcela',o=>cBrl(o.r.parcela),1),
+   ln('Lance (R$)',o=>o.r.lance>0?cBrl(o.r.lance):'sem lance',1),ln('Lance (%)',o=>o.r.lance>0?cPct(o.r.pct):'—',1),
+   ln('Parcelas que o lance quita (no final)',o=>o.r.alt?String(o.r.alt.quitadas):'0',1),
+   ln('Redução da parcela (lance diluído)',o=>o.r.reducao>0?cBrl(o.r.reducao):'—',1)];
+  /* diferenças em relação à opção 1 e destaque da menor parcela */
+  L.forEach(l=>{l.cel.forEach((c,i)=>{if(i>0&&R[i].r.ok&&R[0].r.ok&&l.dif&&c.t!==l.cel[0].t)c.df=1})});
+  const par=L.find(l=>l.rot==='Valor da parcela');
+  if(par&&ref&&okR.length>1){par.cel.forEach((c,i)=>{const o=R[i];if(!o.r.ok)return;const d=o.r.parcela-R[0].r.parcela;if(i>0&&Math.abs(d)>=.005)c.n=(d>0?'+ ':'− ')+cBrl(Math.abs(d))+' vs opção 1';if(Math.abs(o.r.parcela-Math.min(...okR.map(z=>z.r.parcela)))<.005)c.bt=1})}
+  return{R,L}}
+function cmpRes(){
+  const el=document.getElementById('cp_res');if(!el)return;const{R,L}=cmpLinhas(),n=R.filter(o=>o.r.ok).length;
+  if(!n){el.innerHTML=`<div class="cc-er">Escolha a moto e o prazo de cada opção para comparar.${R.some(o=>!o.r.ok&&o.r.erros)?`<ul>${[...new Set(R.flatMap(o=>o.r.erros||[]))].map(e=>`<li>${esc(e)}</li>`).join('')}</ul>`:''}</div>`;window.CCX=null;return}
+  el.innerHTML=`<div class="cc-tb"><table class="cc-t"><thead><tr><th></th>${R.map((o,i)=>`<th>Opção ${i+1}</th>`).join('')}</tr></thead><tbody>${L.map(l=>`<tr><td>${esc(l.rot)}</td>${l.cel.map(c=>`<td class="${c.bt?'bt':c.df?'df':''}">${esc(c.t)}${c.n?`<small>${esc(c.n)}</small>`:''}${c.bt&&!c.n?'<small>menor parcela</small>':''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+  <p class="cmp-n" style="margin:8px 2px 0">Destaque amarelo = diferente da opção 1 · verde = menor parcela. A redução mostra o lance diluído nas parcelas; a linha de quitação mostra quantas parcelas do final ele quitaria.</p>
+  <div class="cc-x"><label class="cmp-l" for="cp_tx">Proposta comparativa <small>(você pode editar antes de enviar)</small></label><textarea id="cp_tx"></textarea></div>`;
+  document.getElementById('cp_tx').value=cmpTexto();
+  window.CCX={nome:CP.nome,share:true,build:async()=>{const c=await cmpImg();cmpSalva();return c}}}
+function cmpTexto(){
+  const{R}=cmpLinhas(),nome=(CP.nome||'').trim().split(' ')[0],ok=R.filter(o=>o.r.ok);
+  const blocos=ok.map((o,i)=>`*Opção ${i+1}: ${o.m.nome}*\n${o.c.cota} · ${cPlanoTxt(o.c.ss)} · ${o.r.prazo}x\nCrédito: ${cBrl(o.r.credito)}\nParcela: ${cBrl(o.r.parcela)}${o.r.lance>0?`\nLance: ${cBrl(o.r.lance)} (${cPct(o.r.pct)})${o.r.alt&&o.r.alt.quitadas>0?`\nQuita ${o.r.alt.quitadas} parcela(s) do final, ou reduz ${cBrl(o.r.reducao)} de cada parcela`:`\nReduz ${cBrl(o.r.reducao)} de cada parcela`}`:''}`);
+  return [`Olá${nome?', '+nome:''}! Montei uma comparação de consórcio para você:`,'',blocos.join('\n\n'),'',ccObs(false).replace(/\*\*\*\*Este é o plano[^\n]*/,'****Planos com e sem seguro prestamista conforme indicado em cada opção.'),'','Qual delas combina mais com você?','',ccAssin(),`Data: ${cHoje()}`].join('\n')}
+async function cmpImg(){
+  const{R,L}=cmpLinhas(),ok=R.map((o,i)=>({o,i})).filter(a=>a.o.r.ok),N=ok.length||1;
+  const cv=document.createElement('canvas'),W=1080,H=1350;cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  try{if(document.fonts&&document.fonts.ready)await document.fonts.ready}catch(e){}
+  x.fillStyle='#f4f5f9';x.fillRect(0,0,W,H);await ccCabeca(x,W);
+  x.textAlign='center';x.fillStyle='#14141c';x.font=`800 44px ${cdFam}`;x.fillText('Comparação de planos',W/2,280);
+  x.fillStyle='#5a5a68';x.font=`600 28px ${cdFam}`;const nm=(CP.nome||'').trim();x.fillText(nm?`Preparada para ${nm}`:'Consórcio Honda',W/2,322);x.textAlign='left';
+  const x0=50,lw=300,cw=Math.floor((W-2*x0-lw)/N),y0=350,rh=64,rows=L.filter(l=>l.rot!=='Tipo de cota'&&l.rot!=='Parcelas restantes'||R.some(o=>o.c.cota==='Reposição'));
+  x.fillStyle='#fff';cdRr(x,x0-10,y0,W-2*x0+20,rh*(rows.length+1)+20,22);x.fill();
+  x.fillStyle='#14141c';x.font=`800 26px ${cdFam}`;x.textAlign='center';ok.forEach((a,k)=>x.fillText(`Opção ${a.i+1}`,x0+lw+k*cw+cw/2,y0+rh/2+10));
+  rows.forEach((l,ri)=>{const y=y0+rh*(ri+1)+10;x.fillStyle='#eeeef3';x.fillRect(x0,y,W-2*x0,2);x.fillStyle='#5a5a68';x.font=`600 22px ${cdFam}`;x.textAlign='left';
+    cWrap(x,l.rot,lw-10).slice(0,2).forEach((t,k,A)=>x.fillText(t,x0,y+(A.length>1?26+k*24:rh/2+9)));
+    ok.forEach((a,k)=>{const c=l.cel[a.i];if(c.bt){x.fillStyle='#eefaf0';x.fillRect(x0+lw+k*cw+4,y+4,cw-8,rh-6)}else if(c.df){x.fillStyle='#fff8e6';x.fillRect(x0+lw+k*cw+4,y+4,cw-8,rh-6)}
+      x.fillStyle='#14141c';x.textAlign='center';const sz=cdFit(x,c.t,cw-16,24,800,15);x.fillText(c.t,x0+lw+k*cw+cw/2,y+rh/2+9)})});
+  x.textAlign='center';x.fillStyle='#6a6a78';x.font=`500 21px ${cdFam}`;let y=y0+rh*(rows.length+1)+64;
+  cWrap(x,'Valores conforme a tabela de consórcio atual; podem sofrer alterações sem aviso prévio e dependem da disponibilidade de cotas. Oferta de lance não garante a contemplação. Valor da parcela pode variar de acordo com o aumento do bem.',940).forEach(l=>{if(y<H-70){x.fillText(l,W/2,y);y+=28}});
+  x.fillStyle='#14141c';x.font=`700 24px ${cdFam}`;x.fillText(`${(V.nome||'').trim()} · ${V.whatsapp?cdZap(V.whatsapp):''} · ${cHoje()}`,W/2,H-30);x.textAlign='left';return cv}
+let CPSIG='';
+async function cmpSalva(){
+  const{R}=cmpLinhas(),ok=R.filter(o=>o.r.ok);if(!ok.length)return;
+  const cols=ok.map(o=>({motoId:o.m.id,motoNome:o.m.nome,cota:o.c.cota,ss:o.c.ss,plano:cPlanoTxt(o.c.ss),prazo:o.r.prazo,restantes:o.r.restantes,credito:o.r.credito,parcela:o.r.parcela,lance:o.r.lance,pct:o.r.pct,reducao:o.r.reducao,quitadas:o.r.alt?o.r.alt.quitadas:0})),sig=JSON.stringify(cols);
+  if(sig===CPSIG)return;CPSIG=sig;if(await ccSalva(CP.s,CP.x,'comparacao',{nome:CP.nome,cols,tabela:calcTabela()}))ccHist(CP.s,CP.x.id,document.getElementById('cp_hist'),'cmpReabre')}
+function cmpReabre(i){const el=document.getElementById('cp_hist'),h=el&&el._h&&el._h[i];if(!h||h.tipo!=='comparacao')return toast('Esta é uma simulação: abra em Calcular');
+  const cs=(h.dados.cols||[]).filter(c=>M.find(o=>o.id===c.motoId)).slice(0,3);if(cs.length<2)return toast('As motos desta comparação não estão mais no catálogo');
+  CP.cols=cs.map(c=>({motoId:c.motoId,cota:c.cota||'Nova',ss:!!c.ss,prazo:+c.prazo||0,restantes:+c.restantes||+c.prazo||0,lanceR:c.lance>0?cDec(c.lance):''}));cmpForm();toast('Comparação carregada com os valores atuais do catálogo')}
+function cmpCopia(){const t=(document.getElementById('cp_tx')||{}).value;if(!t)return toast('Escolha as opções para gerar a proposta');navigator.clipboard.writeText(t).then(()=>{toast('Proposta copiada!');cmpSalva()},()=>toast('Não foi possível copiar'))}
+function cmpZap(){const t=(document.getElementById('cp_tx')||{}).value;if(!t)return toast('Escolha as opções para gerar a proposta');const w=wlk(CP.tel);if(!w)return toast('Informe um WhatsApp válido do cliente. Use Copiar.');window.open(w+'&text='+encodeURIComponent(t),'_blank');cmpSalva()}
 
 /* ---- Playbook ---- */
 async function pPlaybook(){
