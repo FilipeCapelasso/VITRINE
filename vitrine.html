@@ -2783,7 +2783,7 @@ async function pPers0(keep){
  <section class="ps-c"><h3>Seções do site</h3><p class="sub">Escolha o que aparece para o cliente.</p>${PS_SEC.map(s=>`<div class="ps-t"><span>${s[1]} ${esc(s[2])}<small>${esc(s[3])}</small></span><label class="ps-sy"><input type="checkbox" ${(S.ocultar||[]).includes(s[0])?'':'checked'} onchange="psSec('${s[0]}',this.checked)" aria-label="Mostrar ${esc(s[2])}"><i></i></label></div>`).join('')}</section> ${psSobreH()}${psPedidoH()}
  </div>
  <aside class="ps-pv"><h4>Prévia ao vivo</h4><div id="ps_pv"></div></aside>
- <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['motos','🏍️','Motos'],['conta','⚙️','Meu site'],['personalizar','🎨','Personalizar']];
+ <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['motos','🏍️','Motos'],['calculadora','🧮','Calculadora'],['comparar','⚖️','Comparar'],['conta','⚙️','Meu site'],['personalizar','🎨','Personalizar']];
 let AC=null,PSS=null,PSAVED={},PSLIVE=false;
 async function acessoCarrega(){try{const r=await sb.rpc('meu_acesso');AC=(r&&r.data)||{}}catch(e){AC={}}}
 const ehPrem=()=>!!(AC&&AC.limites&&AC.limites.personalizar);
@@ -2809,10 +2809,10 @@ function adm(t){ if(t)T=t; if(T!=='personalizar')psRevert(); if(T==='personaliza
   if(T==='site'||T==='perfil'){CTAB=T==='site'?'textos':'perfil';T='conta'}
   PNS='#pn';
   const nav=NAV.map(a=>{const lk=a[0]==='personalizar'&&!ehPrem();return `<button class="nv ${T===a[0]?'on':''}${lk?' lockd':''}" onclick="${lk?'persLock()':`adm('${a[0]}')`}" ${lk?'aria-label="Personalizar (bloqueado: só Premium)"':''}><span class="ic">${a[1]}</span><span class="nlb">${a[2]}</span>${lk?'<span class="nlk" aria-hidden="true">🔒</span>':''}${a[0]==='personalizar'&&!lk&&AC&&AC.msgs_novas>0&&T!=='personalizar'?`<span class="nb" id="pe_nb">${AC.msgs_novas}</span>`:''}${a[0]==='vendas'?'<span class="nb" id="vdbg" hidden></span>':''}</button>`}).join('');
-  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',conta:'Meu site',personalizar:'Personalizar meu site'}[T];
+  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',calculadora:'Calculadora de consórcio',comparar:'Comparar',conta:'Meu site',personalizar:'Personalizar meu site'}[T];
   $('#app').innerHTML=`<div class="shell"><aside class="sd"><div class="sd-top">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}</b><small>Painel do vendedor</small></div></div><nav class="sd-nav">${nav}</nav><div class="sd-bot"><a class="lk" href="#">↗ Ver meu site</a><button class="lk" onclick="out()">Sair</button><small class="ver">Versão 01/11/2026</small></div></aside>
   <main class="mn"><div class="frase" id="frase">${fraseH(V&&V.frase_n,0,'fr-t')}</div><div id="plc"></div><header class="mt2"><h1>${tt}</h1><span class="mt2a"><a class="btn sm" href="#" style="text-decoration:none">Ver site</a><button class="btn sm" onclick="out()">Sair</button></span></header><span id="nb" hidden></span><div id="pn"></div></main></div>`;
-  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,conta:pConta,personalizar:pPers})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();
+  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,calculadora:pCalculadora,comparar:pComparar,conta:pConta,personalizar:pPers})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();
 }
 
 /* ---- prazo do plano (comprado em..., suspensão automática em...) com cronômetro ---- */
@@ -2935,18 +2935,25 @@ const cPlanoTxt=ss=>ss?'Sem seguro prestamista':'Com seguro prestamista';
 .calc .cc-t thead th{background:#fafafc;font-size:13px}.calc .cc-t tr:last-child td{border-bottom:0}
 .calc .cc-t td.df{background:#fff8e6}.calc .cc-t td.bt{background:#eefaf0;font-weight:700}.calc .cc-t td small{display:block;color:#7a6200;font-weight:500;font-size:11.5px}.calc .cc-t td.bt small{color:#1c7a34}
 .calc .cc-x{margin-top:12px}.calc .cc-x textarea{min-height:200px}
+.calc-pg{max-height:none!important;overflow:visible!important;width:min(900px,100%)!important;margin:0 0 24px;box-shadow:0 2px 16px rgba(20,20,40,.1)}.calc-pg.cc-w{width:min(1100px,100%)!important}.calc-pg .cmp-b{overflow:visible}.calc-pg .cmp-f{border-radius:0 0 22px 22px}
+.cc-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}.cc-tabs button{border:1px solid #d6d8e3;background:#fff;color:#2a2a38;border-radius:999px;padding:10px 16px;font:600 14px Inter,system-ui,sans-serif;cursor:pointer}.cc-tabs button.on{background:#14141c;color:#fff;border-color:#14141c}
+.calc .cq-cols{align-items:start;margin-top:12px}.calc .cq-fin h4,.calc .cq-con h4{font-size:15px;padding-bottom:8px;border-bottom:3px solid #2f3550;margin-bottom:6px}.calc .cq-con h4{border-color:#d90f24}
+.calc .cq-sum{margin-top:16px;border-radius:16px;padding:14px 16px;background:#f4f5f9;border:1px solid #e3e3ec;display:flex;flex-direction:column;gap:3px}.calc .cq-sum b{font-size:17px}.calc .cq-sum span{font-size:14.5px;font-weight:600}.calc .cq-sum small{color:#6a6a78;font-size:12.5px}
+.calc .cq-sum.w-con{background:#eefaf0;border-color:#b9e3c4}.calc .cq-sum.w-cdc{background:#eef3fb;border-color:#bccdea}
+@media(max-width:700px){.calc .cq-cols{grid-template-columns:1fr}}
 @media(max-width:700px){.calc .cc-g{grid-template-columns:1fr}.calc .cc-cols{grid-template-columns:1fr}}
 `;document.head.appendChild(s)})();
 const CC_IC={calc:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="5" y="2.5" width="14" height="19" rx="2.5"/><path d="M8.5 7h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></svg>',cmp:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4v16M17 4v16M3 8l4-4 4 4M13 16l4 4 4-4"/></svg>'};
-const ccBtns=(s,id)=>`<button type="button" class="btn sm cc-b" onclick="calcAbre('${s}','${id}')" title="Calcular o consórcio deste cliente">${CC_IC.calc}Calcular</button><button type="button" class="btn sm cc-b" onclick="cmpAbre('${s}','${id}')" title="Comparar planos para este cliente">${CC_IC.cmp}Comparar</button>`;
+const ccBtns=(s,id)=>`<button type="button" class="btn sm cc-b" onclick="calcAbre('${s}','${id}')" title="Calcular o consórcio deste cliente">${CC_IC.calc}Calcular</button><button type="button" class="btn sm cc-b" onclick="cqAbre('${s}','${id}')" title="Comparar financiamento CDC x consórcio Honda">${CC_IC.cmp}Comparar</button><button type="button" class="btn sm cc-b" onclick="cmpAbre('${s}','${id}')" title="Comparar planos de consórcio">${CC_IC.cmp}Planos</button>`;
 /* ---------- histórico ---------- */
 async function ccHist(s,id,el,onOpen){
-  if(!el)return;try{const r=await sb.from('simulacoes').select('id,tipo,dados,created_at').eq('origem',s).eq('cliente_id',id).order('created_at',{ascending:false}).limit(8);
+  if(!el||!id)return;try{const r=await sb.from('simulacoes').select('id,tipo,dados,created_at').eq('origem',s).eq('cliente_id',id).order('created_at',{ascending:false}).limit(8);
     if(r.error||!r.data||!r.data.length){el.innerHTML='';return}
-    el.innerHTML=`<details class="cc-hs"><summary>Propostas anteriores deste cliente (${r.data.length})</summary>${r.data.map((h,i)=>{const d=h.dados||{},c=d.cols||[d];const t=h.tipo==='comparacao'?`Comparação · ${c.length} opções`:`${esc(d.motoNome||'Simulação')} · ${esc(d.plano||'')} ${d.prazo?d.prazo+'x':''}`;
-      return `<div class="cc-hi"><div><b>${t}</b><small>${new Date(h.created_at).toLocaleString('pt-BR')}${d.parcela?' · parcela '+cBrl(d.parcela):''}${d.lance>0?' · lance '+cBrl(d.lance):''}</small></div>${onOpen?`<button type="button" class="btn sm" onclick="${onOpen}(${i})">Reabrir</button>`:''}</div>`}).join('')}</details>`;
+    el.innerHTML=`<details class="cc-hs"><summary>Propostas anteriores deste cliente (${r.data.length})</summary>${r.data.map((h,i)=>{const d=h.dados||{},c=d.cols||[d];const t=h.tipo==='cdc_consorcio'?`CDC x Consórcio · ${esc(d.motoNome||'')}`:h.tipo==='comparacao'?`Planos de consórcio · ${c.length} opções`:`${esc(d.motoNome||'Simulação')} · ${esc(d.plano||'')} ${d.prazo?d.prazo+'x':''}`;
+      return `<div class="cc-hi"><div><b>${t}</b><small>${new Date(h.created_at).toLocaleString('pt-BR')}${d.totalCdc>0?' · CDC '+cBrl(d.totalCdc)+' · Consórcio '+cBrl(d.totalCon):''}${d.parcela?' · parcela '+cBrl(d.parcela):''}${d.lance>0?' · lance '+cBrl(d.lance):''}</small></div>${onOpen?`<button type="button" class="btn sm" onclick="${onOpen}(${i})">Reabrir</button>`:''}</div>`}).join('')}</details>`;
     el._h=r.data}catch(e){el.innerHTML=''}}
 async function ccSalva(s,x,tipo,dados){
+  if(!x||!x.id)return false;
   try{const r=await sb.from('simulacoes').insert({vendedor_id:V.id,origem:s,cliente_id:x.id,cliente_nome:cNomeCli(x)||null,tipo,dados}).select('id').single();
     if(r.error)throw r.error;return true}catch(e){toast('Cálculo feito, mas não consegui guardar no histórico: '+((e&&e.message)||e));return false}}
 /* ---------- texto da proposta ---------- */
@@ -2993,19 +3000,19 @@ async function ccBaixa(tipo){
   const g=window.CCX;if(!g||!g.build)return;toast('Gerando a imagem…');
   try{const cv=await g.build(),b=await ccBlob(cv),nome=`${tipo}-${(g.nome||'cliente').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'cliente'}.png`;
     const f=new File([b],nome,{type:'image/png'});
-    if(CD_SH&&g.share){try{await navigator.share({files:[f],text:''});return}catch(e){if(e&&e.name==='AbortError')return}}
     const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);toast('Imagem baixada: '+nome)}
   catch(e){toast('Não consegui gerar a imagem: '+((e&&e.message)||e))}}
 /* ====================== CALCULAR ====================== */
 let CS=null;
-function calcAbre(s,id){
-  const x=cCliente(s,id);if(!x)return toast('Cliente não encontrado');
-  if(typeof vdFecha==='function')vdFecha();
+function calcIni(s,x){
   const m=cMotoDe(x),lv=cNum(x.lance_valor);
   CS={s,x,motoId:m?m.id:'',nome:cNomeCli(x),tel:x.telefone||'',cota:'Nova',ss:false,prazo:0,restantes:0,lanceR:lv>0?cDec(lv):'',lanceP:'',quitar:false,res:null};
   /* prazo: se a parcela do pedido bate com um plano do catálogo, já vem selecionado */
   if(m){const pv=cNum(x.parcela);if(pv>0){const p=cPlanos(m).find(p=>Math.abs(+p.valor-pv)<.011||Math.abs(+p.valor_sem_seguro-pv)<.011);if(p){CS.prazo=+p.parcelas;CS.restantes=+p.parcelas;CS.ss=!(Math.abs(+p.valor-pv)<.011)}}}
-  ccPctDeR();CS.hist=1;
+  ccPctDeR();CS.hist=x.id?1:0}
+function calcAbre(s,id){
+  const x=cCliente(s,id);if(!x)return toast('Cliente não encontrado');
+  if(typeof vdFecha==='function')vdFecha();CCPG=false;calcIni(s,x);
   const d=document.createElement('div');d.id='vdm';d.className='vdm';d.onclick=e=>{if(e.target===d)vdFecha()};
   d.innerHTML=`<div class="cmp calc" role="dialog" aria-label="Calculadora de consórcio"><header class="cmp-h"><div class="cl-av" style="--fc:#d90f24">${esc((CS.nome||'C').charAt(0).toUpperCase())}</div><div><b>Calculadora de consórcio</b><small>${esc(CS.nome||'Cliente')} · ${esc(x.moto_nome||'moto não informada')}</small></div></header><div class="cmp-b" id="cc_b"></div><footer class="cmp-f"><button type="button" class="btn red" id="cc_go" onclick="calcRoda()">Calcular</button><button type="button" class="btn" onclick="vdFecha()">Fechar</button><p class="cmp-n">Valores do catálogo do seu site (${esc(calcTabela())}).</p></footer></div>`;
   document.body.appendChild(d);calcForm();ccHist(s,x.id,document.getElementById('cc_hist'),'calcReabre')}
@@ -3014,7 +3021,7 @@ function calcForm(){
   const m=M.find(o=>o.id===CS.motoId),L=cMotosOk(),pls=m?cPlanos(m):[],c=m?cCredito(m):0,ss=m&&cTemSS(m);
   const prazos=[...new Set(pls.map(p=>+p.parcelas))],rest=CS.cota==='Reposição'&&CS.prazo?Array.from({length:CS.prazo-1},(_,i)=>CS.prazo-i):[];
   const par=m&&CS.prazo?cParcela(m,CS.prazo,CS.ss):0;
-  document.getElementById('cc_b').innerHTML=`<div class="cc-g">
+  document.getElementById('cc_b').innerHTML=`<div class="cc-g">${CCPG?ccPick('calc'):''}
   <div class="full"><label class="cmp-l">Tabela</label><input type="text" readonly value="${esc(calcTabela())}"></div>
   <div><label class="cmp-l" for="cc_n">Nome do cliente</label><input type="text" id="cc_n" value="${esc(CS.nome)}" oninput="CS.nome=this.value" autocomplete="off"></div>
   <div><label class="cmp-l" for="cc_t">WhatsApp do cliente</label><input type="tel" id="cc_t" value="${esc(CS.tel)}" oninput="CS.tel=this.value" autocomplete="off"></div>
@@ -3043,7 +3050,7 @@ function ccRes(){
   el.innerHTML=`<div class="cc-rs"><div class="hl"><span>Valor do crédito</span><b>${cBrl(r.credito)}</b></div><div><span>Lance</span><b>${r.lance>0?cBrl(r.lance)+' ('+cPct(r.pct)+')':'sem lance'}</b></div><div><span>1ª parcela / hoje</span><b>${cBrl(r.p1)}</b></div><div><span>2ª parcela / próximo vencimento</span><b>${cBrl(r.p2)}</b></div>${r.demais>0?`<div><span>${r.demais} parcelas de</span><b>${cBrl(r.demaisValor)}</b></div>`:''}<div class="ef"><span>${esc(ccEfeito(r))}</span></div>${r.quitar&&r.quitadas>0&&r.sobra>0?`<div><span>Sobra do lance (não completa outra parcela)</span><b>${cBrl(r.sobra)}</b></div>`:''}</div>
   ${r.aviso?`<div class="cc-av">${esc(r.aviso)}</div>`:''}
   <div class="cc-x"><label class="cmp-l" for="cc_tx">Proposta para enviar <small>(você pode editar antes de enviar)</small></label><textarea id="cc_tx"></textarea></div>
-  <div class="cmp-f" style="padding:10px 0 0;border:0;background:none"><button type="button" class="btn red" onclick="calcZap()">Enviar no WhatsApp</button><button type="button" class="btn" onclick="calcCopia()">Copiar</button><button type="button" class="btn" onclick="ccBaixa('proposta')">${CD_SH?'Compartilhar imagem':'Baixar imagem'}</button><button type="button" class="btn" onclick="cmpAbre('${CS.s}','${CS.x.id}')">Comparar planos</button></div>`;
+  <div class="cmp-f" style="padding:10px 0 0;border:0;background:none"><button type="button" class="btn red" onclick="calcZap()">Enviar no WhatsApp</button><button type="button" class="btn" onclick="calcCopia()">Copiar</button><button type="button" class="btn" onclick="ccBaixa('proposta')">Baixar imagem</button>${CS.x.id?`<button type="button" class="btn" onclick="cqAbre('${CS.s}','${CS.x.id}')">Comparar CDC x Consórcio</button>`:''}</div>`;
   document.getElementById('cc_tx').value=ccTexto(S,r)}
 async function calcRoda(){
   const e=ccEntrada();const btn=document.getElementById('cc_go');
@@ -3053,9 +3060,9 @@ async function calcRoda(){
     window.CCX={nome:CS.nome,share:true,build:()=>ccImgProposta(CS.snap,CS.res)};
     if(btn){btn.disabled=true;btn.innerHTML='<span class="cc-ld"></span>Calculando…'}
     ccRes();
-    await ccSalva(CS.s,CS.x,'calculo',{motoId:m.id,motoNome:m.nome,cota:CS.cota,ss:CS.ss,plano:cPlanoTxt(CS.ss),nome:CS.nome,tel:CS.tel,prazo:r.prazo,restantes:r.restantes,credito:r.credito,parcela:r.parcela,lance:r.lance,pct:r.pct,quitar:r.quitar,quitadas:r.quitadas,reducao:r.reducao,demais:r.demais,demaisValor:r.demaisValor,tabela:calcTabela()});
+    const sv=await ccSalva(CS.s,CS.x,'calculo',{motoId:m.id,motoNome:m.nome,cota:CS.cota,ss:CS.ss,plano:cPlanoTxt(CS.ss),nome:CS.nome,tel:CS.tel,prazo:r.prazo,restantes:r.restantes,credito:r.credito,parcela:r.parcela,lance:r.lance,pct:r.pct,quitar:r.quitar,quitadas:r.quitadas,reducao:r.reducao,demais:r.demais,demaisValor:r.demaisValor,tabela:calcTabela()});
     if(btn){btn.disabled=false;btn.textContent='Calcular'}
-    ccHist(CS.s,CS.x.id,document.getElementById('cc_hist'),'calcReabre');toast('Simulação pronta e salva no histórico')}
+    ccHist(CS.s,CS.x.id,document.getElementById('cc_hist'),'calcReabre');toast(CS.x.id?(sv?'Simulação pronta e salva no histórico':'Simulação pronta'):'Simulação pronta (avulsa: não fica no histórico de um cliente)')}
   else ccRes()}
 function calcReabre(i){const el=document.getElementById('cc_hist'),h=el&&el._h&&el._h[i];if(!h||h.tipo!=='calculo')return toast('Esta é uma comparação: abra em Comparar');const d=h.dados||{};
   if(!M.find(o=>o.id===d.motoId))return toast('A moto desta simulação não está mais no catálogo');
@@ -3065,14 +3072,16 @@ function calcZap(){const t=document.getElementById('cc_tx').value,w=wlk(CS.tel);
 /* ====================== COMPARAR ====================== */
 let CP=null;
 function cmpNovaCol(m,prazo,ss){return{motoId:m?m.id:'',cota:'Nova',ss:!!ss,prazo:prazo||0,restantes:prazo||0,lanceR:''}}
-function cmpAbre(s,id){
-  const x=cCliente(s,id);if(!x)return toast('Cliente não encontrado');if(typeof vdFecha==='function')vdFecha();
+function cmpIni(s,x){
   const m=cMotoDe(x),pz=m?cPlanos(m).map(p=>+p.parcelas).sort((a,b)=>b-a):[],lv=cNum(x.lance_valor);
   const base=pz.slice(0,3);while(base.length&&base.length<2)base.push(base[0]);
   CP={s,x,nome:cNomeCli(x),tel:x.telefone||'',cols:(base.length?base:[0,0]).slice(0,3).map(z=>cmpNovaCol(m,z,false))};
   if(lv>0)CP.cols.forEach(c=>c.lanceR=cDec(lv));
-  CP.hist=1;const d=document.createElement('div');d.id='vdm';d.className='vdm';d.onclick=e=>{if(e.target===d)vdFecha()};
-  d.innerHTML=`<div class="cmp calc cc-w" role="dialog" aria-label="Comparar planos de consórcio"><header class="cmp-h"><div class="cl-av" style="--fc:#d90f24">${esc((CP.nome||'C').charAt(0).toUpperCase())}</div><div><b>Comparar planos</b><small>${esc(CP.nome||'Cliente')} · ${esc(x.moto_nome||'moto não informada')} · ${esc(calcTabela())}</small></div></header><div class="cmp-b" id="cp_b"></div><footer class="cmp-f"><button type="button" class="btn red" onclick="cmpZap()">Enviar proposta no WhatsApp</button><button type="button" class="btn" onclick="cmpCopia()">Copiar</button><button type="button" class="btn" onclick="ccBaixa('comparacao')">${CD_SH?'Compartilhar imagem':'Baixar imagem'}</button><button type="button" class="btn" onclick="vdFecha()">Fechar</button></footer></div>`;
+  CP.hist=x.id?1:0}
+function cmpAbre(s,id){
+  const x=cCliente(s,id);if(!x)return toast('Cliente não encontrado');if(typeof vdFecha==='function')vdFecha();CCPG=false;cmpIni(s,x);
+  const d=document.createElement('div');d.id='vdm';d.className='vdm';d.onclick=e=>{if(e.target===d)vdFecha()};
+  d.innerHTML=`<div class="cmp calc cc-w" role="dialog" aria-label="Comparar planos de consórcio"><header class="cmp-h"><div class="cl-av" style="--fc:#d90f24">${esc((CP.nome||'C').charAt(0).toUpperCase())}</div><div><b>Comparar planos de consórcio</b><small>${esc(CP.nome||'Cliente')} · ${esc(x.moto_nome||'moto não informada')} · ${esc(calcTabela())}</small></div></header><div class="cmp-b" id="cp_b"></div><footer class="cmp-f"><button type="button" class="btn red" onclick="cmpZap()">Enviar proposta no WhatsApp</button><button type="button" class="btn" onclick="cmpCopia()">Copiar</button><button type="button" class="btn" onclick="ccBaixa('comparacao')">Baixar imagem</button><button type="button" class="btn" onclick="vdFecha()">Fechar</button></footer></div>`;
   document.body.appendChild(d);cmpForm();ccHist(s,x.id,document.getElementById('cp_hist'),'cmpReabre')}
 function cmpCol(i){const c=CP.cols[i],m=M.find(o=>o.id===c.motoId),pls=m?cPlanos(m):[],prazos=[...new Set(pls.map(p=>+p.parcelas))].sort((a,b)=>a-b),L=cMotosOk(),
   rest=c.cota==='Reposição'&&c.prazo?Array.from({length:c.prazo-1},(_,k)=>c.prazo-k):[c.prazo].filter(Boolean);
@@ -3084,7 +3093,7 @@ function cmpCol(i){const c=CP.cols[i],m=M.find(o=>o.id===c.motoId),pls=m?cPlanos
   <label class="cmp-l">Parcelas restantes</label><select ${c.cota==='Reposição'&&c.prazo?'':'disabled'} onchange="cmpSet(${i},'restantes',+this.value)">${rest.length?rest.map(z=>`<option value="${z}" ${z===c.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione o prazo</option>'}</select>
   <label class="cmp-l">Lance em R$ <small>(opcional)</small></label><input type="text" inputmode="decimal" value="${esc(c.lanceR)}" placeholder="0,00" onchange="cmpSet(${i},'lanceR',this.value);ccFmt(this)"></div>`}
 function cmpForm(){
-  document.getElementById('cp_b').innerHTML=`<div class="cc-g"><div><label class="cmp-l" for="cp_n">Nome do cliente</label><input type="text" id="cp_n" value="${esc(CP.nome)}" oninput="CP.nome=this.value"></div><div><label class="cmp-l" for="cp_t">WhatsApp do cliente</label><input type="tel" id="cp_t" value="${esc(CP.tel)}" oninput="CP.tel=this.value"></div></div>
+  document.getElementById('cp_b').innerHTML=`<div class="cc-g">${CCPG?ccPick('pl'):''}<div><label class="cmp-l" for="cp_n">Nome do cliente</label><input type="text" id="cp_n" value="${esc(CP.nome)}" oninput="CP.nome=this.value"></div><div><label class="cmp-l" for="cp_t">WhatsApp do cliente</label><input type="tel" id="cp_t" value="${esc(CP.tel)}" oninput="CP.tel=this.value"></div></div>
   <div class="cc-cols" style="--n:${CP.cols.length}">${CP.cols.map((_,i)=>cmpCol(i)).join('')}</div>
   <div class="cmp-f" style="padding:10px 0 0;border:0;background:none;gap:8px">${CP.cols.length<3?'<button type="button" class="btn sm" onclick="cmpAdd()">+ Adicionar opção</button>':''}<label class="cmp-n" style="flex:none;display:flex;gap:8px;align-items:center">Mesmo lance (R$) para todas: <input type="text" inputmode="decimal" style="width:130px;padding:8px 10px;border:1px solid #dcdce6;border-radius:11px" placeholder="0,00" onchange="cmpLanceTodos(this.value)"></label></div>
   <div id="cp_res"></div><div id="cp_hist"></div>`;cmpRes();if(CP.hist)ccHist(CP.s,CP.x.id,document.getElementById('cp_hist'),'cmpReabre')}
@@ -3154,6 +3163,160 @@ function cmpReabre(i){const el=document.getElementById('cp_hist'),h=el&&el._h&&e
   CP.cols=cs.map(c=>({motoId:c.motoId,cota:c.cota||'Nova',ss:!!c.ss,prazo:+c.prazo||0,restantes:+c.restantes||+c.prazo||0,lanceR:c.lance>0?cDec(c.lance):''}));cmpForm();toast('Comparação carregada com os valores atuais do catálogo')}
 function cmpCopia(){const t=(document.getElementById('cp_tx')||{}).value;if(!t)return toast('Escolha as opções para gerar a proposta');navigator.clipboard.writeText(t).then(()=>{toast('Proposta copiada!');cmpSalva()},()=>toast('Não foi possível copiar'))}
 function cmpZap(){const t=(document.getElementById('cp_tx')||{}).value;if(!t)return toast('Escolha as opções para gerar a proposta');const w=wlk(CP.tel);if(!w)return toast('Informe um WhatsApp válido do cliente. Use Copiar.');window.open(w+'&text='+encodeURIComponent(t),'_blank');cmpSalva()}
+
+/* ====================== COMPARAR: FINANCIAMENTO CDC x CONSÓRCIO HONDA ====================== */
+let CQ=null,CCPG=false;
+const cq$=v=>{const n=cNum(v);return isFinite(n)&&n>0?Math.round(n*100):0};
+const cqBrl=c=>cBrl(c/100);
+function cqIni(s,x){
+  const m=cMotoDe(x),lv=cNum(x.lance_valor);
+  CQ={s,x,nome:cNomeCli(x),tel:x.telefone||'',motoId:m?m.id:'',
+    f:{valor:m?cDec(cCredito(m)):'',entrada:'',n:'',parc:'',frete:'',taxas:''},
+    c:{cota:'Nova',ss:false,prazo:0,restantes:0,lanceR:lv>0?cDec(lv):'',quitar:false,frete:''},hist:x.id?1:0};
+  if(m){const pv=cNum(x.parcela);if(pv>0){const p=cPlanos(m).find(p=>Math.abs(+p.valor-pv)<.011||Math.abs(+p.valor_sem_seguro-pv)<.011);if(p){CQ.c.prazo=+p.parcelas;CQ.c.restantes=+p.parcelas;CQ.c.ss=!(Math.abs(+p.valor-pv)<.011)}}}}
+function cqAbre(s,id){
+  const x=cCliente(s,id);if(!x)return toast('Cliente não encontrado');if(typeof vdFecha==='function')vdFecha();CCPG=false;cqIni(s,x);
+  const d=document.createElement('div');d.id='vdm';d.className='vdm';d.onclick=e=>{if(e.target===d)vdFecha()};
+  d.innerHTML=`<div class="cmp calc cc-w" role="dialog" aria-label="Comparar financiamento CDC e consórcio Honda"><header class="cmp-h"><div class="cl-av" style="--fc:#d90f24">${esc((CQ.nome||'C').charAt(0).toUpperCase())}</div><div><b>Comparar: Financiamento CDC x Consórcio Honda</b><small>${esc(CQ.nome||'Cliente')} · ${esc(x.moto_nome||'moto não informada')}</small></div></header><div class="cmp-b" id="cq_b"></div>${cqFoot(1)}</div>`;
+  document.body.appendChild(d);cqForm()}
+const cqFoot=cl=>`<footer class="cmp-f"><button type="button" class="btn red" onclick="cqZap()">Enviar proposta no WhatsApp</button><button type="button" class="btn" onclick="cqCopia()">Copiar</button><button type="button" class="btn" onclick="ccBaixa('cdc-x-consorcio')">Baixar imagem</button>${cl?'<button type="button" class="btn" onclick="vdFecha()">Fechar</button>':''}</footer>`;
+function cqMoeda(g,k,lab,hint,ph){const v=CQ[g][k];return `<label class="cmp-l">${lab}${hint?` <small>${hint}</small>`:''}</label><input type="text" inputmode="decimal" value="${esc(v)}" placeholder="${ph||'0,00'}" oninput="cqSet('${g}','${k}',this.value)" onblur="cqFmt(this)">`}
+function cqFmt(el){const n=cNum(el.value);if(isFinite(n)&&n>0)el.value=cDec(n)}
+function cqForm(){
+  const m=M.find(o=>o.id===CQ.motoId),L=cMotosOk(),pls=m?cPlanos(m):[],c=CQ.c,f=CQ.f,cr=m?cCredito(m):0,ss=m&&cTemSS(m);
+  const prazos=[...new Set(pls.map(p=>+p.parcelas))].sort((a,b)=>a-b),rest=c.cota==='Reposição'&&c.prazo?Array.from({length:c.prazo-1},(_,i)=>c.prazo-i):[];
+  const par=m&&c.prazo?cParcela(m,c.prazo,c.ss):0;
+  document.getElementById('cq_b').innerHTML=`<div class="cc-g">${CCPG?ccPick('cq'):''}
+  <div><label class="cmp-l" for="cq_n">Nome do cliente</label><input type="text" id="cq_n" value="${esc(CQ.nome)}" oninput="CQ.nome=this.value" autocomplete="off"></div>
+  <div><label class="cmp-l" for="cq_t">WhatsApp do cliente</label><input type="tel" id="cq_t" value="${esc(CQ.tel)}" oninput="CQ.tel=this.value" autocomplete="off"></div>
+  <div class="full"><label class="cmp-l" for="cq_m">Moto (a mesma nas duas modalidades)</label><select id="cq_m" onchange="cqMoto(this.value)"><option value="">Selecione uma moto:</option>${L.map(o=>`<option value="${o.id}" ${o.id===CQ.motoId?'selected':''}>${esc(o.nome)}</option>`).join('')}</select></div></div>
+  <div class="cc-cols cq-cols" style="--n:2">
+  <div class="cc-col cq-fin"><h4>Financiamento CDC</h4>
+   <label class="cmp-l">Modelo da motocicleta</label><input type="text" readonly value="${m?esc(m.nome):''}" placeholder="Escolha a moto acima">
+   ${cqMoeda('f','valor','Valor da motocicleta')}
+   ${cqMoeda('f','entrada','Valor da entrada')}
+   <label class="cmp-l">Quantidade de parcelas</label><input type="text" inputmode="numeric" value="${esc(f.n)}" placeholder="Ex.: 36" oninput="cqSet('f','n',this.value)">
+   ${cqMoeda('f','parc','Valor de cada parcela','(da simulação real do banco)')}
+   ${cqMoeda('f','frete','Frete e outras despesas','(se houver)')}
+   ${cqMoeda('f','taxas','Taxas ou custos adicionais','(se não estiverem nas parcelas)')}
+  </div>
+  <div class="cc-col cq-con"><h4>Consórcio Honda</h4>
+   <label class="cmp-l">Modelo da motocicleta</label><input type="text" readonly value="${m?esc(m.nome):''}" placeholder="Escolha a moto acima">
+   <label class="cmp-l">Valor do crédito</label><input type="text" readonly value="${cr>0?cBrl(cr):''}" placeholder="Vem do catálogo">
+   <label class="cmp-l">Tabela de consórcio</label><input type="text" readonly value="${esc(calcTabela())}">
+   <label class="cmp-l">Tipo de cota</label><select onchange="cqSet('c','cota',this.value,1)"><option ${c.cota==='Nova'?'selected':''}>Nova</option><option ${c.cota==='Reposição'?'selected':''}>Reposição</option></select>
+   <label class="cmp-l">Plano</label><select ${m?'':'disabled'} onchange="cqSet('c','ss',this.value==='1',1)"><option value="0" ${c.ss?'':'selected'}>Com seguro prestamista</option>${ss?`<option value="1" ${c.ss?'selected':''}>Sem seguro prestamista</option>`:''}</select>
+   <label class="cmp-l">Prazo original</label><select ${m?'':'disabled'} onchange="cqSet('c','prazo',+this.value,1)"><option value="">Selecione um prazo</option>${prazos.map(z=>`<option value="${z}" ${z===c.prazo?'selected':''}>${z}x</option>`).join('')}</select>
+   <label class="cmp-l">Parcelas restantes</label><select ${c.cota==='Reposição'&&c.prazo?'':'disabled'} onchange="cqSet('c','restantes',+this.value,1)">${c.prazo?(c.cota==='Reposição'?rest:[c.prazo]).map(z=>`<option value="${z}" ${z===c.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione um prazo</option>'}</select>
+   <label class="cmp-l">Valor da parcela</label><input type="text" readonly value="${par>0?cBrl(par):''}" placeholder="Escolha o plano e o prazo">
+   ${cqMoeda('c','frete','Frete','(se houver)')}
+   ${cqMoeda('c','lanceR','Valor do lance','(opcional)')}
+   <label class="cc-ck"><input type="checkbox" ${c.quitar?'checked':''} onchange="cqSet('c','quitar',this.checked)"><span>Usar o lance para quitar as parcelas do final do plano.</span></label>
+  </div></div>
+  <div id="cq_res"></div><div id="cq_hist"></div>`;
+  cqRes();if(CQ.hist)ccHist(CQ.s,CQ.x.id,document.getElementById('cq_hist'),'cqReabre')}
+function cqMoto(v){const m=M.find(o=>o.id===v);CQ.motoId=v;CQ.c.prazo=0;CQ.c.restantes=0;CQ.c.ss=false;CQ.f.valor=m?cDec(cCredito(m)):'';cqForm()}
+function cqSet(g,k,v,re){CQ[g][k]=v;if(g==='c'){if(k==='cota')CQ.c.restantes=CQ.c.prazo;if(k==='prazo')CQ.c.restantes=v;if(k==='ss'){const m=M.find(o=>o.id===CQ.motoId);if(m&&v&&!cTemSS(m))CQ.c.ss=false}}re?cqForm():cqRes()}
+/* cálculo: tudo em centavos. Financiamento = entrada + parcelas + despesas + taxas.
+   Consórcio = parcelas efetivamente pagas + lance (pago uma vez só) + frete. */
+function cqCalc(){
+  const f=CQ.f,c=CQ.c,m=M.find(o=>o.id===CQ.motoId),E=[];
+  if(!m)return{ok:false,erros:['Escolha a moto.']};
+  const valor=cq$(f.valor),ent=cq$(f.entrada),n=Math.trunc(cNum(f.n)),pc=cq$(f.parc),fr=cq$(f.frete),tx=cq$(f.taxas),frc=cq$(c.frete);
+  if(!(n>=1))E.push('Financiamento: informe a quantidade de parcelas.');
+  if(!(pc>0))E.push('Financiamento: informe o valor de cada parcela (da simulação real do banco).');
+  if(valor>0&&ent>valor)E.push('Financiamento: a entrada não pode ser maior que o valor da moto.');
+  const r=calcCore({credito:cCredito(m),parcela:c.prazo?cParcela(m,c.prazo,c.ss):0,prazo:c.prazo,restantes:c.restantes||c.prazo,lance:cNum(c.lanceR),quitar:c.quitar});
+  if(!r.ok)r.erros.forEach(e=>E.push('Consórcio: '+e));
+  if(E.length)return{ok:false,erros:E};
+  const pcc=Math.round(r.parcela*100),lc=Math.round(r.lance*100),rs=r.restantes,red=Math.round(r.reducao*100);
+  let qtd=rs,pagas;
+  if(r.quitar&&r.quitadas>0){qtd=rs-r.quitadas;pagas=qtd*pcc}else pagas=rs*pcc-(red>0?(rs-2)*red:0);
+  const totF=ent+n*pc+fr+tx,totC=pagas+lc+frc,mx=Math.max(totF,totC);
+  return{ok:true,m,r,fin:{valor,ent,n,pc,fr,tx,total:totF},con:{credito:Math.round(r.credito*100),pcc,qtd,rs,lc,pct:r.pct,frete:frc,pagas,total:totC,quitadas:r.quitar?r.quitadas:0,red,demaisValor:Math.round(r.demaisValor*100)},
+    dif:Math.abs(totF-totC),pctEco:mx>0?Math.round(Math.abs(totF-totC)*10000/mx)/100:0,menor:totF===totC?'':totF<totC?'cdc':'con'}}
+function cqLinhas(k){const F=k.fin,C=k.con,nm=k.m.nome;
+  return [['Modelo da moto',nm,nm],['Valor da moto / crédito',F.valor>0?cqBrl(F.valor):'—',cqBrl(C.credito)],
+   ['Entrada / lance',F.ent>0?cqBrl(F.ent):'Sem entrada',C.lc>0?`${cqBrl(C.lc)} (${cPct(C.pct)})`:'Sem lance'],
+   ['Parcelas',`${F.n}x`,`${C.qtd}x${C.quitadas>0?` (lance quita ${C.quitadas})`:''}`],
+   ['Valor da parcela',cqBrl(F.pc),cqBrl(C.pcc)+(C.red>0?` (reduz ${cqBrl(C.red)} das demais)`:'')],
+   ['Frete e despesas',F.fr>0?cqBrl(F.fr):'—',C.frete>0?cqBrl(C.frete):'—'],
+   ['Taxas e custos adicionais',F.tx>0?cqBrl(F.tx):'—','—'],
+   ['Custo total',cqBrl(F.total),cqBrl(C.total)]]}
+const cqNome=k=>k.menor==='cdc'?'Financiamento CDC':'Consórcio Honda';
+const cqFrase=k=>k.menor?`O menor custo total estimado é o do ${cqNome(k)}: ${cqBrl(k.dif)} a menos (cerca de ${cPct(k.pctEco)}).`:'Os dois têm o mesmo custo total estimado.';
+function cqRes(){
+  const el=document.getElementById('cq_res');if(!el)return;const k=cqCalc();CQK=k;
+  if(!k.ok){window.CCX=null;const tocou=CQ.f.n||CQ.f.parc||CQ.f.entrada||CQ.c.prazo;el.innerHTML=tocou?`<div class="cc-er"><b>Falta completar:</b><ul>${k.erros.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></div>`:'';return}
+  const L=cqLinhas(k),tot=L.length-1;
+  el.innerHTML=`<div class="cq-sum ${k.menor?'w-'+k.menor:''}"><b>${k.menor?`Menor custo total: ${cqNome(k)}`:'Custos totais iguais'}</b><span>${k.menor?`Diferença de ${cqBrl(k.dif)} · economia estimada de ${cPct(k.pctEco)}`:'Sem diferença entre as modalidades'}</span><small>Estimativa sem garantia de economia. O consórcio depende de contemplação (sorteio ou lance) e não garante a entrega imediata da moto.</small></div>
+  <div class="cc-tb"><table class="cc-t"><thead><tr><th>Informação</th><th>Financiamento CDC</th><th>Consórcio Honda</th></tr></thead><tbody>${L.map((l,i)=>{const t=i===tot,a=t&&k.menor==='cdc'?'bt':t&&k.menor==='con'?'df':'',b=t&&k.menor==='con'?'bt':t&&k.menor==='cdc'?'df':'';return `<tr><td>${esc(l[0])}</td><td class="${a}">${esc(l[1])}${a==='bt'?'<small>menor custo total</small>':''}</td><td class="${b}">${esc(l[2])}${b==='bt'?'<small>menor custo total</small>':''}</td></tr>`}).join('')}</tbody></table></div>
+  <div class="cc-x"><label class="cmp-l" for="cq_tx">Proposta comparativa <small>(você pode editar antes de enviar)</small></label><textarea id="cq_tx"></textarea></div>`;
+  document.getElementById('cq_tx').value=cqTexto(k);
+  window.CCX={nome:CQ.nome,build:async()=>{const c=await cqImg(k);cqSalva(k);return c}}}
+let CQK=null;
+function cqTexto(k){const F=k.fin,C=k.con,nome=(CQ.nome||'').trim().split(' ')[0];
+  return [`Olá${nome?', '+nome:''}! Montei o comparativo para a sua ${k.m.nome}:`,'',
+   '*FINANCIAMENTO CDC*',`Entrada: ${F.ent>0?cqBrl(F.ent):'sem entrada'}`,`Parcelas: ${F.n}x de ${cqBrl(F.pc)}`,...(F.fr>0?[`Frete e despesas: ${cqBrl(F.fr)}`]:[]),...(F.tx>0?[`Taxas e custos adicionais: ${cqBrl(F.tx)}`]:[]),`*Valor total: ${cqBrl(F.total)}*`,'',
+   '*CONSÓRCIO HONDA*',`Crédito: ${cqBrl(C.credito)}`,`Plano: ${CQ.c.cota} · ${cPlanoTxt(CQ.c.ss)} · ${C.rs===+CQ.c.prazo?C.rs+'x':CQ.c.prazo+'x ('+C.rs+' restantes)'}`,`Parcelas: ${C.qtd}x de ${cqBrl(C.pcc)}${C.red>0?` (o lance reduz ${cqBrl(C.red)} das demais)`:''}`,...(C.lc>0?[`Lance: ${cqBrl(C.lc)} (${cPct(C.pct)})${C.quitadas>0?` — quita ${C.quitadas} parcela(s) do final`:''}`]:[]),...(C.frete>0?[`Frete: ${cqBrl(C.frete)}`]:[]),`*Valor total: ${cqBrl(C.total)}*`,'',
+   `*Diferença entre os custos totais:* ${k.menor?cqBrl(k.dif):'R$ 0,00'}`,cqFrase(k),'',
+   '*Importante:*','*O consórcio depende de contemplação por sorteio ou lance e não garante a entrega imediata da motocicleta.','**O financiamento libera a moto na contratação, sujeito à aprovação de crédito.','***Valores estimados, sem garantia de economia; podem sofrer alterações sem aviso prévio.','',ccAssin(),`Data: ${cHoje()}`].join('\n')}
+async function cqImg(k){
+  const F=k.fin,C=k.con,cv=document.createElement('canvas'),W=1080,H=1350;cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  try{if(document.fonts&&document.fonts.ready)await document.fonts.ready}catch(e){}
+  x.fillStyle='#f4f5f9';x.fillRect(0,0,W,H);await ccCabeca(x,W);
+  x.textAlign='center';x.fillStyle='#14141c';x.font=`800 40px ${cdFam}`;x.fillText('Financiamento CDC x Consórcio Honda',W/2,270);
+  x.fillStyle='#5a5a68';x.font=`600 28px ${cdFam}`;const nm=(CQ.nome||'').trim();x.fillText(nm?`Preparado para ${nm}`:'Comparativo de aquisição',W/2,312);
+  x.fillStyle='#14141c';cdFit(x,k.m.nome,940,46,800,28);x.fillText(k.m.nome,W/2,368);
+  const cw=490,y0=396,cards=[
+   {t:'FINANCIAMENTO CDC',cor:'#2f3550',key:'cdc',rows:[['Valor da moto',F.valor>0?cqBrl(F.valor):'—'],['Entrada',F.ent>0?cqBrl(F.ent):'Sem entrada'],['Parcelas',`${F.n}x de ${cqBrl(F.pc)}`],['Frete e despesas',F.fr>0?cqBrl(F.fr):'—'],['Taxas adicionais',F.tx>0?cqBrl(F.tx):'—']],tot:F.total,x:40},
+   {t:'CONSÓRCIO HONDA',cor:'#d90f24',key:'con',rows:[['Crédito',cqBrl(C.credito)],['Plano',`${CQ.c.cota} · ${CQ.c.ss?'sem':'com'} seguro · ${CQ.c.prazo}x`],['Parcelas',`${C.qtd}x de ${cqBrl(C.pcc)}`],['Lance',C.lc>0?`${cqBrl(C.lc)} (${cPct(C.pct)})`:'Sem lance'],['Frete',C.frete>0?cqBrl(C.frete):'—']],tot:C.total,x:550}];
+  const rh=64,hh=70,ch=hh+rh*5+120;
+  cards.forEach(cd=>{const win=k.menor===cd.key;
+    x.fillStyle='#fff';cdRr(x,cd.x,y0,cw,ch,24);x.fill();if(win){x.lineWidth=5;x.strokeStyle='#1c9a45';cdRr(x,cd.x,y0,cw,ch,24);x.stroke()}
+    x.save();cdRr(x,cd.x,y0,cw,ch,24);x.clip();x.fillStyle=cd.cor;x.fillRect(cd.x,y0,cw,hh);x.restore();
+    x.fillStyle='#fff';x.font=`800 28px ${cdFam}`;x.textAlign='center';x.fillText(cd.t,cd.x+cw/2,y0+hh/2+10);
+    cd.rows.forEach((r,i)=>{const y=y0+hh+i*rh;if(i){x.fillStyle='#eeeef3';x.fillRect(cd.x+24,y,cw-48,2)}
+      x.textAlign='left';x.fillStyle='#5a5a68';x.font=`600 21px ${cdFam}`;x.fillText(r[0],cd.x+24,y+rh/2+8);
+      x.textAlign='right';x.fillStyle='#14141c';cdFit(x,r[1],cw-48-170,24,800,15);x.fillText(r[1],cd.x+cw-24,y+rh/2+8)});
+    const ty=y0+hh+rh*5;x.fillStyle=win?'#eefaf0':'#f6f6fa';x.fillRect(cd.x,ty+10,cw,ch-hh-rh*5-10);
+    x.textAlign='center';x.fillStyle='#5a5a68';x.font=`700 20px ${cdFam}`;x.fillText(win?'VALOR TOTAL · MENOR CUSTO':'VALOR TOTAL',cd.x+cw/2,ty+48);
+    x.fillStyle=win?'#1c7a34':'#14141c';cdFit(x,cqBrl(cd.tot),cw-40,44,800,26);x.fillText(cqBrl(cd.tot),cd.x+cw/2,ty+96)});
+  let y=y0+ch+34;x.fillStyle=k.menor?'#fff8e6':'#fff';cdRr(x,40,y,1000,96,20);x.fill();
+  x.fillStyle='#14141c';x.textAlign='center';x.font=`800 30px ${cdFam}`;
+  x.fillText(k.menor?`Diferença: ${cqBrl(k.dif)} — menor custo no ${cqNome(k)}`:'Os dois têm o mesmo custo total estimado',W/2,y+42);
+  x.fillStyle='#5a5a68';x.font=`600 22px ${cdFam}`;x.fillText(k.menor?`Economia estimada de ${cPct(k.pctEco)} (sem garantia)`:'Sem diferença entre as modalidades',W/2,y+76);
+  y+=96+36;x.fillStyle='#6a6a78';x.font=`500 21px ${cdFam}`;
+  cWrap(x,'O consórcio depende de contemplação por sorteio ou lance e não garante a entrega imediata da motocicleta. O financiamento libera a moto na contratação, sujeito à aprovação de crédito. Valores estimados, sem garantia de economia; podem sofrer alterações sem aviso prévio.',940).forEach(l=>{if(y<H-70){x.fillText(l,W/2,y);y+=28}});
+  x.fillStyle='#14141c';x.font=`700 24px ${cdFam}`;x.fillText(`${(V.nome||'').trim()} · ${V.whatsapp?cdZap(V.whatsapp):''} · ${cHoje()}`,W/2,H-30);x.textAlign='left';return cv}
+let CQSIG='';
+async function cqSalva(k){
+  k=k||CQK;if(!k||!k.ok)return;const d={nome:CQ.nome,tel:CQ.tel,motoId:k.m.id,motoNome:k.m.nome,f:{...CQ.f},c:{...CQ.c},totalCdc:k.fin.total/100,totalCon:k.con.total/100,tabela:calcTabela()},sig=JSON.stringify([d.motoId,d.f,d.c]);
+  if(sig===CQSIG)return;CQSIG=sig;if(await ccSalva(CQ.s,CQ.x,'cdc_consorcio',d))ccHist(CQ.s,CQ.x.id,document.getElementById('cq_hist'),'cqReabre')}
+function cqReabre(i){const el=document.getElementById('cq_hist'),h=el&&el._h&&el._h[i];if(!h||h.tipo!=='cdc_consorcio')return toast('Esta é outra simulação: abra em Calcular ou Comparar planos');
+  const d=h.dados||{};if(!M.find(o=>o.id===d.motoId))return toast('A moto desta comparação não está mais no catálogo');
+  CQ.motoId=d.motoId;CQ.f={...CQ.f,...(d.f||{})};CQ.c={...CQ.c,...(d.c||{})};cqForm();toast('Comparação carregada: o crédito e a parcela do consórcio vêm do catálogo atual')}
+function cqCopia(){const t=(document.getElementById('cq_tx')||{}).value;if(!t)return toast('Preencha os dados das duas modalidades para gerar a proposta');navigator.clipboard.writeText(t).then(()=>{toast('Proposta copiada!');cqSalva()},()=>toast('Não foi possível copiar'))}
+function cqZap(){const t=(document.getElementById('cq_tx')||{}).value;if(!t)return toast('Preencha os dados das duas modalidades para gerar a proposta');const w=wlk(CQ.tel);if(!w)return toast('Informe um WhatsApp válido do cliente. Use Copiar.');window.open(w+'&text='+encodeURIComponent(t),'_blank');cqSalva()}
+/* ====================== PÁGINAS DO MENU: Calculadora e Comparar ====================== */
+const ccAvulso=()=>({id:null,nome:'',telefone:'',moto_nome:''});
+function ccPick(k){const L=(typeof VD!=='undefined'?VD:[]).slice(0,150);if(!L.length)return'';
+  return `<div class="full"><label class="cmp-l">Cliente <small>(opcional: preenche nome, WhatsApp e moto)</small></label><select onchange="ccPicou('${k}',this.value)"><option value="">Sem cliente (avulso)</option>${L.map(o=>`<option value="${o._s}|${o.id}" ${(k==='calc'&&CS&&CS.x&&CS.x.id===o.id)||(k==='cq'&&CQ&&CQ.x&&CQ.x.id===o.id)||(k==='pl'&&CP&&CP.x&&CP.x.id===o.id)?'selected':''}>${esc((o.nome_completo||o.nome||'Cliente')+' · '+(o.moto_nome||'sem moto'))}</option>`).join('')}</select></div>`}
+function ccPicou(k,v){let s=null,x=ccAvulso();if(v){const a=v.split('|'),c=cCliente(a[0],a.slice(1).join('|'));if(c){x=c;s=a[0]}}
+  if(k==='calc'){calcIni(s,x);calcForm()}else if(k==='cq'){cqIni(s,x);cqForm()}else{cmpIni(s,x);cmpForm()}}
+async function ccPgCarrega(t){if(typeof VD!=='undefined'&&!VD.length){$('#pn').innerHTML='<div class="sk" style="height:140px;border-radius:18px"></div>';await vdLoad()}return T===t}
+async function pCalculadora(){
+  if(!await ccPgCarrega('calculadora'))return;CCPG=true;calcIni(null,ccAvulso());
+  $('#pn').innerHTML=`<p class="mu" style="margin:0 0 12px">Simule o consórcio com os valores do catálogo. Escolha um cliente para preencher tudo automaticamente ou use sem cliente.</p><div class="cmp calc calc-pg"><div class="cmp-b" id="cc_b"></div><footer class="cmp-f"><button type="button" class="btn red" id="cc_go" onclick="calcRoda()">Calcular</button><p class="cmp-n">Valores do catálogo do seu site (${esc(calcTabela())}).</p></footer></div>`;
+  calcForm()}
+let CMPTAB='cq';
+async function pComparar(){
+  if(!await ccPgCarrega('comparar'))return;CCPG=true;
+  const tabs=`<div class="cc-tabs" role="tablist"><button type="button" role="tab" aria-selected="${CMPTAB==='cq'}" class="${CMPTAB==='cq'?'on':''}" onclick="CMPTAB='cq';pComparar()">Financiamento CDC x Consórcio Honda</button><button type="button" role="tab" aria-selected="${CMPTAB==='pl'}" class="${CMPTAB==='pl'?'on':''}" onclick="CMPTAB='pl';pComparar()">Comparar planos de consórcio</button></div>`;
+  if(CMPTAB==='cq'){cqIni(null,ccAvulso());
+    $('#pn').innerHTML=`${tabs}<p class="mu" style="margin:0 0 12px">Compare duas formas de comprar a mesma moto: o financiamento CDC (com os dados da simulação do banco) e o consórcio Honda (com os valores do catálogo).</p><div class="cmp calc calc-pg cc-w"><div class="cmp-b" id="cq_b"></div>${cqFoot(0)}</div>`;cqForm()}
+  else{cmpIni(null,ccAvulso());
+    $('#pn').innerHTML=`${tabs}<div class="cmp calc calc-pg cc-w"><div class="cmp-b" id="cp_b"></div><footer class="cmp-f"><button type="button" class="btn red" onclick="cmpZap()">Enviar proposta no WhatsApp</button><button type="button" class="btn" onclick="cmpCopia()">Copiar</button><button type="button" class="btn" onclick="ccBaixa('comparacao')">Baixar imagem</button></footer></div>`;cmpForm()}}
 
 /* ---- Playbook ---- */
 async function pPlaybook(){
