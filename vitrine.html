@@ -2179,7 +2179,7 @@ function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visT
   ${pl.length?`<div class="dt-sec"><h3>Planos de consórcio</h3><div class="dt-pl">${pl.map(x=>`<div><b>${x.parcelas}x</b><span>${brl(x.valor)}</span></div>`).join('')}</div><p class="mu" style="font-size:12.5px;margin-top:10px">${esc(m.emplacamento||'Com emplacamento')} · valores sujeitos a ajuste conforme a tabela do consórcio. ${catSelo()} <a href="#" onclick="openM(cur,'con');return false">Simular com um plano →</a></p></div>`:''}
   ${m.descricao?`<div class="dt-sec"><h3>Descrição e ficha técnica</h3><div class="desc">${fmtDesc(m.descricao)}</div></div>`:''}
   <div class="dt-sec dt-end">${V.whatsapp?`<a class="btn" target="_blank" rel="noopener" href="${esc(wa('Olá! Vi a moto '+m.nome+ofTxt(m)+' no seu site e gostaria de tirar uma dúvida.'))}">Tirar dúvidas no chat com o vendedor</a>`:`<button class="btn" onclick="chatOpen(null,'${m.id}')">Tirar dúvidas no chat com o vendedor</button>`}<button class="btn" onclick="shareM()">Compartilhar esta moto</button></div>
-  <div class="dt-bar"><button class="btn red" onclick="openM(cur,'con')">Simular consórcio</button><button class="btn red2" onclick="openM(cur,'fin')">Simular financiamento</button></div>`}
+  <div class="dt-bar"><button class="btn red2" onclick="shareM()">Compartilhar</button><a class="btn red wa" target="_blank" rel="noopener" href="${wa('Olá! Tenho interesse na '+hn(m)+corTxt(m)+'. Gostaria de tirar uma dúvida.')}">Tirar dúvida</a></div>`}
   if(v==='con'){const p=m.planos||[];b=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>Tabela de consórcio</h3><button class="btn red pill" onclick="howOrVideo()">▶ Como funciona?</button></div>${cartaH(p)} ${how('Você entra em um grupo e paga parcelas mensais sem juros (há taxa de administração). A moto é liberada por sorteio ou lance. Fale com o vendedor para tirar suas dúvidas.')}
     ${f[0]?`<div style="border:1px solid var(--bd);border-radius:14px;margin:12px 0;overflow:hidden"><img ${IMGA(f[0],'det')} alt="${esc(m.nome)}" style="display:block;width:100%;${soCon(m)?'max-height:340px':'height:230px'};object-fit:contain"></div>`:''}
     <h3 style="text-align:center">${esc(m.emplacamento||'Com emplacamento')}</h3><div class="pl">${p.map((x,k)=>`<label><input type="radio" name="pl" value="${k}" ${k?'':'checked'}>${x.parcelas}x <b>${brl(x.valor)}</b></label>`).join('')||'<p class="mu">Consulte os planos com o vendedor.</p>'}</div>
@@ -3646,20 +3646,10 @@ function shMoto(){const m=L[cur];if(!m)return null;const cor=COR_SEL[m.id]||'';l
   if(cor){try{k=corFoto(m,cor)}catch(e){k=-1}}if(k<0&&typeof G==='number')k=G;const f=(m.fotos||[])[k>=0?k:0]||img0(m);
   return {m:Object.assign({},m,{fotos:f?[f]:[],categoria:[m.categoria,cor?'Cor '+cor:''].filter(Boolean).join(' · ')}),cor}}
 let SHB=null;
-async function shareM(){const r=shMoto();if(!r)return;const m=L[cur],u=siteUrl()+'/'+SLUG+'#moto='+m.id;
-  document.querySelectorAll('.shm').forEach(x=>x.remove());
-  const d=document.createElement('div');d.className='shm';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-label','Compartilhar '+(m.nome||'moto'));
-  d.innerHTML=`<div class="shm-b"><button type="button" class="shm-x" aria-label="Fechar" onclick="this.closest('.shm').remove()">×</button><h3>Compartilhar esta moto</h3><p>${r.cor?'Cartão da cor <b>'+esc(r.cor)+'</b>, ':'Cartão '}com a tabela do consórcio e o contato de ${esc((V.nome||'').split(' ')[0]||'seu vendedor')}.</p><div class="shm-p"><div class="shm-ld">Gerando a imagem…</div></div><div class="shm-a"><button type="button" class="btn red" id="shm_s" disabled>Compartilhar imagem</button><button type="button" class="btn" id="shm_d" disabled>Baixar imagem</button><button type="button" class="btn" id="shm_l">Copiar link</button></div></div>`;
-  d.addEventListener('click',e=>{if(e.target===d)d.remove()});document.body.appendChild(d);
-  d.querySelector('#shm_l').onclick=()=>{const ok=()=>toast('Link copiado!');if(navigator.clipboard)navigator.clipboard.writeText(u).then(ok,()=>prompt('Copie o link:',u));else prompt('Copie o link:',u)};
-  try{const p=await cdPronto(r.m);SHB=p.b;if(!d.isConnected)return;const url=URL.createObjectURL(p.b),pv=d.querySelector('.shm-p');pv.innerHTML=`<img alt="Cartão da ${esc(m.nome||'moto')} pronto para compartilhar" src="${url}">`;
-    const nome=cdNome(r.m).replace(/\.png$/,(r.cor?'-'+r.cor.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-'):'')+'.png'),file=new File([p.b],nome,{type:'image/png'});
-    const bs=d.querySelector('#shm_s'),bd=d.querySelector('#shm_d');bd.disabled=false;
-    bd.onclick=()=>{const a=document.createElement('a');a.href=url;a.download=nome;document.body.appendChild(a);a.click();a.remove();toast('Imagem baixada')};
-    if(navigator.canShare&&navigator.canShare({files:[file]})){bs.disabled=false;bs.onclick=async()=>{try{await navigator.share({files:[file],title:m.nome,text:(m.nome||'')+' — '+u})}catch(e){if(e&&e.name!=='AbortError')toast('Não consegui compartilhar. Use Baixar imagem.')}}}
-    else{bs.remove();bd.classList.add('red')}
-    if(p.aviso)toast('Imagem gerada'+p.aviso)}
-  catch(e){const pv=d.querySelector('.shm-p');if(pv)pv.innerHTML='<div class="shm-ld">Não consegui gerar a imagem agora. Use “Copiar link”.</div>'}}
+async function shareM(){const r=shMoto();if(!r||SHB)return;SHB=1;const m=L[cur];toast('Gerando a imagem…');
+  try{const p=await cdPronto(r.m),nome=cdNome(r.m).replace(/\.png$/,(r.cor?'-'+r.cor.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-'):'')+'.png'),url=URL.createObjectURL(p.b),a=document.createElement('a');
+    a.href=url;a.download=nome;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);toast('Imagem baixada! Agora é só postar ou mandar no WhatsApp.'+(p.aviso||''))}
+  catch(e){toast('Não consegui gerar a imagem. Tente de novo.')}finally{SHB=null}}
 
 init();
 </script>
