@@ -1858,6 +1858,7 @@ const HONDA_VB='0 0 244.7 199.9',HONDA_D='M82.2 164.3C80.8 164.3 76.4 164.2 72.4
 const FORA=()=>{try{return !!(V&&V.uf&&V.uf!=='AC'&&!((CFG&&CFG.lojas)||[]).some(l=>l.id===V.loja_id))}catch(e){return false}};const LOGO_F=()=>FORA()?'claro':(['escuro','claro','nenhum'].includes(CFG&&CFG.logo_fundo)?CFG.logo_fundo:'escuro');const LOGO_U=()=>{try{return FORA()?(V.concessionaria_logo||''):((CFG&&CFG.logo_empresa)||'')}catch(e){return''}}; function marcaPadrao(n){if(FORA()){const c=(V.concessionaria||'').trim();return `<span class="hlg-t">${esc(c||'Concessionária Honda')}</span>`}return `<svg class="hst" viewBox="6 19 88 62" aria-hidden="true" focusable="false"><path d="${STAR_D}" fill="#f01428"/></svg><span class="hlg-t">${esc(n||'Grupo Star')}</span>`}
 function marcaFalha(el){const s=el&&el.closest?el.closest('.hlg'):null;if(s){s.className='hlg hlg-escuro';s.innerHTML=marcaPadrao(s.closest('.hmb')?'Star Motos':'')}}
 function marcaH(){const f=LOGO_F();
+  if(FORA()&&logoOk()){const c=(V.concessionaria||'').trim();return `<span class="hlg hlg-fora" role="img" aria-label="${esc(c||'Concessionária')}"><span class="hlg-bx"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>${c?`<span class="hlg-t">${esc(c)}</span>`:''}</span>`}
   if(logoOk())return `<span class="hlg hlg-${f}" role="img" aria-label="Grupo Star"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>`;
   return `<span class="hlg hlg-escuro" role="img" aria-label="Grupo Star">${marcaPadrao()}</span>`}
 function hondaSvg(){return `<svg class="hn-s" viewBox="${HONDA_VB}" role="img" aria-label="Honda" focusable="false"><defs><linearGradient id="hnG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff3a4d"/><stop offset=".5" stop-color="#e4172b"/><stop offset="1" stop-color="#a30e1c"/></linearGradient></defs><path fill="url(#hnG)" fill-rule="evenodd" d="${HONDA_D}"/></svg>`}
@@ -1873,6 +1874,7 @@ function celular(){try{return matchMedia('(max-width:979px)').matches}catch(e){r
 
 /* ===== v38: marca no alto do topo do celular (logo + nome Star Motos, acima da foto do vendedor) ===== */
 function marcaCelH(){const f=LOGO_F();
+  if(FORA()&&logoOk()){const c=(V.concessionaria||'').trim();return `<div class="hmb"><span class="hlg hlg-fora" role="img" aria-label="${esc(c||'Concessionária')}"><span class="hlg-bx"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>${c?`<span class="hlg-t">${esc(c)}</span>`:''}</span></div>`}
   if(logoOk())return `<div class="hmb"><span class="hlg hlg-${f}" role="img" aria-label="Star Motos"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span></div>`;
   return `<div class="hmb"><span class="hlg hlg-escuro" role="img" aria-label="Star Motos">${marcaPadrao('Star Motos')}</span></div>`}
 
@@ -3813,6 +3815,15 @@ html body .criar:focus-visible{outline:3px solid #fff;outline-offset:3px}
 .cd:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--r) 35%,transparent),var(--sh)}
 .sec h2{letter-spacing:-.02em}
 @media(prefers-reduced-motion:reduce){.cd,.cd .im img,html body .criar{transition:none}}
+
+/*v33-marca-concessionaria*/
+.hero.v34 .hlg-fora{background:none;border:0;padding:0;box-shadow:none;border-radius:0;gap:14px;align-items:center}
+.hero.v34 .hlg-fora .hlg-bx{display:inline-flex;align-items:center;justify-content:center;background:#fff;padding:8px 14px;border-radius:12px;box-shadow:0 10px 24px -14px #000}
+.hero.v34 .hlg-fora .hlg-bx img{display:block;height:46px;width:auto;max-width:min(220px,44vw);object-fit:contain}
+.hero.v34 .hlg-fora .hlg-t{font-weight:800;font-size:clamp(20px,1.9vw,27px);letter-spacing:-.015em;line-height:1.05;white-space:normal;max-width:min(360px,52vw);text-shadow:0 2px 10px #0008}
+.hmk .hlg-fora{gap:16px}.hmk .hlg-fora .hlg-bx img{height:clamp(50px,4.2vw,66px)}.hmk .hlg-fora .hlg-t{font-size:clamp(26px,2.5vw,38px)}
+.hmb .hlg-fora .hlg-bx img{height:40px}.hmb .hlg-fora .hlg-t{font-size:20px}
+@media(max-width:640px){.hero.v34 .hlg-fora{gap:12px}.hero.v34 .hlg-fora .hlg-t{max-width:56vw}}
 </style>
 </body>
 </html>
