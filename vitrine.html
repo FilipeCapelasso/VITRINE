@@ -3671,6 +3671,15 @@ const psAbas0=psAbas;psAbas=function(){psAbas0();psPolish()};
 const psSync0=psSync;psSync=function(){psSync0();psStatus()};
 
 function bioMais(b){const p=document.getElementById('vbio');if(!p)return;const ab=p.classList.toggle('vb-cl');b.textContent=ab?'Ler mais':'Ler menos';b.setAttribute('aria-expanded',ab?'false':'true')}
+
+/* ===== v32: erros do navegador vão para o admin geral (sem dados do cliente; no máximo 3 por carregamento) ===== */
+(function(){if(typeof sb==='undefined'||!sb)return;let n=0;const seen=new Set();
+  function manda(onde,msg,det){try{if(n>=3)return;const k=onde+'|'+msg;if(seen.has(k))return;seen.add(k);n++;
+    if(/ResizeObserver|Script error\.?$|Load failed|NetworkError|Failed to fetch|AbortError/i.test(msg))return;
+    sb.rpc('registrar_erro_front',{p:{onde:'vitrine/'+(typeof SLUG==='string'?SLUG:'')+(location.pathname.endsWith('/admin')?'/admin':''),msg:String(msg).slice(0,300),det:String(det||'').slice(0,1200)}}).then(()=>{},()=>{})}catch(e){}}
+  addEventListener('error',e=>{if(e&&e.message)manda('js',e.message,(e.filename||'')+':'+(e.lineno||0)+' '+((e.error&&e.error.stack)||''))});
+  addEventListener('unhandledrejection',e=>{const r=e&&e.reason;manda('promise',(r&&(r.message||r.msg))||String(r),(r&&r.stack)||'')});
+})();
 </script>
 <style id="v39">/*v50-honda-sem-preto*/
 body.pn-on .mn.ent>#pn{animation:pnIn .55s cubic-bezier(.2,.8,.2,1) both}body.pn-on .mn.ent .mt2{animation:pnIn .5s cubic-bezier(.2,.8,.2,1) both}
