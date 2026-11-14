@@ -2064,7 +2064,7 @@ function enSlow(){document.querySelectorAll('.en-w').forEach(w=>{const s=w.query
     pos=Math.max(0,Math.min(max,pos+dir*VEL*dt));s.scrollLeft=pos;setv=s.scrollLeft;
     if(dir>0&&pos>=max-1){dir=-1;pausa=Date.now()+2500}else if(dir<0&&pos<=0){dir=1;pausa=Date.now()+2500}}
   w._ap=reset=>{if(reset)pausa=0;const on=ligado(),b=w.querySelector('.en-ap');s.classList.toggle('slow',on);if(b){b.setAttribute('aria-pressed',on?'false':'true');b.setAttribute('aria-label',on?'Pausar a rolagem automática':'Ligar a rolagem automática');b.title=b.getAttribute('aria-label');b.textContent=on?'⏸':'▶'}if(on&&vis){last=0;requestAnimationFrame(tick)}};
-  if(window.IntersectionObserver)new IntersectionObserver(es=>{vis=es[0].isIntersecting;if(vis&&ligado()){last=0;requestAnimationFrame(tick)}},{threshold:.1}).observe(w);else{vis=true;if(ligado())requestAnimationFrame(tick)}
+  if(window.IntersectionObserver)new IntersectionObserver(es=>{const agora=es[0].isIntersecting;if(agora&&!vis){para(2000)}vis=agora;if(vis&&ligado()){last=0;requestAnimationFrame(tick)}},{threshold:.35}).observe(w);else{vis=true;para(2000);if(ligado())requestAnimationFrame(tick)}
   w._ap()})} function enNav(btn,d){const s=btn.parentElement.querySelector('.en-s');if(s)s.scrollBy({left:d*Math.max(260,s.clientWidth*.8),behavior:'smooth'})}
 const entH=()=>{const all=(CF().entregas||[]).filter(enOk),en=enOrd(all.filter(x=>x.t!=='c')),ct=enOrd(all.filter(x=>x.t==='c'));let h='';
   if(en.length)h+=`<section class="ent" id="entregas"><div class="sec"><div><span class="eyb ey2">CLIENTES FELIZES</span><h2>Mais um sonho realizado</h2><p class="mu" style="margin:4px 0 0;font-size:14px">Quem já saiu de moto nova com a gente.</p></div></div><div class="en-w"><div class="en-s">${en.map(entCard).join('')}</div><button type="button" class="en-nv l" aria-label="Anterior" onclick="enNav(this,-1)">‹</button><button type="button" class="en-nv r" aria-label="Próximo" onclick="enNav(this,1)">›</button></div></section>`;
@@ -2085,11 +2085,11 @@ function home(){
   const _pr=temaPreto();if(ALTA()||_pr)altaFonte();document.body.classList.toggle('alta',ALTA());document.body.classList.toggle('fpr',_pr);
   $('#app').innerHTML=`${tnavH()}${ALTA()?heroAltaH():celular()?`<header class="hero"><span class="glow"></span><div class="spd"><i></i><i></i><i></i><i></i></div>
   ${marcaCelH()}<div class="hin nl">${av(V.foto_url)}
-  <div class="idt"><h1>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>${V.bio?`<p>${esc(V.bio)}</p>`:''}</div>
+  <div class="idt"><h1>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>${V.bio?`<p class="vbio${V.bio.length>170?' vb-cl':''}" id="vbio">${esc(V.bio)}</p>${V.bio.length>170?`<button type="button" class="vbio-m" onclick="bioMais(this)" aria-expanded="false" aria-controls="vbio">Ler mais</button>`:''}`:''}</div>
   <h2 class="hhead"><span class="eyb">ENCONTRE A SUA HONDA</span>${hhead()}</h2>${heroExtra()}
   <div class="ctas"><a class="cta w" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site e quero uma moto.')}" onclick="return chatOpen(event)">${IC.wa}${esc(CUSTV('cta','Fale comigo'))}</a>${(V.instagram||V.facebook)?`<div class="soc">${V.instagram?`<a class="cta" target="_blank" rel="noopener" href="https://instagram.com/${esc(V.instagram)}">${IC.ig}Instagram</a>`:''}${V.facebook?`<a class="cta" target="_blank" rel="noopener" href="${esc(fbu(V.facebook))}">${IC.fb}Facebook</a>`:''}</div>`:''}</div>
   <div class="stats"><div><b data-n="${AM.length}">${AM.length}</b><span>modelos para escolher</span></div>${statP2(mn)}</div></div>${heroFeat()}</header>`:`<header class="hero v34"><span class="glow"></span><div class="spd"><i></i><i></i><i></i><i></i></div>
-  ${luzesH()}<div class="hin nl"><div class="hb">${av(V.foto_url,'s')} <div class="idt"><h1>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>${V.bio?`<p>${esc(V.bio)}</p>`:''}</div></div>
+  ${luzesH()}<div class="hin nl"><div class="hb">${av(V.foto_url,'s')} <div class="idt"><h1>${esc(V.nome)}<svg class="vf" viewBox="0 0 24 24" aria-label="Verificado" role="img"><circle cx="12" cy="12" r="11" fill="#1d9bf0"/><path d="M7 12.5l3.2 3.2L17 9" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></h1>${V.bio?`<p class="vbio${V.bio.length>170?' vb-cl':''}" id="vbio">${esc(V.bio)}</p>${V.bio.length>170?`<button type="button" class="vbio-m" onclick="bioMais(this)" aria-expanded="false" aria-controls="vbio">Ler mais</button>`:''}`:''}</div></div>
   <h2 class="hhead"><span class="eyb">ENCONTRE A SUA HONDA</span>${hhead()}</h2>${heroExtra(1)}
   <div class="ctas"><a class="cta w" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site e quero uma moto.')}" onclick="return chatOpen(event)">${IC.wa}${esc(CUSTV('cta','Fale comigo'))}</a>${(V.instagram||V.facebook)?`<div class="soc">${V.instagram?`<a class="cta" target="_blank" rel="noopener" href="https://instagram.com/${esc(V.instagram)}">${IC.ig}Instagram</a>`:''}${V.facebook?`<a class="cta" target="_blank" rel="noopener" href="${esc(fbu(V.facebook))}">${IC.fb}Facebook</a>`:''}</div>`:''}</div>
   <div class="stats"><div><b data-n="${AM.length}">${AM.length}</b><span>modelos para escolher</span></div>${statP2(mn)}</div><div class="hmk">${marcaH()}</div></div>${heroDir()}</header>`}
@@ -3669,6 +3669,8 @@ function psPolish(){const ps=document.querySelector('#pn .ps');if(!ps)return;
 function psStatus(){const st=document.getElementById('ps_st');if(!st)return;const d=!!PSLIVE;st.classList.toggle('dirty',d);st.textContent=d?'Alterações não publicadas':'Tudo publicado'}
 const psAbas0=psAbas;psAbas=function(){psAbas0();psPolish()};
 const psSync0=psSync;psSync=function(){psSync0();psStatus()};
+
+function bioMais(b){const p=document.getElementById('vbio');if(!p)return;const ab=p.classList.toggle('vb-cl');b.textContent=ab?'Ler mais':'Ler menos';b.setAttribute('aria-expanded',ab?'false':'true')}
 </script>
 <style id="v39">/*v50-honda-sem-preto*/
 body.pn-on .mn.ent>#pn{animation:pnIn .55s cubic-bezier(.2,.8,.2,1) both}body.pn-on .mn.ent .mt2{animation:pnIn .5s cubic-bezier(.2,.8,.2,1) both}
@@ -3780,6 +3782,28 @@ html.ho-nvm .hn-s,html.ho-nvm .hn-i{filter:drop-shadow(0 6px 16px #00000038)!imp
 .ps-pv>h4:before{content:"";width:8px;height:8px;border-radius:50%;background:#22c55e;box-shadow:0 0 0 4px #22c55e30}
 @media(max-width:899px){html body .shell .sd .nv{word-break:normal;overflow-wrap:normal;font-size:9.6px;letter-spacing:-.15px}}
 @media(prefers-reduced-motion:reduce){.ps-st.dirty:before,.ps-flash{animation:none}}
+
+/*v31-vitrine-premium*/
+.vbio{position:relative}.vbio.vb-cl{display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden}
+.vbio-m{appearance:none;border:0;background:none;color:#fff;opacity:.85;font:700 13.5px Inter,system-ui,sans-serif;padding:4px 0 0;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+.vbio-m:hover{opacity:1}
+html body .criar-w{margin:26px 0 8px}
+html body .criar{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:54px;padding:0 30px;border-radius:999px;background:linear-gradient(180deg,#ffffff,#eceef3);color:#101016!important;font:800 15px/1 Inter,system-ui,sans-serif;letter-spacing:-.005em;white-space:nowrap;text-decoration:none;border:1px solid #ffffffcc;box-shadow:0 1px 0 #fff inset,0 18px 34px -18px #000c,0 0 0 6px #ffffff10;transition:transform .22s cubic-bezier(.2,.8,.2,1),box-shadow .22s,filter .22s;filter:none}
+html body .criar:before{content:"";width:9px;height:9px;border-radius:50%;background:var(--r,#c80000);box-shadow:0 0 0 4px color-mix(in srgb,var(--r,#c80000) 22%,transparent)}
+html body .criar:after{content:"→";font-weight:900;font-size:16px;transition:transform .22s}
+html body .criar:hover{transform:translateY(-2px);box-shadow:0 1px 0 #fff inset,0 24px 40px -18px #000d,0 0 0 8px #ffffff14;filter:none}
+html body .criar:hover:after{transform:translateX(3px)}
+html body .criar:active{transform:translateY(0) scale(.985)}
+html body .criar:focus-visible{outline:3px solid #fff;outline-offset:3px}
+.criar-s{display:block;margin:10px 0 0;font-size:12.5px;color:#ffffff99}
+@media(max-width:520px){html body .ck{padding:14px 16px 14px;font-size:13px;line-height:1.45;border-radius:18px}html body .ck b{font-size:15px;margin-bottom:4px}html body .ck p{margin:0 0 6px}html body .ck p+p{display:none}html body .ck .r{margin-top:10px;gap:12px}html body .ck button{padding:10px 22px;font-size:14px}}
+.cd .cb small{font-size:11.5px;letter-spacing:.02em;text-transform:uppercase;font-weight:700;color:#8a8a95}
+.cd .cb h3{letter-spacing:-.015em}
+.cd .par{display:flex;flex-direction:column;gap:2px}
+.cd .two .btn{font-weight:700}
+.cd:focus-within{box-shadow:0 0 0 3px color-mix(in srgb,var(--r) 35%,transparent),var(--sh)}
+.sec h2{letter-spacing:-.02em}
+@media(prefers-reduced-motion:reduce){.cd,.cd .im img,html body .criar{transition:none}}
 </style>
 </body>
 </html>
