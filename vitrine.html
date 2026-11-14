@@ -2648,6 +2648,30 @@ const VCL={novo:'s-novo',atendimento:'s-atendimento',em_analise:'s-atendimento',
 const VLB={tipo:'Tipo',pagamento:'Modalidade',cor:'Cor da moto',telefone:'Telefone',email:'E-mail',cpf:'CPF',rg:'RG',rg_emissao:'Emissão do documento',nascimento:'Nascimento',cidade_nascimento:'Naturalidade',pai:'Pai',mae:'Mãe',cep:'CEP',rua:'Rua',numero:'Número',bairro:'Bairro',cidade:'Cidade',estado:'Estado',telefone_recado:'Telefone de recado',ref_nome:'Referência',ref_telefone:'Tel. da referência',profissao:'Profissão',ocupacao:'Vínculo de trabalho',renda:'Renda mensal',debito_automatico:'Débito automático',conta:'Número da conta',agencia:'Agência',banco:'Banco',entrada:'Entrada',parcela:'Parcela desejada',forma_pagamento:'Forma de pagamento',troca:'Moto na troca',parcelamento_cartao:'Parcelamento',habilitacao:'Habilitação',lance:'Lance',lance_valor:'Valor do lance'};
 const VPG={consorcio:'Consórcio',financiamento:'Financiamento',avista:'À vista',cartao:'Cartão de crédito'};
 const vdNovo=x=>(x.status||'novo')==='novo'&&(x._s!=='chat'||x.completo);
+/*v41-cliente-unico: o mesmo cliente (telefone ou CPF) com a MESMA moto e cor vira UM card; os registros originais continuam intactos no banco*/
+let VRAW=[];
+const vdDig=t=>String(t||'').replace(/\D/g,'');
+const vdPrio=x=>x._s==='contrato'?5:x._s==='ficha'?4:(x._s==='chat'&&x.completo)?3:x._s==='contato'?2:1;
+const vdVz=v=>v==null||String(v).trim()==='';
+function vdMerge(R){
+  const G=[],nz=t=>String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+  R.forEach(x=>{
+    const tel=vdDig(x.telefone).slice(-9),cpf=vdDig(x.cpf),nm=nz(x.nome_completo||x.nome),mt=nz(x.moto_nome),cr=nz(x.cor);
+    const g=G.find(g=>{
+      const pessoa=(tel.length>=9&&g.tel.has(tel))||(cpf.length===11&&g.cpf.has(cpf))||(tel.length<9&&cpf.length!==11&&nm&&g.nm.has(nm)&&!g.tel.size&&!g.cpf.size);
+      return pessoa&&(!mt||!g.mt||mt===g.mt)&&(!cr||!g.cr||cr===g.cr)});
+    if(g){g.m.push(x);if(tel.length>=9)g.tel.add(tel);if(cpf.length===11)g.cpf.add(cpf);if(nm)g.nm.add(nm);if(!g.mt)g.mt=mt;if(!g.cr)g.cr=cr}
+    else G.push({m:[x],tel:new Set(tel.length>=9?[tel]:[]),cpf:new Set(cpf.length===11?[cpf]:[]),nm:new Set(nm?[nm]:[]),mt,cr})});
+  const SKIP=['id','_s','status','fase','completo','created_at','updated_at','concluido','_all','_src'];
+  return G.map(g=>{
+    if(g.m.length===1)return g.m[0];
+    const ms=[...g.m].sort((a,b)=>vdPrio(b)-vdPrio(a)||new Date(b.created_at)-new Date(a.created_at)),o={...ms[0]};
+    ms.slice(1).forEach(y=>Object.keys(y).forEach(k=>{if(!SKIP.includes(k)&&vdVz(o[k])&&!vdVz(y[k]))o[k]=y[k]}));
+    if(vdVz(o.fase)){const f=ms.find(y=>!vdVz(y.fase));if(f)o.fase=f.fase}
+    o._all=ms;o._src=[...new Set(ms.map(y=>y._s))];
+    o.created_at=ms.reduce((a,y)=>new Date(y.created_at)>new Date(a)?y.created_at:a,ms[0].created_at);
+    return o}).sort((a,b)=>new Date(b.created_at)-new Date(a.created_at))}
+const vdAtu=()=>{VD=vdMerge(VRAW)};
 async function vdLoad(){
   const q=t=>sb.from(t).select().order('created_at',{ascending:false}).limit(300);
   const r=await Promise.all([q('pedidos_chat'),q('fichas'),q('contratos'),q('leads'),sb.from('rascunhos').select().eq('completo',false).order('updated_at',{ascending:false}).limit(200)]);
@@ -2655,13 +2679,13 @@ async function vdLoad(){
   if(r.slice(0,4).every(x=>x.error))return false;
   const tag=(x,k)=>(x.data||[]).map(o=>({...o,_s:k}));
   const rs=((r[4]&&r[4].data)||[]).map(o=>({...(o.dados||{}),...o,_s:'rascunho',created_at:o.updated_at}));
-  VD=[...tag(r[0],'chat'),...tag(r[1],'ficha'),...tag(r[2],'contrato'),...tag(r[3],'contato'),...rs].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));
+  VRAW=[...tag(r[0],'chat'),...tag(r[1],'ficha'),...tag(r[2],'contrato'),...tag(r[3],'contato'),...rs].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));VD=vdMerge(VRAW);
   return true}
 
 /* ===== o painel LEMBRA o que você abriu (Ver todos os dados / Detalhes) e só redesenha quando algo realmente mudou ===== */
 const VOPEN=new Set();let VSIG='';
 document.addEventListener('toggle',e=>{const d=e.target;if(d&&d.dataset&&d.dataset.k){if(d.open)VOPEN.add(d.dataset.k);else VOPEN.delete(d.dataset.k)}},true);
-const vdSig=()=>VD.map(o=>o._s+o.id+'|'+(o.status||'')+'|'+(o.fase||'')+'|'+(o.completo?1:0)+'|'+(o.updated_at||o.created_at)+'|'+(o.nome||'')+(o.telefone||'')).join(';');
+const vdSig=()=>VRAW.map(o=>o._s+o.id+'|'+(o.status||'')+'|'+(o.fase||'')+'|'+(o.completo?1:0)+'|'+(o.updated_at||o.created_at)+'|'+(o.nome||'')+(o.telefone||'')).join(';');
 async function pVendas(quiet){
   if(!quiet)$('#pn').innerHTML='<div class="kp kg">'+'<div class="sk" style="height:84px"></div>'.repeat(3)+'</div>';
   const ok=await vdLoad();
@@ -2686,12 +2710,12 @@ const VRT={pedidos_chat:'chat',fichas:'ficha',contratos:'contrato',leads:'contat
 function vdRepinta(){if(T==='vendas'&&$('#vdl')){VSIG=vdSig();vdView()}}
 /* o registro que chega pelo tempo real entra DIRETO na lista (sem esperar nenhuma consulta) */
 function vdAplica(t,e){const k=VRT[t];if(!k||!e)return;
-  if(e.eventType==='DELETE'){const id=e.old&&e.old.id;if(id){VD=VD.filter(o=>!(o._s===k&&o.id===id));vdRepinta()}return}
+  if(e.eventType==='DELETE'){const id=e.old&&e.old.id;if(id){VRAW=VRAW.filter(o=>!(o._s===k&&o.id===id));vdAtu();vdRepinta()}return}
   const r=e.new;if(!r||!r.id)return;
-  if(k==='rascunho'&&r.completo){VD=VD.filter(o=>!(o._s===k&&o.id===r.id));vdRepinta();return}
-  const o=k==='rascunho'?{...(r.dados||{}),...r,_s:k,created_at:r.updated_at||r.created_at}:{...r,_s:k},i=VD.findIndex(x=>x._s===k&&x.id===r.id);
-  if(i>=0)VD[i]={...VD[i],...o};else VD.unshift(o);
-  VD.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));vdRepinta()}
+  if(k==='rascunho'&&r.completo){VRAW=VRAW.filter(o=>!(o._s===k&&o.id===r.id));vdAtu();vdRepinta();return}
+  const o=k==='rascunho'?{...(r.dados||{}),...r,_s:k,created_at:r.updated_at||r.created_at}:{...r,_s:k},i=VRAW.findIndex(x=>x._s===k&&x.id===r.id);
+  if(i>=0)VRAW[i]={...VRAW[i],...o};else VRAW.unshift(o);
+  VRAW.sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));vdAtu();vdRepinta()}
 function vdLiveUi(){const e=document.getElementById('vdlive');if(e){e.className='vd-live'+(VLIVE?'':' off');e.lastChild.textContent=VLIVE?'Ao vivo':'Reconectando…'}}
 function vdLive(){
   if(VCH||!sb)return;
@@ -2733,8 +2757,11 @@ async function testarEntrega(){
 
 function vdCampos(x){return Object.keys(VLB).filter(k=>x[k]!=null&&String(x[k]).trim()!=='').map(k=>{let v=x[k];if(k==='cpf')v=pCpf(v);else if(k==='pagamento')v=VPG[v]||v;else if(k==='tipo')v=TL[v]||v;return[VLB[k],v]})}
 
-async function vdSt(s,id,v){const{error}=await sb.from(VTAB[s]).update({status:v}).eq('id',id);if(error)return toast('Erro: '+error.message);const x=VD.find(o=>o.id===id&&o._s===s);if(x)x.status=v;vdView()}
-async function vdDel(s,id){if(!confirm('Excluir este registro? Não dá para desfazer.'))return;const{error}=await sb.from(VTAB[s]).delete().eq('id',id);if(error)return toast('Erro: '+error.message);VD=VD.filter(o=>!(o.id===id&&o._s===s));vdView()}
+async function vdSt(s,id,v){const{error}=await sb.from(VTAB[s]).update({status:v}).eq('id',id);if(error)return toast('Erro: '+error.message);const x=VRAW.find(o=>o.id===id&&o._s===s);if(x)x.status=v;vdAtu();vdView()}
+async function vdDel(s,id){const x=VD.find(o=>o.id===id&&o._s===s),L=(x&&x._all)||[{_s:s,id}];
+  if(!confirm(L.length>1?'Excluir este cliente? Isso apaga os '+L.length+' registros reunidos nele ('+[...new Set(L.map(o=>VSRC[o._s]))].join(', ')+'). Não dá para desfazer.':'Excluir este registro? Não dá para desfazer.'))return;
+  for(const o of L){const{error}=await sb.from(VTAB[o._s]).delete().eq('id',o.id);if(error)return toast('Erro: '+error.message);VRAW=VRAW.filter(y=>!(y.id===o.id&&y._s===o._s))}
+  vdAtu();vdView()}
 function vdCp(s,id){const x=VD.find(o=>o.id===id&&o._s===s);if(!x)return;
   const t=[VSRC[s]+' · '+new Date(x.created_at).toLocaleString('pt-BR'),'Cliente: '+(x.nome_completo||x.nome||''),'Moto: '+(x.moto_nome||''),...vdCampos(x).map(a=>a[0]+': '+a[1]),x.detalhes?'Detalhes: '+x.detalhes:'',x.mensagem?'Mensagem: '+x.mensagem:''].filter(Boolean).join('\n');
   navigator.clipboard.writeText(t).then(()=>toast('Dados copiados!'),()=>toast('Não foi possível copiar'))}
@@ -2935,9 +2962,9 @@ async function pInicio0(){
 /* ---- Clientes ---- */
 function vdView(){
   const sy=window.scrollY,mnt=document.querySelector('.mn'),sm=mnt?mnt.scrollTop:0;
-  const q=nzs(VQ).trim(),c={todos:VD.length,novos:VD.filter(vdNovo).length};Object.keys(VSRC).forEach(k=>c[k]=VD.filter(x=>x._s===k).length);
+  const q=nzs(VQ).trim(),c={todos:VD.length,novos:VD.filter(vdNovo).length};Object.keys(VSRC).forEach(k=>c[k]=VD.filter(x=>(x._src||[x._s]).includes(k)).length);
   const fl=[['todos','Todos'],['novos','Novos'],...Object.entries(VSRC)];
-  const f=VD.filter(x=>(VF==='todos'||(VF==='novos'?vdNovo(x):x._s===VF))&&(!VFASE||faseDe(x)===VFASE)&&(!q||nzs([x.nome,x.nome_completo,x.telefone,x.cpf,x.email,x.moto_nome].join(' ')).includes(q)));
+  const f=VD.filter(x=>(VF==='todos'||(VF==='novos'?vdNovo(x):(x._src||[x._s]).includes(VF)))&&(!VFASE||faseDe(x)===VFASE)&&(!q||nzs([x.nome,x.nome_completo,x.telefone,x.cpf,x.email,x.moto_nome].join(' ')).includes(q)));
   const hj=VD.filter(x=>new Date(x.created_at).toDateString()===new Date().toDateString()).length;
   $('#vdk').innerHTML=`<div class="kp3"><div class="${c.novos?'n':''}"><b>${c.novos}</b><span>novos</span></div><div><b>${hj}</b><span>hoje</span></div><div><b>${c.todos}</b><span>no total</span></div></div>`;
   $('#vdf').innerHTML=fl.map(o=>`<button class="${VF===o[0]?'on':''}" onclick="VF='${o[0]}';vdView()">${esc(o[1])} <em>${c[o[0]]||0}</em></button>`).join('')+`<select class="fs2" onchange="VFASE=+this.value;vdView()" aria-label="Filtrar por fase"><option value="0">Todas as fases</option>${PB.map(p=>`<option value="${p.n}" ${VFASE===p.n?'selected':''}>${p.n}. ${p.nome}</option>`).join('')}</select><span class="vd-live${VLIVE?'':' off'}" id="vdlive" title="Novos clientes aparecem aqui sozinhos, na hora"><i></i><span>${VLIVE?'Ao vivo':'Reconectando…'}</span></span>`;
@@ -2947,10 +2974,11 @@ async function vdFase(s,id,f){
   f=parseInt(f,10);const x=VD.find(o=>o.id===id&&o._s===s);
   const r=await sb.from(VTAB[s]).update({fase:f}).eq('id',id);
   if(r&&r.error){toast(/fase/i.test(r.error.message||'')?'Rode o SQL atualizado no Supabase (campo "fase")':'Erro: '+r.error.message);return vdView()}
-  if(x)x.fase=f;toast('Movido para a fase '+f+' · '+PB[f-1].nome);vdView()}
+  for(const y of ((x&&x._all)||[]).filter(y=>!(y.id===id&&y._s===s))){try{await sb.from(VTAB[y._s]).update({fase:f}).eq('id',y.id)}catch(e){}}
+  VRAW.forEach(y=>{if(y.id===id&&y._s===s||(x&&x._all&&x._all.some(z=>z.id===y.id&&z._s===y._s)))y.fase=f});vdAtu();toast('Movido para a fase '+f+' · '+PB[f-1].nome);vdView()}
 function vdCard(x){
   const s=x._s,k=x.status||'novo',stl=VST[s],nm=x.nome_completo||x.nome||'Cliente',w=wlk(x.telefone),f=faseDe(x),ph=PB[f-1],novo=vdNovo(x),pg=vdPagTxt(x),rasc=s==='rascunho'||(s==='chat'&&!x.completo);
-  return `<article class="cl ${novo?'is-new':''}" style="--fc:${ph.cor}"><div class="cl-h"><div class="cl-av">${esc(nm.trim().charAt(0).toUpperCase())}</div><div class="cl-m"><b>${esc(nm)}${novo?'<span class="nw">novo</span>':''}</b><small>${esc(x.moto_nome||'Moto não informada')}${x.cor?' · '+esc(x.cor):''}${pg?' · '+esc(pg):''}</small><small class="t">${esc(VSRC[s])} · ${ago(x.created_at)}${rasc?(x.concluido==='sim'?' · <u class="okc">terminou o chat</u>':' · <u>não concluiu o envio</u>'):''}</small></div></div>
+  return `<article class="cl ${novo?'is-new':''}" style="--fc:${ph.cor}"><div class="cl-h"><div class="cl-av">${esc(nm.trim().charAt(0).toUpperCase())}</div><div class="cl-m"><b>${esc(nm)}${novo?'<span class="nw">novo</span>':''}</b><small>${esc(x.moto_nome||'Moto não informada')}${x.cor?' · '+esc(x.cor):''}${pg?' · '+esc(pg):''}</small><small class="t">${esc((x._src||[s]).map(k=>VSRC[k]).join(' + '))} · ${ago(x.created_at)}${rasc?(x.concluido==='sim'?' · <u class="okc">terminou o chat</u>':' · <u>não concluiu o envio</u>'):''}</small></div></div>
   <div class="cl-f"><label>Fase da venda<select class="fs" onchange="vdFase('${s}','${x.id}',this.value)">${PB.map(p=>`<option value="${p.n}" ${p.n===f?'selected':''}>${p.n}. ${p.nome}</option>`).join('')}</select></label>${('status' in x&&Object.keys(stl).length)?`<label>Situação<select onchange="vdSt('${s}','${x.id}',this.value)">${Object.keys(stl).map(o=>`<option value="${o}" ${k===o?'selected':''}>${stl[o]}</option>`).join('')}</select></label>`:''}</div>
   <div class="cl-a">${w?`<a class="btn wa sm" target="_blank" rel="noopener" href="${w}">WhatsApp</a>`:''}<button class="btn red sm" onclick="vdMsg('${s}','${x.id}')">✉ Mensagem</button>${ccBtns(s,x.id)}</div>
   <details class="cl-d" data-k="${s}:${x.id}:d"${VOPEN.has(s+':'+x.id+':d')?' open':''}><summary>Ver todos os dados</summary><div class="pdg">${vdCampos(x).map(a=>dr(a[0],a[1])).join('')}</div>${x.detalhes?`<details data-k="${s}:${x.id}:t"${VOPEN.has(s+':'+x.id+':t')?' open':''}><summary>Detalhes</summary><pre>${esc(x.detalhes)}</pre></details>`:''}${x.mensagem?`<details data-k="${s}:${x.id}:m"${VOPEN.has(s+':'+x.id+':m')?' open':''}><summary>Mensagem enviada ao WhatsApp</summary><pre>${esc(x.mensagem)}</pre></details>`:''}<div class="cl-x"><button class="btn sm" onclick="vdCp('${s}','${x.id}')">Copiar dados</button><button class="btn sm" onclick="vdDel('${s}','${x.id}')">Excluir</button></div></details></article>`}
