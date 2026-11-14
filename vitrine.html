@@ -482,6 +482,15 @@ html body .shell .seg{background:linear-gradient(180deg,#eceef4,#e5e7ef)}
 .shell .seg button:focus-visible{outline:2px solid #0b0c10;outline-offset:2px}
 .shell .seg .nb{background:#e11d2a;color:#fff}
 @media(max-width:640px){.shell .seg{display:grid;grid-template-columns:1fr 1fr;width:100%}.shell .seg button{min-height:48px;padding:10px 10px 12px;font-size:14.5px}}
+/*v29-compartilhar-imagem*/
+.shm{position:fixed;inset:0;z-index:9999;background:rgba(8,8,14,.62);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:18px}
+.shm-b{position:relative;width:min(460px,100%);max-height:calc(100vh - 36px);overflow:auto;background:#fff;color:#14141c;border-radius:22px;padding:22px 20px 18px;box-shadow:0 30px 80px -20px #000a}
+.shm-b h3{margin:0 40px 4px 0;font-size:20px}.shm-b p{margin:0 0 14px;color:#55556a;font-size:14.5px;line-height:1.45}
+.shm-x{position:absolute;right:12px;top:12px;width:36px;height:36px;border-radius:50%;border:0;background:#f1f1f5;color:#14141c;font-size:22px;line-height:1;cursor:pointer}
+.shm-p{border-radius:16px;overflow:hidden;background:#f4f5f9;border:1px solid #e8e9f1;aspect-ratio:1080/1350;display:flex;align-items:center;justify-content:center}
+.shm-p img{display:block;width:100%;height:100%;object-fit:contain}
+.shm-ld{color:#6a6a78;font-size:14px;padding:20px;text-align:center}
+.shm-a{display:grid;gap:8px;margin-top:14px}.shm-a .btn{width:100%;justify-content:center;padding:13px 16px;font-size:15px}
 /*v24-acessos*/
 .ac{background:#fff;border:1px solid #e6e6f0;border-radius:22px;overflow:hidden;box-shadow:0 1px 2px rgba(20,20,40,.04)}
 .ac-hd{display:flex;flex-wrap:wrap;align-items:center;gap:14px;padding:22px 24px;background:linear-gradient(135deg,#4338ca,#8b5cf6);color:#fff}
@@ -3630,6 +3639,27 @@ ${!vis?`<div class="ac-empty"><b>Ainda não há visitas ${acPerTxt(D)}.</b><p>Di
 <div class="ac-tips">${dic.map(x=>`<div class="ac-tip${x.p?' main':''}"><span aria-hidden="true">${x.ic}</span><div><b>${x.h}</b><p>${esc(x.t)}</p></div></div>`).join('')}</div>
 <p class="ac-nota">🔒 A contagem é anônima: não guardamos nome, telefone nem IP. A mesma pessoa voltando em menos de 30 minutos conta uma vez só, e os acessos feitos pelo seu próprio aparelho não entram.</p>
 </section>`}
+
+
+/* ===== v29: "Compartilhar esta moto" no site gera o cartão em imagem (cor escolhida, tabela, vendedor) ===== */
+function shMoto(){const m=L[cur];if(!m)return null;const cor=COR_SEL[m.id]||'';let k=-1;
+  if(cor){try{k=corFoto(m,cor)}catch(e){k=-1}}if(k<0&&typeof G==='number')k=G;const f=(m.fotos||[])[k>=0?k:0]||img0(m);
+  return {m:Object.assign({},m,{fotos:f?[f]:[],categoria:[m.categoria,cor?'Cor '+cor:''].filter(Boolean).join(' · ')}),cor}}
+let SHB=null;
+async function shareM(){const r=shMoto();if(!r)return;const m=L[cur],u=siteUrl()+'/'+SLUG+'#moto='+m.id;
+  document.querySelectorAll('.shm').forEach(x=>x.remove());
+  const d=document.createElement('div');d.className='shm';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-label','Compartilhar '+(m.nome||'moto'));
+  d.innerHTML=`<div class="shm-b"><button type="button" class="shm-x" aria-label="Fechar" onclick="this.closest('.shm').remove()">×</button><h3>Compartilhar esta moto</h3><p>${r.cor?'Cartão da cor <b>'+esc(r.cor)+'</b>, ':'Cartão '}com a tabela do consórcio e o contato de ${esc((V.nome||'').split(' ')[0]||'seu vendedor')}.</p><div class="shm-p"><div class="shm-ld">Gerando a imagem…</div></div><div class="shm-a"><button type="button" class="btn red" id="shm_s" disabled>Compartilhar imagem</button><button type="button" class="btn" id="shm_d" disabled>Baixar imagem</button><button type="button" class="btn" id="shm_l">Copiar link</button></div></div>`;
+  d.addEventListener('click',e=>{if(e.target===d)d.remove()});document.body.appendChild(d);
+  d.querySelector('#shm_l').onclick=()=>{const ok=()=>toast('Link copiado!');if(navigator.clipboard)navigator.clipboard.writeText(u).then(ok,()=>prompt('Copie o link:',u));else prompt('Copie o link:',u)};
+  try{const p=await cdPronto(r.m);SHB=p.b;if(!d.isConnected)return;const url=URL.createObjectURL(p.b),pv=d.querySelector('.shm-p');pv.innerHTML=`<img alt="Cartão da ${esc(m.nome||'moto')} pronto para compartilhar" src="${url}">`;
+    const nome=cdNome(r.m).replace(/\.png$/,(r.cor?'-'+r.cor.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-'):'')+'.png'),file=new File([p.b],nome,{type:'image/png'});
+    const bs=d.querySelector('#shm_s'),bd=d.querySelector('#shm_d');bd.disabled=false;
+    bd.onclick=()=>{const a=document.createElement('a');a.href=url;a.download=nome;document.body.appendChild(a);a.click();a.remove();toast('Imagem baixada')};
+    if(navigator.canShare&&navigator.canShare({files:[file]})){bs.disabled=false;bs.onclick=async()=>{try{await navigator.share({files:[file],title:m.nome,text:(m.nome||'')+' — '+u})}catch(e){if(e&&e.name!=='AbortError')toast('Não consegui compartilhar. Use Baixar imagem.')}}}
+    else{bs.remove();bd.classList.add('red')}
+    if(p.aviso)toast('Imagem gerada'+p.aviso)}
+  catch(e){const pv=d.querySelector('.shm-p');if(pv)pv.innerHTML='<div class="shm-ld">Não consegui gerar a imagem agora. Use “Copiar link”.</div>'}}
 
 init();
 </script>
