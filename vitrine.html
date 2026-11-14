@@ -1858,7 +1858,7 @@ const HONDA_VB='0 0 244.7 199.9',HONDA_D='M82.2 164.3C80.8 164.3 76.4 164.2 72.4
 const FORA=()=>{try{return !!(V&&V.uf&&V.uf!=='AC'&&!((CFG&&CFG.lojas)||[]).some(l=>l.id===V.loja_id))}catch(e){return false}};const LOGO_F=()=>FORA()?'claro':(['escuro','claro','nenhum'].includes(CFG&&CFG.logo_fundo)?CFG.logo_fundo:'escuro');const LOGO_U=()=>{try{return FORA()?(V.concessionaria_logo||''):((CFG&&CFG.logo_empresa)||'')}catch(e){return''}}; function marcaPadrao(n){if(FORA()){const c=(V.concessionaria||'').trim();return `<span class="hlg-t">${esc(c||'Concessionária Honda')}</span>`}return `<svg class="hst" viewBox="6 19 88 62" aria-hidden="true" focusable="false"><path d="${STAR_D}" fill="#f01428"/></svg><span class="hlg-t">${esc(n||'Grupo Star')}</span>`}
 function marcaFalha(el){const s=el&&el.closest?el.closest('.hlg'):null;if(s){s.className='hlg hlg-escuro';s.innerHTML=marcaPadrao(s.closest('.hmb')?'Star Motos':'')}}
 function marcaH(){const f=LOGO_F();
-  if(FORA()&&logoOk()){const c=(V.concessionaria||'').trim();return `<span class="hlg hlg-fora" role="img" aria-label="${esc(c||'Concessionária')}"><span class="hlg-bx"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>${c?`<span class="hlg-t">${esc(c)}</span>`:''}</span>`}
+  if(FORA()&&(logoOk()||(V.concessionaria||'').trim())){const c=(V.concessionaria||'').trim();return `<span class="hlg hlg-fora" role="img" aria-label="${esc(c||'Concessionária')}">${logoOk()?`<span class="hlg-bx"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>`:''}${c?`<span class="hlg-t">${esc(c)}</span>`:''}</span>`}
   if(logoOk())return `<span class="hlg hlg-${f}" role="img" aria-label="Grupo Star"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>`;
   return `<span class="hlg hlg-escuro" role="img" aria-label="Grupo Star">${marcaPadrao()}</span>`}
 function hondaSvg(){return `<svg class="hn-s" viewBox="${HONDA_VB}" role="img" aria-label="Honda" focusable="false"><defs><linearGradient id="hnG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff3a4d"/><stop offset=".5" stop-color="#e4172b"/><stop offset="1" stop-color="#a30e1c"/></linearGradient></defs><path fill="url(#hnG)" fill-rule="evenodd" d="${HONDA_D}"/></svg>`}
@@ -1874,7 +1874,7 @@ function celular(){try{return matchMedia('(max-width:979px)').matches}catch(e){r
 
 /* ===== v38: marca no alto do topo do celular (logo + nome Star Motos, acima da foto do vendedor) ===== */
 function marcaCelH(){const f=LOGO_F();
-  if(FORA()&&logoOk()){const c=(V.concessionaria||'').trim();return `<div class="hmb"><span class="hlg hlg-fora" role="img" aria-label="${esc(c||'Concessionária')}"><span class="hlg-bx"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>${c?`<span class="hlg-t">${esc(c)}</span>`:''}</span></div>`}
+  if(FORA()&&(logoOk()||(V.concessionaria||'').trim())){const c=(V.concessionaria||'').trim();return `<div class="hmb"><span class="hlg hlg-fora" role="img" aria-label="${esc(c||'Concessionária')}">${logoOk()?`<span class="hlg-bx"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>`:''}${c?`<span class="hlg-t">${esc(c)}</span>`:''}</span></div>`}
   if(logoOk())return `<div class="hmb"><span class="hlg hlg-${f}" role="img" aria-label="Star Motos"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span></div>`;
   return `<div class="hmb"><span class="hlg hlg-escuro" role="img" aria-label="Star Motos">${marcaPadrao('Star Motos')}</span></div>`}
 
@@ -2259,7 +2259,7 @@ async function upVideo(file){const u=await up(file);let p='';try{const b=await c
 
 function pPerfil(){
   $(PNS).innerHTML=`<div class="pf"><div><h4>Foto de perfil</h4><div class="pf-up"><div class="pf-c">${av(V.foto_url)}<div><b>Foto de perfil</b><small>Aparece no topo do seu site</small><label class="upl">Trocar foto<input type="file" accept="image/*" onchange="upV('foto_url',this)"></label></div></div>
-  </div></div>${FORA()?`<div><h4>Concessionária</h4><div class="pf-up"><div class="pf-c"><span class="pf-lg">${V.concessionaria_logo?`<img src="${esc(V.concessionaria_logo)}" alt="Logo da concessionária">`:'<i>sem logo</i>'}</span><div><b>Logo da concessionária</b><small>Aparece no topo do seu site. PNG com fundo transparente fica melhor.</small><label class="upl">${V.concessionaria_logo?'Trocar logo':'Enviar logo'}<input type="file" accept="image/png,image/webp,image/jpeg" onchange="upV('concessionaria_logo',this)"></label>${V.concessionaria_logo?' <button type="button" class="btn sm" onclick="rmLogoC()">Remover logo</button>':''}</div></div></div><div class="fg" style="margin-top:12px"><div class="full"><label class="l" for="v_c">Nome da concessionária</label><input id="v_c" maxlength="80" value="${esc(V.concessionaria||'')}" placeholder="Ex.: Honda Motoasa"></div></div></div>`:''}
+  </div></div>${FORA()?`<div><h4>Concessionária</h4>${V.concessionaria_logo?`<div class="pf-c" style="margin-bottom:12px"><span class="pf-lg"><img src="${esc(V.concessionaria_logo)}" alt="Logo da concessionária"></span><div><b>Logo da concessionária</b><small>Colocada automaticamente pelo sistema, a partir do nome da concessionária.</small></div></div>`:''}<div class="fg" style="margin-top:12px"><div class="full"><label class="l" for="v_c">Nome da concessionária</label><input id="v_c" maxlength="80" value="${esc(V.concessionaria||'')}" placeholder="Ex.: Honda Motoasa"></div></div></div>`:''}
   <div><h4>Dados de contato</h4><div class="fg"><div><label class="l" for="v_n">Nome do vendedor</label><input id="v_n" value="${esc(V.nome)}"></div><div><label class="l" for="v_w">WhatsApp (55 + DDD + número)</label><input id="v_w" value="${esc(V.whatsapp)}" inputmode="numeric" placeholder="5568999990000"></div><div class="full"><label class="l" for="v_b">Frase de apresentação</label><input id="v_b" value="${esc(V.bio)}" placeholder="Ex.: Venha conquistar sua moto comigo!"></div></div></div>
   <div><h4>Redes sociais</h4><div class="fg"><div><label class="l" for="v_i">Instagram (sem @)</label><input id="v_i" value="${esc(V.instagram)}"></div><div><label class="l" for="v_f">Facebook (usuário ou link)</label><input id="v_f" value="${esc(V.facebook)}"></div></div></div>
   <div class="pf-s"><button class="btn red" onclick="saveV()">Salvar perfil</button></div></div>`}
@@ -2271,7 +2271,6 @@ function rt(){if(RT)return;try{RT=sb.channel('pd').on('postgres_changes',{event:
 async function upV(k,el){
   try{toast('Enviando...');const u=await up(el.files[0]);const{error}=await sb.from('vendedores').update({[k]:u}).eq('id',V.id);if(error)throw error;V[k]=u;toast('Salvo!');pPerfil()}catch(e){toast('Erro: '+e.message)}
 }
-async function rmLogoC(){const{error}=await sb.from('vendedores').update({concessionaria_logo:null}).eq('id',V.id);if(error)return toast('Erro: '+error.message);V.concessionaria_logo=null;toast('Logo removida.');pPerfil()}
 async function saveV(){
   const p={nome:$('#v_n').value.trim(),bio:$('#v_b').value.trim(),whatsapp:waNum($('#v_w').value),instagram:$('#v_i').value.replace('@','').trim(),facebook:$('#v_f').value.trim()};if($('#v_c')){const c=$('#v_c').value.trim().slice(0,80);if(c.length<3)return toast('Informe o nome da concessionária.');p.concessionaria=c}
   const{error}=await sb.from('vendedores').update(p).eq('id',V.id);if(!error)V={...V,...p};toast(error?'Erro: '+error.message:'Perfil salvo!');
@@ -3818,11 +3817,12 @@ html body .criar:focus-visible{outline:3px solid #fff;outline-offset:3px}
 
 /*v33-marca-concessionaria*/
 .hero.v34 .hlg-fora{background:none;border:0;padding:0;box-shadow:none;border-radius:0;gap:14px;align-items:center}
-.hero.v34 .hlg-fora .hlg-bx{display:inline-flex;align-items:center;justify-content:center;background:#fff;padding:8px 14px;border-radius:12px;box-shadow:0 10px 24px -14px #000}
-.hero.v34 .hlg-fora .hlg-bx img{display:block;height:46px;width:auto;max-width:min(220px,44vw);object-fit:contain}
+.hero.v34 .hlg-fora .hlg-bx{display:inline-flex;align-items:center;justify-content:center;background:#fff;padding:9px 16px;border-radius:14px;box-shadow:0 10px 24px -14px #000}
+.hero.v34 .hlg-fora .hlg-bx img{display:block;height:52px;width:auto;max-width:min(240px,46vw);object-fit:contain}
 .hero.v34 .hlg-fora .hlg-t{font-weight:800;font-size:clamp(20px,1.9vw,27px);letter-spacing:-.015em;line-height:1.05;white-space:normal;max-width:min(360px,52vw);text-shadow:0 2px 10px #0008}
 .hmk .hlg-fora{gap:16px}.hmk .hlg-fora .hlg-bx img{height:clamp(50px,4.2vw,66px)}.hmk .hlg-fora .hlg-t{font-size:clamp(26px,2.5vw,38px)}
 .hmb .hlg-fora .hlg-bx img{height:40px}.hmb .hlg-fora .hlg-t{font-size:20px}
+.hmb .hlg-fora{background:none;border:0;padding:0;box-shadow:none;gap:12px;align-items:center}.hmb .hlg-fora .hlg-bx{display:inline-flex;align-items:center;justify-content:center;background:#fff;padding:7px 12px;border-radius:12px;box-shadow:0 10px 24px -14px #000}.hmb .hlg-fora .hlg-bx img{display:block;width:auto;max-width:42vw;object-fit:contain}.hmb .hlg-fora .hlg-t{font-weight:800;line-height:1.05;white-space:normal;max-width:50vw;text-shadow:0 2px 10px #0008}
 @media(max-width:640px){.hero.v34 .hlg-fora{gap:12px}.hero.v34 .hlg-fora .hlg-t{max-width:56vw}}
 </style>
 </body>
