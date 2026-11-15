@@ -23,6 +23,14 @@
       "destination": "https://sitevendedor.vercel.app/"
     },
     {
+      "source": "/comercial/",
+      "destination": "https://sitevendedor.vercel.app/"
+    },
+    {
+      "source": "/comercial/:slug([a-z0-9-]+)",
+      "destination": "https://sitevendedor.vercel.app/?ref=:slug"
+    },
+    {
       "source": "/comercial/:path*",
       "destination": "https://sitevendedor.vercel.app/:path*"
     },
