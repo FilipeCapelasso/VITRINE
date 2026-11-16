@@ -922,7 +922,7 @@ html,body{max-width:100%;overflow-x:clip}
 @keyframes shine{0%,55%{left:-60%}100%{left:130%}}
 .stats{grid-area:s}.hlogo{grid-area:l;max-height:38px;width:auto;opacity:.92;justify-self:start}
 /* moto em destaque */
-.hf{position:relative;z-index:1}
+.hf{position:relative;z-index:1;touch-action:pan-y}
 .hf-s{position:relative;aspect-ratio:1/1;max-height:540px;width:100%}
 .hf-i{position:absolute;inset:0;opacity:0;visibility:hidden;transform:scale(.97) translateY(10px);transition:opacity .7s ease,transform .7s cubic-bezier(.2,.8,.2,1),visibility .7s}
 .hf-i.on{opacity:1;visibility:visible;transform:none;z-index:2}
@@ -2031,8 +2031,14 @@ function heroFeat(){
   const bfH=emOf&&ofp.some(m=>(ofM(m)||{}).bf);
   return `<aside class="hf${emOf?' hf-ofs':''}${bfH?' hf-bf':''}" id="hf" aria-label="${emOf?'Ofertas':'Motos em destaque'}"><div class="hf-s">${pick.map((m,i)=>{const p=minP(m),o=emOf?ofM(m):null;return `<article class="hf-i ${i?'':'on'}" data-i="${i}"><div class="hf-img"><img ${IMGA(m.fotos[0],'hero')} alt="${esc(m.nome)}" ${i?'loading="lazy"':'fetchpriority="high"'} decoding="async"></div>${o?`<div class="hf-c of"><span class="hf-sl hf-of">🔥 ${o.bf?'BLACK FRIDAY':'OFERTA'}</span><h3>${esc(m.nome)}</h3><div class="hf-of-pr"><span class="hf-de">De <s>${ofB(o.de)}</s></span><b class="hf-por">${ofB(o.por)}</b>${o.bf?'<span class="hf-vista">à vista</span>':''}</div><span class="hf-eco">Economize ${ofB(o.desc)} · ${o.pct}% OFF</span>${p&&!o.bf?`<p class="hf-cs">ou consórcio <b>${p.parcelas}x ${brl(p.valor)}</b></p>`:''}${o.bf?ofAvisoH().replace('of-rg','of-rg hf-rg'):''}<button type="button" class="hf-b hf-bo" onclick="${o.bf?`bfAbre('${m.id}')`:`abreMoto('${m.id}')`}">Aproveitar oferta <span aria-hidden="true">→</span></button></div>`:`<div class="hf-c">${m.selo?`<span class="hf-sl">${esc(m.selo)}</span>`:''}<h3>${esc(m.nome)}</h3><p>Consórcio a partir de <b>${p.parcelas}x ${brl(p.valor)}</b></p><button type="button" class="hf-b" onclick="abreMoto('${m.id}')">Ver detalhes <span aria-hidden="true">→</span></button></div>`}</article>`}).join('')}</div>${pick.length>1?`<div class="hf-d" role="tablist">${pick.map((m,i)=>`<button type="button" role="tab" class="${i?'':'on'}" aria-label="Ver ${esc(m.nome)}" onclick="hfGo(${i})"></button>`).join('')}</div>`:''}</aside>`}
 function hfGo(i){const h=document.getElementById('hf');if(!h)return;h.querySelectorAll('.hf-i').forEach((e,k)=>e.classList.toggle('on',k===i));h.querySelectorAll('.hf-d button').forEach((e,k)=>e.classList.toggle('on',k===i));h.dataset.cur=i}
-function heroInit(){clearInterval(HFT);const h=document.getElementById('hf');if(!h)return;const n=h.querySelectorAll('.hf-i').length;if(n<2||matchMedia('(prefers-reduced-motion:reduce)').matches)return;let pausa=false;h.addEventListener('mouseenter',()=>pausa=true);h.addEventListener('mouseleave',()=>pausa=false);h.addEventListener('focusin',()=>pausa=true);h.addEventListener('focusout',()=>pausa=false);
-  HFT=setInterval(()=>{if(pausa||document.hidden||document.documentElement.classList.contains('an-off'))return;hfGo(((+h.dataset.cur||0)+1)%n)},5000)}
+function heroSwipe(h,n){if(h._sw||n<2)return;h._sw=1;let x0=0,y0=0,t0=0,on=false;
+  h.addEventListener('touchstart',e=>{if(e.touches.length!==1){on=false;return}const t=e.touches[0];x0=t.clientX;y0=t.clientY;t0=Date.now();on=true;h._tq=1},{passive:true});
+  h.addEventListener('touchend',e=>{if(!on)return;on=false;h._tq=0;const t=e.changedTouches[0],dx=t.clientX-x0,dy=t.clientY-y0;
+    if(Math.abs(dx)<40||Math.abs(dx)<Math.abs(dy)*1.3||Date.now()-t0>900)return;
+    const c=+h.dataset.cur||0;hfGo(dx<0?(c+1)%n:(c-1+n)%n)},{passive:true});
+  h.addEventListener('touchcancel',()=>{on=false;h._tq=0},{passive:true})}
+function heroInit(){clearInterval(HFT);const h=document.getElementById('hf');if(!h)return;const n=h.querySelectorAll('.hf-i').length;heroSwipe(h,n);if(n<2||matchMedia('(prefers-reduced-motion:reduce)').matches)return;let pausa=false;h.addEventListener('mouseenter',()=>pausa=true);h.addEventListener('mouseleave',()=>pausa=false);h.addEventListener('focusin',()=>pausa=true);h.addEventListener('focusout',()=>pausa=false);
+  HFT=setInterval(()=>{if(pausa||h._tq||document.hidden||document.documentElement.classList.contains('an-off'))return;hfGo(((+h.dataset.cur||0)+1)%n)},5000)}
 function abreMoto(id){Q='';C='Todas';FP=0;lista(1);const i=L.findIndex(m=>m.id===id);if(i>=0)openM(i,'det')}
 const tnavH=()=>`<nav class="tnav" id="tnav" aria-label="Menu do site"><div class="tn-in"><a class="tn-b" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'});return false">${av(V.foto_url)}<b>${esc(V.nome)}</b></a><div class="tn-l"><a href="#catalogo">Motos</a><a href="#videos">Vídeos</a><a href="#entregas">Clientes felizes</a><a href="#porque">Por que comigo</a><a href="#duvidas">Dúvidas</a><a href="#loja">Loja</a></div><a class="tn-w" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site e quero uma moto.')}" onclick="return chatOpen(event)">${IC.wa}<span>Falar agora</span></a></div></nav>`;
 function tnavInit(){const h=document.querySelector('.hero'),n=document.getElementById('tnav');if(!h||!n)return;
