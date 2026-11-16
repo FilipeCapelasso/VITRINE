@@ -2192,7 +2192,7 @@ function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visT
     <button class="btn red" onclick="chatOpen(null,'${m.id}')">Simular e preencher meus dados</button><button class="btn or" onclick="conWa(1)">QUERO UM REPASSE DE CONSÓRCIO</button>`}
   if(v==='fin')b=`<div class="fin"><div><h3>Financiamento</h3><p class="mu">Preencha o formulário abaixo para que o vendedor possa trazer pra você as melhores cotações do mercado.</p></div>${f[0]?`<img ${IMGA(f[0],'det')} alt="${esc(m.nome)}" decoding="async">`:''}</div>
     ${fld('f_nom','Nome e sobrenome','autocomplete="name"')}${fld('f_tel','Telefone com DDD (WhatsApp)','inputmode="tel" autocomplete="tel-national" placeholder="(00) 00000-0000"','tel')}${fld('f_cpf','CPF','inputmode="numeric" placeholder="000.000.000-00"','cpf')}${fld('f_nas','Data de nascimento','inputmode="numeric" autocomplete="bday" placeholder="DD/MM/AAAA"','dt')}${fld('f_ent','Valor de entrada (opcional)','inputmode="numeric" placeholder="Deixe em branco se não tiver"','rs')}
-    <label class="l" for="f_hab">Possui habilitação?</label><select id="f_hab"><option>Sim</option><option>Não</option></select>
+    <label class="l" for="f_hab">Possui habilitação?</label><select id="f_hab" onchange="if(this.value)finSend()"><option value="" selected disabled>Selecione: Sim ou Não</option><option>Sim</option><option>Não</option></select>
     <p class="mu" style="font-size:12px;border-top:1px solid var(--bd);padding-top:12px">Ao preencher ou enviar, você concorda com nossa <a href="#" onclick="priv();return false">Política de Privacidade</a>. O que você digita já fica disponível ao vendedor, para ele poder te ajudar, mesmo que você não conclua o envio.</p>
     <button class="btn wa" onclick="finSend()">Enviar para o vendedor</button>`;
   const mo=$('#modal');if(mo.style.display!=='block'){history.pushState({m:1},'');FO=document.activeElement}
@@ -2217,6 +2217,7 @@ document.addEventListener('input',vitRasc,true);document.addEventListener('chang
 function finSend(){
   if(fsb)return;let bad=null;['f_nom','f_tel','f_cpf','f_nas'].forEach(i=>{if(!vf(i)&&!bad)bad=i});
   if(bad){$('#'+bad).focus();return toast('Confira os campos destacados')}
+  if(!$('#f_hab').value){$('#f_hab').focus();return toast('Responda se possui habilitação para enviar')}
   const g=i=>$('#'+i).value.trim(),m=L[cur];
   const d={entrada:g('f_ent'),nascimento:g('f_nas'),cpf:g('f_cpf'),nome:g('f_nom'),telefone:g('f_tel'),habilitacao:$('#f_hab').value};
   fsb=1;setTimeout(()=>fsb=0,6000);const salvo=lead('financiamento',d).then(ok=>{rascCompleto('financiamento','fin-'+m.id);if(!ok)toast('Seu pedido foi guardado e será reenviado automaticamente.')}).catch(()=>{});
@@ -2500,7 +2501,7 @@ cor:{q:()=>`Qual cor você prefere para ${CH.ans.moto?'a '+CH.ans.moto:'a moto'}
 nomec:{q:()=>'Qual é o seu nome completo?',ph:'Nome e sobrenome',run(v){const n=cap(v);if(n.split(' ').length<2||/\d/.test(n))return{err:'Preciso do nome completo (nome e sobrenome).'};return{show:n,set:{nomec:n},next:CH.ans.pag==='consorcio'?'nasc':'cpf'}}},
 cpf:{q:()=>'Agora me informe seu CPF, somente os números.',ph:'000.000.000-00',mode:'numeric',mask:'cpf',run(v){const d=dg(v);if(!okCpf(d))return{err:'Esse CPF não parece válido. Confere e digita de novo, só os números.'};return{show:fCpf(d),set:{cpf:d},next:CH.ans.pag==='consorcio'?'c_rg':'nasc'}}},
 nasc:{q:()=>'Qual é a sua data de nascimento, no formato DD/MM/AAAA?',ph:'DD/MM/AAAA',mode:'numeric',mask:'nas',run(v){const r=nasc(v);if(r.err)return r;r.next=CH.ans.pag==='financiamento'?'hab':(CH.ans.pag==='consorcio'?'cpf':'fim');return r}},
-hab:{q:()=>'Você já tem CNH (habilitação)?',opts:()=>['Tenho CNH','Estou tirando','Ainda não tenho'],run(v){const o=['Tenho CNH','Estou tirando','Ainda não tenho'],i=opt(v,o);if(i<0)return{err:'Toque em uma das opções abaixo 👇'};return{show:o[i],set:{hab:o[i]},next:'fim'}}}
+hab:{q:()=>'Você possui habilitação?',opts:()=>['Sim','Não'],run(v){const o=['Sim','Não'],i=opt(v,o);if(i<0)return{err:'Toque em uma das opções abaixo 👇'};return{show:o[i],set:{hab:o[i]},next:'fim'}}}
 };
 
 /* ===== v46: CONSÓRCIO no chat: todos os dados da pré-análise + débito automático ===== */
