@@ -2237,9 +2237,11 @@ function corSync(m,k){const s=COR_SEL[m.id];if(!s)return;const n=corDe(m,k);if(n
 let EMP='com';
 const AVISO_CON=()=>`<p class="mu avc">Os valores podem sofrer alterações sem aviso prévio e estão sujeitos à atualização no site. Para confirmar o valor exato, entre em contato com um de nossos consultores.</p><p class="avs">com Seguro de Vida em Grupo</p>`;
 const temAlt=m=>!!(m&&Array.isArray(m.planos_alt)&&m.planos_alt.some(x=>x&&x.valor>0));
-const planosV=m=>(EMP==='sem'&&temAlt(m))?m.planos_alt:(m&&m.planos)||[];
-const empV=m=>(EMP==='sem'&&temAlt(m))?(m.emplacamento_alt||'Sem emplacamento'):((m&&m.emplacamento)||'Com emplacamento');
-const empTog=(m,v)=>temAlt(m)?`<div class="emp" role="group" aria-label="Emplacamento"><button type="button" class="${EMP==='com'?'on':''}" aria-pressed="${EMP==='com'}" onclick="setEmp('com','${v}')">Com emplacamento</button><button type="button" class="${EMP==='sem'?'on':''}" aria-pressed="${EMP==='sem'}" onclick="setEmp('sem','${v}')">Sem emplacamento</button></div>`:'';
+const semEmp=()=>!ofAcre()&&EMP==='sem';
+const planosV=m=>semEmp()?(temAlt(m)?m.planos_alt:[]):(m&&m.planos)||[];
+const empV=m=>semEmp()?(m.emplacamento_alt||'Sem emplacamento'):((m&&m.emplacamento)||'Com emplacamento');
+const SEMEMP_VAZIO=`<p class="mu" style="text-align:center;margin:10px 0">Os valores sem emplacamento desta moto estão sendo atualizados. Fale com o vendedor para confirmar.</p>`;
+const empTog=(m,v)=>!ofAcre()?`<div class="emp" role="group" aria-label="Emplacamento"><button type="button" class="${EMP==='com'?'on':''}" aria-pressed="${EMP==='com'}" onclick="setEmp('com','${v}')">Com emplacamento</button><button type="button" class="${EMP==='sem'?'on':''}" aria-pressed="${EMP==='sem'}" onclick="setEmp('sem','${v}')">Sem emplacamento</button></div>`:'';
 function setEmp(k,v){EMP=k;openM(cur,v)}
 function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visTrack('moto',m.nome)}catch(e){}setTimeout(()=>corInit(m),60)}let b='';
   const how=t=>`<div id="hw" class="hw" style="display:none">${t}</div>`;
@@ -2252,12 +2254,12 @@ function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visT
     ${corPick(m)}
     <div class="dt-cta"><button class="btn red" onclick="openM(cur,'con')">Simular consórcio</button><button class="btn red2" onclick="openM(cur,'fin')">Simular financiamento</button></div>
   </div></div>
-  ${pl.length?`<div class="dt-sec"><h3>Planos de consórcio</h3>${empTog(m,'det')}<div class="dt-pl">${pl.map(x=>`<div><b>${x.parcelas}x</b><span>${brl(x.valor)}</span></div>`).join('')}</div>${AVISO_CON()}<p class="mu" style="font-size:12.5px;margin-top:10px">${esc(empV(m))} · ${catSelo()} <a href="#" onclick="openM(cur,'con');return false">Simular com um plano →</a></p></div>`:''}
+  ${(m.planos||[]).some(x=>x&&x.valor>0)?`<div class="dt-sec"><h3>Planos de consórcio</h3>${empTog(m,'det')}${pl.length?`<div class="dt-pl">${pl.map(x=>`<div><b>${x.parcelas}x</b><span>${brl(x.valor)}</span></div>`).join('')}</div>`:SEMEMP_VAZIO}${AVISO_CON()}<button class="btn red" style="margin-top:12px" onclick="openM(cur,'con')">Simular consórcio</button></div>`:''}
   ${m.descricao?`<div class="dt-sec"><h3>Descrição e ficha técnica</h3><div class="desc">${fmtDesc(m.descricao)}</div></div>`:''}
   <div class="dt-bar"><button class="btn red2" onclick="shareM()">Compartilhar</button><a class="btn red wa" target="_blank" rel="noopener" href="${wa('Olá! Tenho interesse na '+hn(m)+corTxt(m)+'. Gostaria de tirar uma dúvida.')}">Tirar dúvida</a></div>`}
   if(v==='con'){const p=planosV(m);b=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>Tabela de consórcio</h3><button class="btn red pill" onclick="howOrVideo()">▶ Como funciona?</button></div>${cartaH(p)} ${how('Você entra em um grupo e paga parcelas mensais sem juros (há taxa de administração). A moto é liberada por sorteio ou lance. Fale com o vendedor para tirar suas dúvidas.')}
     ${f[0]?`<div style="border:1px solid var(--bd);border-radius:14px;margin:12px 0;overflow:hidden"><img ${IMGA(f[0],'det')} alt="${esc(m.nome)}" style="display:block;width:100%;${soCon(m)?'max-height:340px':'height:230px'};object-fit:contain"></div>`:''}
-    ${empTog(m,'con')}<h3 style="text-align:center">${esc(empV(m))}</h3><div class="pl">${p.map((x,k)=>`<label><input type="radio" name="pl" value="${k}" ${k?'':'checked'}>${x.parcelas}x <b>${brl(x.valor)}</b></label>`).join('')||'<p class="mu">Consulte os planos com o vendedor.</p>'}</div>
+    ${empTog(m,'con')}<h3 style="text-align:center">${esc(empV(m))}</h3>${p.length?'':SEMEMP_VAZIO}<div class="pl">${p.map((x,k)=>`<label><input type="radio" name="pl" value="${k}" ${k?'':'checked'}>${x.parcelas}x <b>${brl(x.valor)}</b></label>`).join('')||(semEmp()?'':'<p class="mu">Consulte os planos com o vendedor.</p>')}</div>
     ${AVISO_CON()}
     <button class="btn red" onclick="chatOpen(null,'${m.id}')">Simular e preencher meus dados</button><button class="btn or" onclick="conWa(1)">QUERO UM REPASSE DE CONSÓRCIO</button>`}
   if(v==='fin')b=`<div class="fin"><div><h3>Financiamento</h3><p class="mu">Preencha o formulário abaixo para que o vendedor possa trazer pra você as melhores cotações do mercado.</p></div>${f[0]?`<img ${IMGA(f[0],'det')} alt="${esc(m.nome)}" decoding="async">`:''}</div>
@@ -2275,7 +2277,7 @@ const nav=d=>{const j=(cur+d+L.length)%L.length;openM(j,soCon(L[j])?'con':'det')
 const closeM=()=>history.state&&history.state.m?history.back():$('#modal').style.display='none';
 async function lead(tipo,x={}){const m=L[cur],r={tipo,moto_id:m.id,moto_nome:m.nome,...x};try{return await segSend('leads',r)}catch(e){return false}}
 function conWa(rep){
-  const m=L[cur],r=document.querySelector('input[name=pl]:checked'),p=r&&(m.planos||[])[r.value];
+  const m=L[cur],r=document.querySelector('input[name=pl]:checked'),p=r&&planosV(m)[r.value];
   const t=rep?`Olá! Quero um repasse de consórcio da ${hn(m)}.`:p?`Olá! Tenho interesse na ${hn(m)} no plano de ${p.parcelas} parcelas de ${brl(p.valor)}. Gostaria de fazer uma simulação.`:`Olá! Tenho interesse no consórcio da ${hn(m)}. Gostaria de fazer uma simulação.`;
   lead('consorcio',{detalhes:t});waOpen(wa(t));
 }
@@ -2860,9 +2862,9 @@ function vdCtx(x){
   const prim=nm?nm.split(/\s+/)[0].charAt(0).toUpperCase()+nm.split(/\s+/)[0].slice(1).toLowerCase():'tudo bem';
   const base=m?m.nome:(x.moto_nome||'');
   const moto=base?(m&&(soCon(m)||/^honda\b/i.test(base))||/^honda\b/i.test(base)?base:'Honda '+base):'moto escolhida';
-  const pl=m?(m.planos||[]).filter(p=>p.valor>0):[];
+  const pl=m?planosV(m).filter(p=>p.valor>0):[];
   return{n:prim,tem:!!nm,moto,modelo:m&&m.modelo?m.modelo:'',cor:x.cor||'',pag:vdPagTxt(x),entrada:x.entrada||'',parcela:x.parcela||'',
-    vend:(V.nome||'').trim(),pl,emp:m&&m.emplacamento?m.emplacamento:''}}
+    vend:(V.nome||'').trim(),pl,emp:m&&(semEmp()||m.emplacamento)?empV(m):''}}
 function vdResumo(c){return['• Moto: '+c.moto,c.modelo&&'• Modelo/versão: '+c.modelo,c.cor&&'• Cor: '+c.cor,c.pag&&'• Modalidade: '+c.pag,c.parcela&&'• Parcela desejada: '+c.parcela,c.entrada&&'• Entrada: '+c.entrada].filter(Boolean).join('\n')}
 function vdDocsTxt(){return VDOCS.filter(d=>VM.docs[d[0]]).map(d=>d[1]+' '+d[2]).join('\n')}
 function vdAcao(c){return c.pag==='Financiamento'?'à análise de crédito do seu financiamento':c.pag==='Consórcio'?'à sua adesão ao consórcio':c.pag?'à sua compra':'ao seu atendimento'}
