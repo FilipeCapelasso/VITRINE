@@ -1496,7 +1496,7 @@ function psPay(){const o={};['cor','cantos','fonte','estilo_topo','botoes','fund
   if((S.ocultar||[]).length)o.ocultar=[...S.ocultar];return o}
 /* ---- pedido especial ao moderador (chat com o dono) ---- */
 let PEMS=[],PETIPO='pedido';
-function psPedidoH(){return `<section class="ps-c pe-c" id="pe_c"><h3>💬 Pedido especial ao moderador</h3><p class="sub">Quer uma mudança que não está aqui? Escreva o que você quer, ou dê a sua opinião para melhorar o site. O moderador responde por aqui mesmo.</p><div class="ps-o pe-t"><button type="button" data-pe="pedido" class="on" onclick="peTipo('pedido')">🛠️ Pedido<small>Quero uma modificação</small></button><button type="button" data-pe="opiniao" onclick="peTipo('opiniao')">💡 Opinião<small>Sugestão de melhoria</small></button></div><div class="ps-f"><label for="pe_t">O que eu quero…</label><textarea id="pe_t" rows="4" maxlength="1000" placeholder="O que eu quero…"></textarea></div><button type="button" class="btn red" id="pe_b" onclick="peEnviar()" style="margin-top:10px">Enviar ao moderador</button><div id="pe_th" class="pe-th"><p class="mu">Carregando mensagens…</p></div></section>`}
+function psPedidoH(){return ''} /* chat com o moderador removido em 2026-11-16 */
 function peTipo(t){PETIPO=t;document.querySelectorAll('[data-pe]').forEach(b=>b.classList.toggle('on',b.dataset.pe===t))}
 function peDesenha(){const el=document.getElementById('pe_th');if(!el)return;if(!PEMS.length){el.innerHTML='<p class="mu">Você ainda não enviou nenhuma mensagem.</p>';return}
   el.innerHTML=PEMS.map(m=>`<div class="pe-m ${m.de==='admin'?'a':'v'}"><b>${m.de==='admin'?'Moderador':'Você'}${m.tipo==='opiniao'?' · opinião':''}</b><p>${esc(m.texto).replace(/\n/g,'<br>')}</p><small>${esc(fdhv(m.criado))}</small></div>`).join('');el.scrollTop=el.scrollHeight}
@@ -1509,7 +1509,7 @@ async function peEnviar(){const t=document.getElementById('pe_t'),b=document.get
   try{const r=await sb.rpc('meu_pedido_enviar',{p_texto:x,p_tipo:PETIPO});if(r.error)throw r.error;PEMS=(r.data&&r.data.mensagens)||[];t.value='';peDesenha();toast('Enviado ao moderador! A resposta aparece aqui mesmo.')}
   catch(e){toast((e&&e.message)||'Não foi possível enviar')}
   b.disabled=false;b.textContent=tx}
-async function peBadge(){if(!document.querySelector('.nv')||!ehPrem())return;try{await acessoCarrega()}catch(e){return}const btn=document.querySelector('.nv[onclick*="personalizar"]');if(!btn)return;let nb=document.getElementById('pe_nb');const n=(AC&&AC.msgs_novas)||0;
+async function peBadge(){const ob=document.getElementById('pe_nb');if(ob)ob.remove();return;if(!document.querySelector('.nv')||!ehPrem())return;try{await acessoCarrega()}catch(e){return}const btn=document.querySelector('.nv[onclick*="personalizar"]');if(!btn)return;let nb=document.getElementById('pe_nb');const n=(AC&&AC.msgs_novas)||0;
   if(n>0&&T!=='personalizar'){if(!nb){nb=document.createElement('span');nb.className='nb';nb.id='pe_nb';btn.appendChild(nb)}nb.textContent=n}else if(nb)nb.remove()}
 if(!window.__peB){window.__peB=setInterval(peBadge,60000)}
 /* ---- aparência pública: título, selo, frase e "Sobre mim" ---- */
@@ -1610,16 +1610,16 @@ function psEfeitosH(){const op=(k,v,t,s,ic)=>`<button type="button" data-o="${k}
 <h4 class="ps-h4">Efeito nos cartões das motos</h4><div class="ps-o">${op('efeito_cartao','','Nenhum','Como está hoje','')}${op('efeito_cartao','levantar','Levantar','Sobe um pouco ao passar o dedo ou mouse','')}${op('efeito_cartao','brilho','Contorno brilhante','Borda na cor do site','')}</div>
 <h4 class="ps-h4">Entrada das seções</h4><div class="ps-o">${op('entrada','','Nenhuma','Tudo já aparece','')}${op('entrada','subir','Subir suave','Surgem de baixo ao rolar','')}${op('entrada','aparecer','Aparecer','Surgem aos poucos ao rolar','')}</div>
 <h4 class="ps-h4">Moldura da sua foto</h4><div class="ps-o">${op('moldura','','Padrão','Como está hoje','')}${op('moldura','anel','Anel brilhante','Brilho que pulsa em volta','')}${op('moldura','gradiente','Gradiente girando','Borda colorida em movimento','')}</div></section>`}
-function psChatH(){return `<section class="ps-c pe-c pe-chat" id="pe_c" data-g="pedido"><div class="pe-hd"><div class="pe-av" aria-hidden="true">🛡️</div><div><b>Moderador</b><small><i class="pe-on"></i> Online · converse por aqui</small></div></div><div id="pe_th" class="pe-th" role="log" aria-live="polite"><p class="mu">Carregando mensagens…</p></div><div class="pe-in"><textarea id="pe_t" rows="1" maxlength="1000" placeholder="Escreva uma mensagem…" aria-label="Mensagem para o moderador" onkeydown="peKey(event)" oninput="peAuto(this)"></textarea><button type="button" class="pe-send" id="pe_b" onclick="peEnviar()" aria-label="Enviar mensagem">➤</button></div><small class="pe-dica">Enter envia · Shift+Enter quebra a linha. Peça uma mudança no site, tire dúvidas ou dê sugestões.</small></section>`}
+function psChatH(){return ''}
 function psAbas(){const ps=document.querySelector('#pn .ps');if(!ps)return;const col=ps.querySelector('.ps-col');if(!col)return;
-  const velho=document.getElementById('pe_c');if(velho)velho.outerHTML=psChatH();
+  const velho=document.getElementById('pe_c');if(velho)velho.remove();
   if(!document.getElementById('ps_ef')){const an=[...col.children].find(s=>/Animações/.test((s.querySelector('h3')||{}).textContent||''));const t=document.createElement('div');t.innerHTML=psEfeitosH();if(an)an.after(t.firstElementChild);else col.append(t.firstElementChild)}
   [...col.children].map(s=>{const g=s.id==='pe_c'?['pedido',0]:(PS_G[((s.querySelector('h3')||{}).textContent||'').trim()]||['detalhes',99]);s.dataset.g=g[0];return[s,g[1]]}).sort((a,b)=>a[1]-b[1]).forEach(([s])=>col.append(s));
   if(!ps.querySelector('.ps-seg')){const bar=document.createElement('div');bar.className='seg ps-seg';bar.setAttribute('role','tablist');
-    bar.innerHTML=[['cores','🎨 Cores'],['detalhes','✨ Detalhes'],['pedido','💬 Pedido especial ao moderador']].map(([k,t])=>`<button type="button" role="tab" data-pt="${k}" onclick="psTab('${k}')">${t}${k==='pedido'?'<span class="nb" id="pe_tb" hidden></span>':''}</button>`).join('');
+    bar.innerHTML=[['cores','🎨 Cores'],['detalhes','✨ Detalhes']].map(([k,t])=>`<button type="button" role="tab" data-pt="${k}" onclick="psTab('${k}')">${t}${k==='pedido'?'<span class="nb" id="pe_tb" hidden></span>':''}</button>`).join('');
     const hd=ps.querySelector('.ps-hd');(hd||ps.firstElementChild).after(bar)}
   psTab(PTAB,true);psSync()}
-function psTab(t,mudo){PTAB=t;const ps=document.querySelector('#pn .ps');if(!ps)return;ps.dataset.t=t;ps.querySelectorAll('[data-pt]').forEach(b=>{b.classList.toggle('on',b.dataset.pt===t);b.setAttribute('aria-selected',b.dataset.pt===t)});
+function psTab(t,mudo){if(t==='pedido')t='cores';PTAB=t;const ps=document.querySelector('#pn .ps');if(!ps)return;ps.dataset.t=t;ps.querySelectorAll('[data-pt]').forEach(b=>{b.classList.toggle('on',b.dataset.pt===t);b.setAttribute('aria-selected',b.dataset.pt===t)});
   const tb=document.getElementById('pe_tb');if(tb)tb.hidden=true;
   if(t==='pedido'){peCarrega();if(!mudo)setTimeout(()=>{const a=document.getElementById('pe_t');if(a)a.focus({preventScroll:true})},60)}else{clearInterval(window.__peT)}}
 const pPersBase=pPers0;
@@ -3761,7 +3761,7 @@ init();
 
 /* ===== v30: Personalizar mais claro (passos, abas com descrição, atalhos, status) ===== */
 const PS_IC={'Combinações prontas':'✨','Cor do site':'🎨','Letras':'🔤','Formato dos cantos':'◰','Topo do site':'🖼️','Estilo dos botões':'👆','Textos':'✏️','Animações':'🎞️','Efeitos especiais':'🎉','Tamanho dos cartões das motos':'🏍️','Fundo da página':'🌗','Seções do site':'🧩','Sobre mim':'🙋'};
-const PS_ABA=[['cores','🎨','Cores','Tema pronto e cor do site'],['detalhes','✨','Detalhes','Letras, topo, botões, textos e seções'],['pedido','💬','Pedido especial','Peça uma mudança ao moderador']];
+const PS_ABA=[['cores','🎨','Cores','Tema pronto e cor do site'],['detalhes','✨','Detalhes','Letras, topo, botões, textos e seções']];
 function psPolish(){const ps=document.querySelector('#pn .ps');if(!ps)return;
   const hd=ps.querySelector('.ps-hd');if(hd&&!hd.querySelector('.ps-stp')){const l=document.createElement('ol');l.className='ps-stp';l.innerHTML='<li><b>1</b><span>Escolha<small>Cor, letras e estilo</small></span></li><li><b>2</b><span>Confira<small>A prévia muda na hora</small></span></li><li><b>3</b><span>Publique<small>Toque em Salvar e publicar</small></span></li>';const bd=hd.querySelector('.ps-bd');if(bd)hd.insertBefore(l,bd);else hd.append(l)}
   const sg=ps.querySelector('.ps-seg');if(sg&&!sg.classList.contains('rich')){sg.classList.add('rich');sg.innerHTML=PS_ABA.map(a=>`<button type="button" role="tab" data-pt="${a[0]}" onclick="psTab('${a[0]}')"><span class="pt-i" aria-hidden="true">${a[1]}</span><span class="pt-t">${a[2]}<small>${a[3]}</small></span>${a[0]==='pedido'?'<span class="nb" id="pe_tb" hidden></span>':''}</button>`).join('');psTab(PTAB,true)}
@@ -3782,7 +3782,7 @@ function bioMais(b){const p=document.getElementById('vbio');if(!p)return;const a
 /* ===== v32: erros do navegador vão para o admin geral (sem dados do cliente; no máximo 3 por carregamento) ===== */
 (function(){if(typeof sb==='undefined'||!sb)return;let n=0;const seen=new Set();
   function manda(onde,msg,det){try{if(n>=3)return;const k=onde+'|'+msg;if(seen.has(k))return;seen.add(k);n++;
-    if(/ResizeObserver|Script error\.?$|Load failed|NetworkError|Failed to fetch|AbortError/i.test(msg))return;
+    if(/ResizeObserver|Script error\.?$|Load failed|NetworkError|Failed to fetch|AbortError|ethereum|__firefox__|webkit\.messageHandlers|__gCrWeb|instantSearchSDK/i.test(msg))return;
     sb.rpc('registrar_erro_front',{p:{onde:'vitrine/'+(typeof SLUG==='string'?SLUG:'')+(location.pathname.endsWith('/admin')?'/admin':''),msg:String(msg).slice(0,300),det:String(det||'').slice(0,1200)}}).then(()=>{},()=>{})}catch(e){}}
   addEventListener('error',e=>{if(e&&e.message)manda('js',e.message,(e.filename||'')+':'+(e.lineno||0)+' '+((e.error&&e.error.stack)||''))});
   addEventListener('unhandledrejection',e=>{const r=e&&e.reason;manda('promise',(r&&(r.message||r.msg))||String(r),(r&&r.stack)||'')});
