@@ -618,6 +618,7 @@ html.tp-cor .hlz i{background:linear-gradient(180deg,transparent 0,#ffffff 40%,#
 /*v40-visual-seguro*/.hero .hb a.btn,.hero .hb .cta,.hero a[href*="wa.me"].btn,.hero a[href*="instagram"]{min-height:48px}
 @media(hover:none){.en-tip .tp-h{font-size:0!important}.en-tip .tp-h::before{content:"▶ Toque para assistir";font-size:12px}}
 .emp{display:flex;gap:6px;margin:10px 0 12px;padding:4px;border-radius:999px;background:rgba(127,127,127,.15)}.emp button{flex:1;border:0;border-radius:999px;padding:9px 6px;font:inherit;font-size:13px;font-weight:600;background:transparent;color:inherit;cursor:pointer}.emp button.on{background:#d71920;color:#fff}
+.avc{font-size:12px;line-height:1.45;margin:12px 0 4px}.avs{font-style:italic;text-align:center;font-size:14px;margin:6px 0 12px;opacity:.85}
 </style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
@@ -2234,6 +2235,7 @@ async function corSel(i){const m=L[cur];if(!m)return;const c=(m.cores||[]).filte
 function corSync(m,k){const s=COR_SEL[m.id];if(!s)return;const n=corDe(m,k);if(n&&n!==s){COR_SEL[m.id]=n;const b=document.getElementById('corbox');if(b)b.outerHTML=corPick(m);document.querySelectorAll('.dt-cta a.wa,.dt-bar a.wa').forEach(a=>a.href=wa('Olá! Tenho interesse na '+hn(m)+corTxt(m)+'. Gostaria de saber mais sobre as condições.'))}}
 
 let EMP='com';
+const AVISO_CON=()=>`<p class="mu avc">Os valores podem sofrer alterações sem aviso prévio e estão sujeitos à atualização no site. Para confirmar o valor exato, entre em contato com um de nossos consultores.</p><p class="avs">com Seguro de Vida em Grupo</p>`;
 const temAlt=m=>!!(m&&Array.isArray(m.planos_alt)&&m.planos_alt.some(x=>x&&x.valor>0));
 const planosV=m=>(EMP==='sem'&&temAlt(m))?m.planos_alt:(m&&m.planos)||[];
 const empV=m=>(EMP==='sem'&&temAlt(m))?(m.emplacamento_alt||'Sem emplacamento'):((m&&m.emplacamento)||'Com emplacamento');
@@ -2250,13 +2252,13 @@ function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visT
     ${corPick(m)}
     <div class="dt-cta"><button class="btn red" onclick="openM(cur,'con')">Simular consórcio</button><button class="btn red2" onclick="openM(cur,'fin')">Simular financiamento</button></div>
   </div></div>
-  ${pl.length?`<div class="dt-sec"><h3>Planos de consórcio</h3>${empTog(m,'det')}<div class="dt-pl">${pl.map(x=>`<div><b>${x.parcelas}x</b><span>${brl(x.valor)}</span></div>`).join('')}</div><p class="mu" style="font-size:12.5px;margin-top:10px">${esc(empV(m))} · valores sujeitos a ajuste conforme a tabela do consórcio. ${catSelo()} <a href="#" onclick="openM(cur,'con');return false">Simular com um plano →</a></p></div>`:''}
+  ${pl.length?`<div class="dt-sec"><h3>Planos de consórcio</h3>${empTog(m,'det')}<div class="dt-pl">${pl.map(x=>`<div><b>${x.parcelas}x</b><span>${brl(x.valor)}</span></div>`).join('')}</div>${AVISO_CON()}<p class="mu" style="font-size:12.5px;margin-top:10px">${esc(empV(m))} · ${catSelo()} <a href="#" onclick="openM(cur,'con');return false">Simular com um plano →</a></p></div>`:''}
   ${m.descricao?`<div class="dt-sec"><h3>Descrição e ficha técnica</h3><div class="desc">${fmtDesc(m.descricao)}</div></div>`:''}
   <div class="dt-bar"><button class="btn red2" onclick="shareM()">Compartilhar</button><a class="btn red wa" target="_blank" rel="noopener" href="${wa('Olá! Tenho interesse na '+hn(m)+corTxt(m)+'. Gostaria de tirar uma dúvida.')}">Tirar dúvida</a></div>`}
   if(v==='con'){const p=planosV(m);b=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>Tabela de consórcio</h3><button class="btn red pill" onclick="howOrVideo()">▶ Como funciona?</button></div>${cartaH(p)} ${how('Você entra em um grupo e paga parcelas mensais sem juros (há taxa de administração). A moto é liberada por sorteio ou lance. Fale com o vendedor para tirar suas dúvidas.')}
     ${f[0]?`<div style="border:1px solid var(--bd);border-radius:14px;margin:12px 0;overflow:hidden"><img ${IMGA(f[0],'det')} alt="${esc(m.nome)}" style="display:block;width:100%;${soCon(m)?'max-height:340px':'height:230px'};object-fit:contain"></div>`:''}
     ${empTog(m,'con')}<h3 style="text-align:center">${esc(empV(m))}</h3><div class="pl">${p.map((x,k)=>`<label><input type="radio" name="pl" value="${k}" ${k?'':'checked'}>${x.parcelas}x <b>${brl(x.valor)}</b></label>`).join('')||'<p class="mu">Consulte os planos com o vendedor.</p>'}</div>
-    <p class="mu" style="font-size:13px">*Os valores podem ser ajustados conforme tabela do consórcio.</p>
+    ${AVISO_CON()}
     <button class="btn red" onclick="chatOpen(null,'${m.id}')">Simular e preencher meus dados</button><button class="btn or" onclick="conWa(1)">QUERO UM REPASSE DE CONSÓRCIO</button>`}
   if(v==='fin')b=`<div class="fin"><div><h3>Financiamento</h3><p class="mu">Preencha o formulário abaixo para que o vendedor possa trazer pra você as melhores cotações do mercado.</p></div>${f[0]?`<img ${IMGA(f[0],'det')} alt="${esc(m.nome)}" decoding="async">`:''}</div>
     ${fld('f_nom','Nome e sobrenome','autocomplete="name"')}${fld('f_tel','Telefone com DDD (WhatsApp)','inputmode="tel" autocomplete="tel-national" placeholder="(00) 00000-0000"','tel')}${fld('f_cpf','CPF','inputmode="numeric" placeholder="000.000.000-00"','cpf')}${fld('f_nas','Data de nascimento','inputmode="numeric" autocomplete="bday" placeholder="DD/MM/AAAA"','dt')}${fld('f_ent','Valor de entrada (opcional)','inputmode="numeric" placeholder="Deixe em branco se não tiver"','rs')}
