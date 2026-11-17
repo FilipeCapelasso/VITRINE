@@ -3125,6 +3125,7 @@ function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,150
   if(T==='pedidos'||T==='leads')T='vendas';
   if(T==='site'||T==='perfil'){CTAB=T==='site'?'textos':'perfil';T='conta'}
   if(appModo()&&!['vendas','avisos','personalizar','conta'].includes(T))T='vendas';
+  if(!appModo()&&T==='avisos')T='inicio';
   PNS='#pn';
   const nav=navLista().map(a=>{const lk=a[0]==='personalizar'&&!ehPrem();return `<button class="nv ${T===a[0]?'on':''}${lk?' lockd':''}" onclick="${lk?'persLock()':`adm('${a[0]}')`}" ${lk?'aria-label="Personalizar (bloqueado: só Premium)"':''}><span class="ic">${a[1]}</span><span class="nlb">${a[2]}</span>${lk?'<span class="nlk" aria-hidden="true">🔒</span>':''}${a[0]==='personalizar'&&!lk&&AC&&AC.msgs_novas>0&&T!=='personalizar'?`<span class="nb" id="pe_nb">${AC.msgs_novas}</span>`:''}${a[0]==='vendas'?'<span class="nb" id="vdbg" hidden></span>':''}${a[0]==='avisos'?'<span class="nb" id="avbg" hidden></span>':''}</button>`}).join('');
   const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',calculadora:'Calculadora de consórcio',sorteio:'Sorteio da Loteria Federal',comparar:'Comparar',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
@@ -3999,7 +4000,7 @@ function srEdita(id){const c=SRC.find(o=>o.id===id);if(!c)return;srForm(c);const
 async function srDel(id){if(!confirm('Excluir esta cota?'))return;const r=await sb.from('cotas_consorcio').delete().eq('id',id);if(r.error){toast('Não consegui excluir.');return}SRC=SRC.filter(o=>o.id!==id);srLista();toast('Cota excluída.')}
 
 const NAV_APP=[['vendas','👥','Clientes'],['avisos','🔔','Notificações'],['personalizar','🎨','Personalizar'],['conta','⚙️','Configuração']];
-const navLista=()=>{if(appModo())return NAV_APP;const a=NAV.slice();a.splice(2,0,['avisos','🔔','Notificações']);return a};
+const navLista=()=>appModo()?NAV_APP:NAV;
 const AVIC={sorteio:['🎰','#7c3aed','Sorteio'],rascunho:['✍️','#2f6bff','Começou a preencher'],preguicoso:['😴','#f59e0b','Parou de preencher'],chat:['✅','#16a34a','Finalizou'],ficha:['✅','#16a34a','Finalizou'],contrato:['✅','#16a34a','Finalizou'],contato:['💬','#16a34a','Contato'],chat_inicio:['💬','#2f6bff','Começou o chat'],teste:['🔔','#7c3aed','Teste']};
 const avIc=t=>AVIC[t]||['🔔','#64748b','Aviso'];
 const avTit=t=>String(t||'').replace(/^(?:\p{Extended_Pictographic}|\uFE0F|\u200D)+\s*/u,'');
