@@ -3100,7 +3100,7 @@ async function pPers0(keep){
  <section class="ps-c"><h3>Seções do site</h3><p class="sub">Escolha o que aparece para o cliente.</p>${PS_SEC.map(s=>`<div class="ps-t"><span>${s[1]} ${esc(s[2])}<small>${esc(s[3])}</small></span><label class="ps-sy"><input type="checkbox" ${(S.ocultar||[]).includes(s[0])?'':'checked'} onchange="psSec('${s[0]}',this.checked)" aria-label="Mostrar ${esc(s[2])}"><i></i></label></div>`).join('')}</section> ${psSobreH()}${psPedidoH()}
  </div>
  <aside class="ps-pv"><h4>Prévia ao vivo</h4><div id="ps_pv"></div></aside>
- <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['motos','🏍️','Motos'],['calculadora','🧮','Calculadora'],['sorteio','🎰','Sorteio'],['comparar','⚖️','Comparar'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
+ <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['motos','🏍️','Motos'],['calculadora','🧮','Calculadora'],['comparar','⚖️','Comparar'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
 let AC=null,PSS=null,PSAVED={},PSLIVE=false;
 async function acessoCarrega(){try{const r=await sb.rpc('meu_acesso');AC=(r&&r.data)||{}}catch(e){AC={}}}
 const ehPrem=()=>!!(AC&&AC.limites&&AC.limites.personalizar);
@@ -3121,7 +3121,7 @@ function enPre(){try{const c=navigator.connection;if(c&&(c.saveData||/(^|-)2g$/.
   vs.slice(0,4).forEach(carga);const ws=[...document.querySelectorAll('.en-w')];const todos=w=>w.querySelectorAll('.en-mp video').forEach(carga);
   if(window.IntersectionObserver){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){todos(e.target);io.unobserve(e.target)}}),{rootMargin:'1000px 0px'});ws.forEach(w=>io.observe(w))}else ws.forEach(todos)}
 function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,1500)} if(t)T=t; if(T!=='personalizar')psRevert(); if(T==='personalizar'&&AC&&AC.limites&&!ehPrem()){T='inicio';persLock()}
-  if(T==='resumo'||T==='playbook')T='inicio';
+  if(T==='resumo'||T==='playbook'||T==='sorteio')T='inicio';
   if(T==='pedidos'||T==='leads')T='vendas';
   if(T==='site'||T==='perfil'){CTAB=T==='site'?'textos':'perfil';T='conta'}
   if(appModo()&&!['vendas','avisos','personalizar','conta'].includes(T))T='vendas';
@@ -3843,7 +3843,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
     try{if(typeof T!=='undefined'&&T==='vendas'&&typeof pVendas==='function'&&$('#vdl'))pVendas(true)}catch(x){}}
   if(d.tipo==='abrir'&&d.url){try{const u=new URL(d.url,location.origin);appUrl(u.searchParams);if(T==='vendas')adm('vendas')}catch(x){}}});
 /* aviso tocado: abre na aba Clientes e mostra o botão do WhatsApp do cliente */
-function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(qp.get('t')==='avisos')T='avisos';if(qp.get('t')==='sorteio')T='sorteio';if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
+function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(qp.get('t')==='avisos')T='avisos';if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
   const cq=qp.get('c');if(cq)setTimeout(()=>avAbreCli(cq),900);const wa=qp.get('wa');if(wa&&/^https:\/\/wa\.me\//.test(wa))setTimeout(()=>appWaBar(wa),600);
   if(qp.has('app')||qp.has('t')||qp.has('wa')){try{history.replaceState(null,'',location.pathname)}catch(e){}}}
 function appWaBar(wa){let b=document.getElementById('ap_wab');if(b)b.remove();b=document.createElement('div');b.id='ap_wab';b.className='ap-wab';
