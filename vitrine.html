@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0d0d12">
-<script>/*app-vendedor: o painel /nome/admin vira um app instalável (Android, iPhone e computador)*/try{var am=/^\/([a-z0-9-]+)\/admin\/?$/i.exec(location.pathname);if(am){var ah=document.head,aa=function(t,o){var e=document.createElement(t);for(var k in o)e.setAttribute(k,o[k]);ah.appendChild(e)};aa('link',{rel:'manifest',href:'/'+am[1]+'/app.webmanifest'});aa('meta',{name:'apple-mobile-web-app-capable',content:'yes'});aa('meta',{name:'mobile-web-app-capable',content:'yes'});aa('meta',{name:'apple-mobile-web-app-title',content:'Meu Painel'});aa('meta',{name:'apple-mobile-web-app-status-bar-style',content:'default'});document.addEventListener('DOMContentLoaded',function(){var o=document.querySelectorAll('link[rel="apple-touch-icon"]');for(var i=0;i<o.length;i++)o[i].remove();aa('link',{rel:'apple-touch-icon',sizes:'180x180',href:'/app-icon-180.png'})})}}catch(e){}</script>
+<script>/*app-vendedor: o painel /nome/admin vira um app instalável (Android, iPhone e computador)*/try{var am=/^\/([a-z0-9-]+)\/admin\/?$/i.exec(location.pathname);if(am){var ah=document.head,aa=function(t,o){var e=document.createElement(t);for(var k in o)e.setAttribute(k,o[k]);ah.appendChild(e)};aa('link',{rel:'manifest',href:'/'+am[1]+'/app.webmanifest'});aa('meta',{name:'apple-mobile-web-app-capable',content:'yes'});aa('meta',{name:'mobile-web-app-capable',content:'yes'});aa('meta',{name:'apple-mobile-web-app-title',content:'Meu Painel'});aa('meta',{name:'apple-mobile-web-app-status-bar-style',content:'default'});document.addEventListener('DOMContentLoaded',function(){var o=document.querySelectorAll('link[rel="apple-touch-icon"]');for(var i=0;i<o.length;i++)o[i].remove();aa('link',{rel:'apple-touch-icon',sizes:'180x180',href:'/app-honda-180.png'})})}}catch(e){}</script>
 <title>Vitrine de Motos Honda</title>
 <meta name="description" content="Escolha sua moto Honda com consórcio ou financiamento e fale direto com o vendedor pelo WhatsApp.">
 <meta property="og:type" content="website"><meta property="og:title" content="Vitrine de Motos Honda"><meta property="og:description" content="Consórcio e financiamento de motos Honda com atendimento direto pelo WhatsApp.">
@@ -636,6 +636,53 @@ html.tp-cor .hlz i{background:linear-gradient(180deg,transparent 0,#ffffff 40%,#
 .ap-wab{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:9999;display:flex;gap:8px;max-width:520px;margin:0 auto;animation:apw .25s ease-out}
 .ap-wab a{flex:1;background:#25d366;color:#05351a;font-weight:800;text-align:center;text-decoration:none;border-radius:999px;padding:15px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}.ap-wab button{border:0;border-radius:50%;width:50px;background:#fff;box-shadow:0 10px 30px -10px rgba(0,0,0,.4);font-size:16px}
 @keyframes apw{from{transform:translateY(20px);opacity:0}}@media(prefers-reduced-motion:reduce){.ap-wab{animation:none}}
+/* notificações: aviso animado + aba */
+.av-st{position:fixed;top:calc(12px + env(safe-area-inset-top));right:14px;z-index:10000;display:flex;flex-direction:column;gap:10px;width:min(400px,calc(100vw - 24px));pointer-events:none}
+@media(max-width:640px){.av-st{left:12px;right:12px;width:auto}.av-im{width:48px;height:48px}.av-th{width:52px;height:52px}}
+.av-c{position:relative;pointer-events:auto;display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:20px;padding:14px 38px 16px 14px;overflow:hidden;
+ box-shadow:0 22px 50px -18px rgba(15,18,40,.45),0 0 0 1px rgba(15,18,40,.06);transform-origin:top center;animation:avEntra .62s cubic-bezier(.2,1.4,.35,1) both}
+.av-c::before{content:'';position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--avc)}
+.av-c.sai{animation:avSai .4s ease-in forwards}
+.av-ic{position:relative;flex:none;width:46px;height:46px;border-radius:50%;background:color-mix(in srgb,var(--avc) 14%,#fff);display:flex;align-items:center;justify-content:center;font-size:23px}
+.av-ic span{display:inline-block;animation:avIco .9s .25s ease-in-out both}
+.av-ic i{position:absolute;inset:0;border-radius:50%;border:2px solid var(--avc);opacity:0;animation:avOnda 1.6s .2s ease-out 2}.av-ic i+i{animation-delay:.6s}
+.av-preguicoso .av-ic span{animation:avZz 2.2s .2s ease-in-out infinite}
+.av-chat .av-ic span,.av-ficha .av-ic span,.av-contrato .av-ic span{animation:avPop .7s .25s cubic-bezier(.2,1.6,.4,1) both}
+.av-tx{flex:1;min-width:0}.av-tx b{display:block;font-size:15px;line-height:1.3;color:#0b0c10}.av-tx p{margin:3px 0 0;font-size:13px;color:#555;line-height:1.4}
+.av-bt{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}.av-bt a,.av-bt button{border:0;border-radius:999px;padding:8px 12px;font:700 13px Inter,sans-serif;cursor:pointer;text-decoration:none;white-space:nowrap}
+.av-wa{background:#25d366;color:#053519}.av-ver{background:#f1f2f6;color:#1f2230}
+.av-im{flex:none;width:60px;height:60px;object-fit:contain;align-self:center;animation:avMoto .8s .3s cubic-bezier(.2,1.2,.4,1) both}
+.av-x{position:absolute;top:8px;right:8px;width:28px;height:28px;border:0;border-radius:50%;background:transparent;color:#888;cursor:pointer;font-size:13px}.av-x:hover{background:#f1f2f6}
+.av-pg{position:absolute;left:0;right:0;bottom:0;height:3px;background:rgba(0,0,0,.05)}.av-pg s{display:block;height:100%;background:var(--avc);transform-origin:left;animation:avTempo 9s linear forwards}
+.av-c.pausa .av-pg s{animation-play-state:paused}
+@keyframes avEntra{0%{opacity:0;transform:translateY(-120%) scale(.9)}100%{opacity:1;transform:none}}
+@keyframes avSai{to{opacity:0;transform:translateX(110%) scale(.96)}}
+@keyframes avIco{0%,100%{transform:rotate(0)}20%{transform:rotate(-18deg) scale(1.15)}40%{transform:rotate(14deg)}60%{transform:rotate(-8deg)}80%{transform:rotate(4deg)}}
+@keyframes avPop{0%{transform:scale(0)}100%{transform:scale(1)}}
+@keyframes avZz{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px) rotate(-6deg)}}
+@keyframes avOnda{0%{opacity:.7;transform:scale(1)}100%{opacity:0;transform:scale(1.7)}}
+@keyframes avMoto{0%{opacity:0;transform:translateX(30px) scale(.8)}100%{opacity:1;transform:none}}
+@keyframes avTempo{to{transform:scaleX(0)}}
+@media(prefers-reduced-motion:reduce){.av-c,.av-c.sai,.av-ic span,.av-ic i,.av-im{animation:none!important}.av-c.sai{opacity:0}}
+.av-top .av-on,.av-top .av-off{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}.av-top small{display:block;color:#666;font-size:13px;margin-top:2px}
+.av-on{justify-content:flex-start!important;flex-wrap:nowrap!important}.av-on .av-dot{flex:none}.av-dot{width:12px;height:12px;border-radius:50%;background:#16a34a;box-shadow:0 0 0 0 rgba(22,163,74,.5);animation:avPulso 2s infinite}
+@keyframes avPulso{70%{box-shadow:0 0 0 10px rgba(22,163,74,0)}100%{box-shadow:0 0 0 0 rgba(22,163,74,0)}}
+.av-off .btn{width:auto;margin:0;padding:11px 18px}.av-acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.av-acts .btn{width:auto;margin:0;padding:10px 16px;font-size:14px}
+.av-f{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.av-f button{border:1px solid #e3e4ec;background:#fff;border-radius:999px;padding:8px 14px;font:600 13.5px Inter,sans-serif;cursor:pointer}.av-f button.on{background:#0d0d12;color:#fff;border-color:#0d0d12}
+.av-dia{margin:16px 0 8px;font-size:12.5px;text-transform:capitalize;color:#777;font-weight:700}
+.av-i{display:flex;gap:12px;align-items:flex-start;background:#fff;border:1px solid #ebebf1;border-radius:16px;padding:14px;margin-bottom:10px;position:relative}
+.av-i.nova{border-color:color-mix(in srgb,var(--avc) 45%,#fff);box-shadow:0 8px 22px -16px var(--avc)}.av-i.nova::after{content:'';position:absolute;top:14px;right:14px;width:9px;height:9px;border-radius:50%;background:var(--avc)}
+.av-ii{flex:none;width:40px;height:40px;border-radius:50%;background:color-mix(in srgb,var(--avc) 14%,#fff);display:flex;align-items:center;justify-content:center;font-size:19px}
+.av-it{flex:1;min-width:0}.av-it b{display:block;font-size:14.5px;margin-top:2px}.av-it p{margin:3px 0 0;font-size:13px;color:#555}
+.av-ih{display:flex;gap:8px;align-items:center;flex-wrap:wrap;padding-right:16px}.av-tg{font-size:11.5px;font-weight:800;color:var(--avc)}.av-ih time{font-size:12px;color:#888}
+.av-th{flex:none;width:64px;height:64px;object-fit:contain;align-self:center}
+.av-vz{text-align:center;padding:40px 16px;color:#666}.av-vz div{font-size:34px}.av-vz b{display:block;color:#111;margin:6px 0}
+.av-pf{margin-top:16px}.av-pf summary{cursor:pointer;font-weight:800}.av-pf h5{margin:16px 0 4px;font-size:13px;color:#777}
+.av-sw{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:12px 0;border-bottom:1px solid #f0f0f5;cursor:pointer}.av-sw small{display:block;color:#777;font-size:12.5px}
+.av-sw input{position:absolute;opacity:0;width:1px;height:1px}.av-sw i{flex:none;width:46px;height:28px;border-radius:999px;background:#d6d8e1;position:relative;transition:background .2s}
+.av-sw i::after{content:'';position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.av-sw input:checked+i{background:#16a34a}.av-sw input:checked+i::after{transform:translateX(18px)}.av-sw input:focus-visible+i{outline:2px solid #0d0d12;outline-offset:2px}
+.shell.apm .frase{display:none}
 </style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
@@ -3024,12 +3071,13 @@ function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,150
   if(T==='resumo'||T==='playbook')T='inicio';
   if(T==='pedidos'||T==='leads')T='vendas';
   if(T==='site'||T==='perfil'){CTAB=T==='site'?'textos':'perfil';T='conta'}
+  if(appModo()&&!['vendas','avisos','personalizar','conta'].includes(T))T='vendas';
   PNS='#pn';
-  const nav=NAV.map(a=>{const lk=a[0]==='personalizar'&&!ehPrem();return `<button class="nv ${T===a[0]?'on':''}${lk?' lockd':''}" onclick="${lk?'persLock()':`adm('${a[0]}')`}" ${lk?'aria-label="Personalizar (bloqueado: só Premium)"':''}><span class="ic">${a[1]}</span><span class="nlb">${a[2]}</span>${lk?'<span class="nlk" aria-hidden="true">🔒</span>':''}${a[0]==='personalizar'&&!lk&&AC&&AC.msgs_novas>0&&T!=='personalizar'?`<span class="nb" id="pe_nb">${AC.msgs_novas}</span>`:''}${a[0]==='vendas'?'<span class="nb" id="vdbg" hidden></span>':''}</button>`}).join('');
-  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',calculadora:'Calculadora de consórcio',comparar:'Comparar',conta:'Configuração',personalizar:'Personalizar meu site'}[T];
-  $('#app').innerHTML=`<div class="shell"><aside class="sd"><div class="sd-top">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}</b><small>Painel do vendedor</small></div></div><nav class="sd-nav">${nav}</nav><div class="sd-bot"><a class="lk" href="#">↗ Ver meu site</a><button class="lk" onclick="out()">Sair</button><small class="ver">Versão 01/11/2026</small></div></aside>
+  const nav=navLista().map(a=>{const lk=a[0]==='personalizar'&&!ehPrem();return `<button class="nv ${T===a[0]?'on':''}${lk?' lockd':''}" onclick="${lk?'persLock()':`adm('${a[0]}')`}" ${lk?'aria-label="Personalizar (bloqueado: só Premium)"':''}><span class="ic">${a[1]}</span><span class="nlb">${a[2]}</span>${lk?'<span class="nlk" aria-hidden="true">🔒</span>':''}${a[0]==='personalizar'&&!lk&&AC&&AC.msgs_novas>0&&T!=='personalizar'?`<span class="nb" id="pe_nb">${AC.msgs_novas}</span>`:''}${a[0]==='vendas'?'<span class="nb" id="vdbg" hidden></span>':''}${a[0]==='avisos'?'<span class="nb" id="avbg" hidden></span>':''}</button>`}).join('');
+  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',calculadora:'Calculadora de consórcio',comparar:'Comparar',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
+  $('#app').innerHTML=`<div class="shell${appModo()?' apm':''}"><aside class="sd"><div class="sd-top">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}</b><small>Painel do vendedor</small></div></div><nav class="sd-nav">${nav}</nav><div class="sd-bot"><a class="lk" href="#">↗ Ver meu site</a><button class="lk" onclick="out()">Sair</button><small class="ver">Versão 01/11/2026</small></div></aside>
   <main class="mn"><div class="frase" id="frase">${fraseH(V&&V.frase_n,0,'fr-t')}</div><div id="plc"></div><header class="mt2"><h1>${tt}</h1><span class="mt2a"><a class="btn sm" href="#" style="text-decoration:none">Ver site</a><button class="btn sm" onclick="out()">Sair</button></span></header><span id="nb" hidden></span><div id="pn"></div></main></div>`;
-  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,calculadora:pCalculadora,comparar:pComparar,conta:pConta,personalizar:pPers})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();
+  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,calculadora:pCalculadora,comparar:pComparar,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
 }
 
 /* ---- prazo do plano (comprado em..., suspensão automática em...) com cronômetro ---- */
@@ -3688,8 +3736,7 @@ async function appAtivar(pedir){
   return{ok:true}}
 /* ao abrir o painel: se o aparelho já tinha permitido, renova a inscrição sem perguntar nada (troca de conta, reinstalação) */
 async function appAuto(){try{if(appPushOk()&&Notification.permission==='granted')await appAtivar(false)}catch(e){}
-  try{if(navigator.clearAppBadge)navigator.clearAppBadge()}catch(e){}
-  try{sb.from('app_notificacoes').update({lida:true}).eq('lida',false).then(()=>{},()=>{})}catch(e){}}
+}
 async function appBtAtivar(){const b=$('#ap_at');if(b){b.disabled=true;b.textContent='Ativando…'}
   let r;try{r=await appAtivar(true)}catch(e){r={ok:false,m:String(e&&e.message||e)}}
   if(r.ok){toast('Avisos ativados neste aparelho!');await appStatus();appRe();setTimeout(appTeste,400);return}
@@ -3707,11 +3754,11 @@ async function appTeste(){
     appRe();if(Date.now()-ini<15000&&APP_TESTE&&APP_TESTE.fase!=='chegou'&&APP_TESTE.fase!=='erro')setTimeout(chk,2500)};
   setTimeout(chk,2500)}
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const d=e.data||{};
-  if(d.tipo==='push'){if(d.d&&d.d.tp==='teste'&&APP_TESTE){APP_TESTE.fase='chegou';appRe()}
+  if(d.tipo==='push'&&d.d){const x=d.d;try{avMostra({id:x.id,tipo:x.tp,titulo:x.t,corpo:x.b,dados:{wa:x.wa,img:x.img,cid:x.cid},criado:x.em||new Date().toISOString()})}catch(z){}
     try{if(typeof T!=='undefined'&&T==='vendas'&&typeof pVendas==='function'&&$('#vdl'))pVendas(true)}catch(x){}}
   if(d.tipo==='abrir'&&d.url){try{const u=new URL(d.url,location.origin);appUrl(u.searchParams);if(T==='vendas')adm('vendas')}catch(x){}}});
 /* aviso tocado: abre na aba Clientes e mostra o botão do WhatsApp do cliente */
-function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
+function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(qp.get('t')==='avisos')T='avisos';if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
   const wa=qp.get('wa');if(wa&&/^https:\/\/wa\.me\//.test(wa))setTimeout(()=>appWaBar(wa),600);
   if(qp.has('app')||qp.has('t')||qp.has('wa')){try{history.replaceState(null,'',location.pathname)}catch(e){}}}
 function appWaBar(wa){let b=document.getElementById('ap_wab');if(b)b.remove();b=document.createElement('div');b.id='ap_wab';b.className='ap-wab';
@@ -3750,6 +3797,67 @@ async function pApp(){$(PNS).innerHTML='<div id="ap_box"><p class="mu">Carregand
 function appIniH(){let x=false,ep='';try{x=localStorage.getItem('ap_ini_x')==='1';ep=localStorage.getItem('push_ep')||''}catch(e){}
   if(x||(appPushOk()&&Notification.permission==='granted'&&ep))return'<div id="ap_ini"></div>';
   return`<section class="card2 ap-ini" id="ap_ini"><div><b>📲 Receba cada cliente na hora, no celular</b><p>Instale o app do painel e ative os avisos: você fica sabendo quando o cliente começa, termina ou para de preencher.</p></div><div class="ap-ini-a"><button class="btn red" onclick="CTAB='app';adm('conta')">Configurar agora</button><button class="btn" onclick="try{localStorage.setItem('ap_ini_x','1')}catch(e){};document.getElementById('ap_ini').outerHTML='<div id=&quot;ap_ini&quot;></div>'">Agora não</button></div></section>`}
+
+/* ===== MODO APP + NOTIFICAÇÕES DENTRO DO PAINEL =====
+   Aberto pelo app instalado, o painel mostra só Clientes, Notificações, Personalizar e Configuração.
+   Cada aviso novo aparece animado na tela (com som e vibração) mesmo com o painel aberto no navegador:
+   chega pelo Supabase Realtime e pelo service worker, sem repetir o mesmo aviso. */
+const appModo=()=>{try{return appStand()||sessionStorage.getItem('app_modo')==='1'}catch(e){return appStand()}};
+const NAV_APP=[['vendas','👥','Clientes'],['avisos','🔔','Notificações'],['personalizar','🎨','Personalizar'],['conta','⚙️','Configuração']];
+const navLista=()=>{if(appModo())return NAV_APP;const a=NAV.slice();a.splice(2,0,['avisos','🔔','Notificações']);return a};
+const AVIC={rascunho:['✍️','#2f6bff','Começou a preencher'],preguicoso:['😴','#f59e0b','Parou de preencher'],chat:['✅','#16a34a','Finalizou'],ficha:['✅','#16a34a','Finalizou'],contrato:['✅','#16a34a','Finalizou'],contato:['💬','#16a34a','Contato'],chat_inicio:['💬','#2f6bff','Começou o chat'],teste:['🔔','#7c3aed','Teste']};
+const avIc=t=>AVIC[t]||['🔔','#64748b','Aviso'];
+const avTit=t=>String(t||'').replace(/^(?:\p{Extended_Pictographic}|\uFE0F|\u200D)+\s*/u,'');
+const AVV=new Set();let AVCH=null,AVLST=[],AVF='todas',AVPREF=null,AVAC=null;
+const avLoc=(k,d)=>{try{const v=localStorage.getItem('av_'+k);return v===null?d:v==='1'}catch(e){return d}};
+const avLocSet=(k,v)=>{try{localStorage.setItem('av_'+k,v?'1':'0')}catch(e){}};
+const avQuando=d=>{const s=Math.max(0,(Date.now()-Date.parse(d))/1000);return s<60?'agora':s<3600?Math.floor(s/60)+' min':s<86400?Math.floor(s/3600)+' h':new Date(d).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})};
+addEventListener('pointerdown',()=>{try{if(!AVAC)AVAC=new (window.AudioContext||window.webkitAudioContext)();if(AVAC.state==='suspended')AVAC.resume()}catch(e){}},{passive:true});
+function avSom(tp){if(!avLoc('som',true)||!AVAC)return;try{const t0=AVAC.currentTime,ns=tp==='preguicoso'?[660,520]:tp==='rascunho'?[740,988]:[784,1047,1319];
+  ns.forEach((f,i)=>{const o=AVAC.createOscillator(),g=AVAC.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0.0001,t0+i*.12);g.gain.exponentialRampToValueAtTime(.18,t0+i*.12+.02);g.gain.exponentialRampToValueAtTime(.0001,t0+i*.12+.32);o.connect(g).connect(AVAC.destination);o.start(t0+i*.12);o.stop(t0+i*.12+.35)})}catch(e){}}
+function avMostra(n){if(!n||n.id==null||AVV.has(+n.id))return;AVV.add(+n.id);
+  const d=n.dados||{},[ic,cor]=avIc(n.tipo);let st=document.getElementById('av_st');
+  if(!st){st=document.createElement('div');st.id='av_st';st.className='av-st';st.setAttribute('aria-live','polite');document.body.appendChild(st)}
+  const el=document.createElement('div');el.className='av-c av-'+(n.tipo||'x');el.style.setProperty('--avc',cor);el.setAttribute('role','status');
+  el.innerHTML=`<div class="av-ic"><span>${ic}</span><i></i><i></i></div><div class="av-tx"><b>${esc(avTit(n.titulo)||'Novo aviso')}</b><p>${esc(n.corpo||'')}</p><div class="av-bt">${d.wa?`<a class="av-wa" href="${esc(d.wa)}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}<button type="button" class="av-ver">Ver clientes</button></div></div>${d.img?`<img class="av-im" src="${esc(d.img)}" alt="" decoding="async">`:''}<button type="button" class="av-x" aria-label="Fechar">✕</button><div class="av-pg"><s></s></div>`;
+  st.prepend(el);while(st.children.length>3)st.lastElementChild.remove();
+  const fecha=()=>{if(el.classList.contains('sai'))return;el.classList.add('sai');setTimeout(()=>el.remove(),420)};
+  let tm=setTimeout(fecha,9000);el.addEventListener('mouseenter',()=>{clearTimeout(tm);el.classList.add('pausa')});el.addEventListener('mouseleave',()=>{el.classList.remove('pausa');tm=setTimeout(fecha,4000)});
+  el.querySelector('.av-x').onclick=fecha;el.querySelector('.av-ver').onclick=()=>{fecha();adm('vendas')};const w=el.querySelector('.av-wa');if(w)w.addEventListener('click',()=>setTimeout(fecha,200));
+  avSom(n.tipo);if(avLoc('vibrar',true))try{navigator.vibrate&&navigator.vibrate([60,40,120])}catch(e){}
+  if(n.tipo==='teste'&&typeof APP_TESTE!=='undefined'&&APP_TESTE){APP_TESTE.fase='chegou';try{appRe()}catch(e){}}
+  if(T==='avisos'&&document.getElementById('av_l')){AVLST.unshift(n);avLista()}
+  avConta()}
+async function avConta(){const b=document.getElementById('avbg');if(!b||!sb)return;try{const{count}=await sb.from('app_notificacoes').select('id',{count:'exact',head:true}).eq('lida',false);b.textContent=count>99?'99+':count;b.hidden=!count}catch(e){}}
+function avLive(){if(AVCH||!sb||!V||!V.id)return;try{AVCH=sb.channel('avisos-'+V.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'app_notificacoes',filter:'vendedor_id=eq.'+V.id},e=>{const n=e.new;if(n&&Date.now()-Date.parse(n.criado||Date.now())<120000)avMostra(n)}).subscribe()}catch(e){}}
+/* ----- aba Notificações ----- */
+async function pAvisos(){
+  const on=await (async()=>{try{const s=await appSubAtual();return !!s&&Notification.permission==='granted'}catch(e){return false}})();
+  $('#pn').innerHTML=`<section class="card2 av-top">${on?`<div class="av-on"><span class="av-dot"></span><div><b>Avisos ativos neste aparelho</b><small>Você é avisado quando o cliente começa, termina ou para de preencher.</small></div></div>`:`<div class="av-off"><div><b>🔕 Este aparelho ainda não recebe avisos com o app fechado</b><small>Com o painel aberto você já vê os avisos aqui. Para receber no celular a qualquer hora, ative:</small></div><button class="btn red" onclick="CTAB='app';adm('conta')">Ativar avisos</button></div>`}
+  <div class="av-acts"><button class="btn" onclick="avTeste()">🔔 Testar aviso</button><button class="btn" onclick="avLidas()">✓ Marcar todas como lidas</button></div></section>
+  <div class="av-f">${[['todas','Todas'],['nao','Não lidas'],['rascunho','✍️ Começou'],['fim','✅ Finalizou'],['preguicoso','😴 Parou']].map(a=>`<button class="${AVF===a[0]?'on':''}" onclick="AVF='${a[0]}';avLista()">${a[1]}</button>`).join('')}</div>
+  <div id="av_l" class="av-l"><div class="sk" style="height:76px;border-radius:16px"></div><div class="sk" style="height:76px;border-radius:16px;margin-top:10px"></div></div>
+  <details class="card2 av-pf" id="av_pf"><summary>⚙️ Quais avisos receber</summary><div id="av_pfx"><p class="mu">Carregando…</p></div></details>`;
+  const r=await sb.from('app_notificacoes').select('id,tipo,titulo,corpo,dados,lida,criado').order('id',{ascending:false}).limit(150);
+  if(T!=='avisos')return;AVLST=(r&&r.data)||[];AVLST.forEach(n=>AVV.add(+n.id));avLista();avPrefs();
+  try{if(navigator.clearAppBadge)navigator.clearAppBadge()}catch(e){}
+  setTimeout(async()=>{if(T!=='avisos')return;try{await sb.rpc('app_marcar_lidas',{p_ids:null})}catch(e){}avConta()},2500)}
+function avLista(){const el=document.getElementById('av_l');if(!el)return;
+  const fim=['chat','ficha','contrato','contato'],l=AVLST.filter(n=>AVF==='todas'||(AVF==='nao'&&!n.lida)||(AVF==='fim'?fim.includes(n.tipo):n.tipo===AVF));
+  if(!l.length){el.innerHTML=`<div class="av-vz"><div>🔔</div><b>${AVLST.length?'Nada neste filtro':'Nenhum aviso ainda'}</b><p>Quando um cliente começar a preencher no seu site, o aviso aparece aqui.</p></div>`;return}
+  let dia='';el.innerHTML=l.map(n=>{const d=n.dados||{},[ic,cor,rot]=avIc(n.tipo),dd=new Date(n.criado),k=dd.toDateString(),hj=new Date().toDateString(),on=new Date(Date.now()-864e5).toDateString();
+    const sep=k!==dia?`<h4 class="av-dia">${k===hj?'Hoje':k===on?'Ontem':dd.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'})}</h4>`:'';dia=k;
+    return sep+`<article class="av-i${n.lida?'':' nova'}" style="--avc:${cor}"><div class="av-ii">${ic}</div><div class="av-it"><div class="av-ih"><span class="av-tg">${rot}</span><time>${dd.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · ${avQuando(n.criado)}</time></div><b>${esc(avTit(n.titulo))}</b><p>${esc(n.corpo||'')}</p><div class="av-bt">${d.wa?`<a class="av-wa" href="${esc(d.wa)}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}<button type="button" class="av-ver" onclick="adm('vendas')">Ver clientes</button></div></div>${d.img?`<img class="av-th" src="${esc(d.img)}" alt="" loading="lazy" decoding="async">`:''}</article>`}).join('')}
+async function avPrefs(){const el=document.getElementById('av_pfx');if(!el)return;try{const r=await sb.rpc('app_prefs_ler');AVPREF=(r&&r.data)||{}}catch(e){AVPREF={}}
+  const p=AVPREF,fim=p.chat!==false&&p.ficha!==false&&p.contrato!==false&&p.contato!==false,sw=(id,on,t,s,fn)=>`<label class="av-sw"><span><b>${t}</b><small>${s}</small></span><input type="checkbox" id="${id}" ${on?'checked':''} onchange="${fn}"><i></i></label>`;
+  el.innerHTML=sw('pf_r',p.rascunho!==false,'✍️ Começou a preencher','Assim que o cliente digita o primeiro dado',"avPrefSalva({rascunho:this.checked})")
+   +sw('pf_f',fim,'✅ Finalizou','Chat, ficha CDC, pré-contrato CNH e formulários',"avPrefSalva({chat:this.checked,ficha:this.checked,contrato:this.checked,contato:this.checked})")
+   +sw('pf_p',p.preguicoso!==false,'😴 Cliente preguiçoso','Parou 3 minutos sem terminar',"avPrefSalva({preguicoso:this.checked})")
+   +`<h5>Neste aparelho</h5>`+sw('pf_s',avLoc('som',true),'🔊 Som no painel','Toca um aviso curto quando chega cliente com o painel aberto',"avLocSet('som',this.checked);if(this.checked){avSom('chat')}")
+   +sw('pf_v',avLoc('vibrar',true),'📳 Vibrar','Vibra o celular com o painel aberto',"avLocSet('vibrar',this.checked)")}
+async function avPrefSalva(o){const r=await sb.rpc('app_prefs_salvar',{p:o});if(r.error)return toast('Não foi possível salvar: '+r.error.message);AVPREF=r.data;toast('Preferência salva')}
+async function avTeste(){const r=await sb.rpc('meu_push_teste');if(r.error)return toast(/aguarde/.test(r.error.message)?'Espere 1 minuto para testar de novo.':'Erro: '+r.error.message);toast('Aviso de teste enviado')}
+async function avLidas(){try{await sb.rpc('app_marcar_lidas',{p_ids:null})}catch(e){}AVLST.forEach(n=>n.lida=true);avLista();avConta();try{navigator.clearAppBadge&&navigator.clearAppBadge()}catch(e){}}
 
 function pConta(){
   $('#pn').innerHTML=`<div class="seg">${[['app','📲 App e avisos'],['perfil','Perfil e contato'],['entregas','Clientes felizes'],['textos','Textos do site'],['como','Como funciona o consórcio'],['previa','Prévia do link'],['entrega','Entrega de pedidos']].map(a=>`<button class="${CTAB===a[0]?'on':''}" onclick="CTAB='${a[0]}';pConta()">${a[1]}</button>`).join('')}</div><div id="pn3" class="card2"></div>`;

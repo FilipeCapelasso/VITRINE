@@ -1,22 +1,61 @@
 {
-  "name": "Meu Painel de Vendedor",
+  "name": "Meu Painel Honda",
   "short_name": "Meu Painel",
-  "description": "Painel do vendedor: clientes, avisos na hora, motos e imagens para divulgar.",
+  "description": "Painel do vendedor: clientes, notificações na hora, personalização e configuração.",
   "id": "./admin",
-  "start_url": "./admin?app=1",
+  "start_url": "./admin?app=1&t=vendas",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#ffffff",
   "theme_color": "#0d0d12",
   "lang": "pt-BR",
-  "categories": ["business", "productivity"],
+  "categories": [
+    "business",
+    "productivity"
+  ],
   "icons": [
-    { "src": "/app-icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/app-icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/app-icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "/app-honda-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-honda-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/app-honda-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "shortcuts": [
-    { "name": "Clientes", "short_name": "Clientes", "url": "./admin?app=1&t=vendas", "icons": [{ "src": "/app-icon-192.png", "sizes": "192x192" }] }
+    {
+      "name": "Clientes",
+      "short_name": "Clientes",
+      "url": "./admin?app=1&t=vendas",
+      "icons": [
+        {
+          "src": "/app-honda-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    },
+    {
+      "name": "Notificações",
+      "short_name": "Notificações",
+      "url": "./admin?app=1&t=avisos",
+      "icons": [
+        {
+          "src": "/app-honda-192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
   ]
 }

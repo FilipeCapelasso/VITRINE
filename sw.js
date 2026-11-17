@@ -50,15 +50,21 @@ self.addEventListener('push', e => {
   if (d.wa) acoes.push({ action: 'wa', title: '💬 Chamar no WhatsApp' });
   acoes.push({ action: 'abrir', title: 'Abrir painel' });
   e.waitUntil((async () => {
+    const abertos = await self.clients.matchAll({ type: 'window', includeUncontrolled: true }).catch(() => []);
+    abertos.forEach(c => { try { c.postMessage({ tipo: 'push', d }); } catch (x) {} });
+    // Painel aberto e visível na tela: o aviso aparece animado dentro dele (Android/computador).
+    // No iPhone a notificação é sempre mostrada (a Apple exige).
+    const naTela = !ehIOS && abertos.some(c => c.visibilityState === 'visible' && /\/admin\/?$/.test(new URL(c.url).pathname));
+    if (naTela && d.tp !== 'teste') return;
     await self.registration.showNotification(d.t || 'Novo cliente no seu site', {
-      body: d.b || '', icon: '/app-icon-192.png', badge: '/app-badge.png',
+      body: d.b || '', icon: '/app-honda-192.png', badge: '/app-honda-badge.png',
+      ...(d.img ? { image: d.img } : {}),
       tag: d.cid ? 'c-' + d.cid : 'n-' + (d.id || Date.now()), renotify: true,
       requireInteraction: d.tp !== 'teste', vibrate: [200, 100, 200, 100, 300],
       timestamp: d.em ? Date.parse(d.em) : Date.now(),
       data: { url, wa: d.wa || null, id: d.id || null, tp: d.tp || '' }, actions: acoes,
     });
     try { if (self.navigator.setAppBadge && d.n > 0) await self.navigator.setAppBadge(d.n); } catch (x) {}
-    try { (await self.clients.matchAll({ type: 'window', includeUncontrolled: true })).forEach(c => c.postMessage({ tipo: 'push', d })); } catch (x) {}
   })());
 });
 self.addEventListener('notificationclick', e => {
