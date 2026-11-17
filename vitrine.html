@@ -3100,7 +3100,7 @@ async function pPers0(keep){
  <section class="ps-c"><h3>Seções do site</h3><p class="sub">Escolha o que aparece para o cliente.</p>${PS_SEC.map(s=>`<div class="ps-t"><span>${s[1]} ${esc(s[2])}<small>${esc(s[3])}</small></span><label class="ps-sy"><input type="checkbox" ${(S.ocultar||[]).includes(s[0])?'':'checked'} onchange="psSec('${s[0]}',this.checked)" aria-label="Mostrar ${esc(s[2])}"><i></i></label></div>`).join('')}</section> ${psSobreH()}${psPedidoH()}
  </div>
  <aside class="ps-pv"><h4>Prévia ao vivo</h4><div id="ps_pv"></div></aside>
- <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['motos','🏍️','Motos'],['calculadora','🧮','Calculadora'],['comparar','⚖️','Comparar'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
+ <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['motos','🏍️','Motos'],['calculadora','🧮','Calculadora'],['sorteio','🎰','Sorteio'],['comparar','⚖️','Comparar'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
 let AC=null,PSS=null,PSAVED={},PSLIVE=false;
 async function acessoCarrega(){try{const r=await sb.rpc('meu_acesso');AC=(r&&r.data)||{}}catch(e){AC={}}}
 const ehPrem=()=>!!(AC&&AC.limites&&AC.limites.personalizar);
@@ -3127,10 +3127,10 @@ function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,150
   if(appModo()&&!['vendas','avisos','personalizar','conta'].includes(T))T='vendas';
   PNS='#pn';
   const nav=navLista().map(a=>{const lk=a[0]==='personalizar'&&!ehPrem();return `<button class="nv ${T===a[0]?'on':''}${lk?' lockd':''}" onclick="${lk?'persLock()':`adm('${a[0]}')`}" ${lk?'aria-label="Personalizar (bloqueado: só Premium)"':''}><span class="ic">${a[1]}</span><span class="nlb">${a[2]}</span>${lk?'<span class="nlk" aria-hidden="true">🔒</span>':''}${a[0]==='personalizar'&&!lk&&AC&&AC.msgs_novas>0&&T!=='personalizar'?`<span class="nb" id="pe_nb">${AC.msgs_novas}</span>`:''}${a[0]==='vendas'?'<span class="nb" id="vdbg" hidden></span>':''}${a[0]==='avisos'?'<span class="nb" id="avbg" hidden></span>':''}</button>`}).join('');
-  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',calculadora:'Calculadora de consórcio',comparar:'Comparar',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
+  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',calculadora:'Calculadora de consórcio',sorteio:'Sorteio da Loteria Federal',comparar:'Comparar',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
   $('#app').innerHTML=`<div class="shell${appModo()?' apm':''}"><aside class="sd"><div class="sd-top">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}</b><small>Painel do vendedor</small></div></div><nav class="sd-nav">${nav}</nav><div class="sd-bot"><a class="lk" href="#">↗ Ver meu site</a><button class="lk" onclick="out()">Sair</button><small class="ver">Versão 01/11/2026</small></div></aside>
   <main class="mn"><div class="frase" id="frase">${fraseH(V&&V.frase_n,0,'fr-t')}</div><div id="plc"></div><header class="mt2"><h1>${tt}</h1><span class="mt2a"><a class="btn sm" href="#" style="text-decoration:none">Ver site</a><button class="btn sm" onclick="out()">Sair</button></span></header><span id="nb" hidden></span><div id="pn"></div></main></div>`;
-  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,calculadora:pCalculadora,comparar:pComparar,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
+  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,calculadora:pCalculadora,sorteio:pSorteio,comparar:pComparar,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
 }
 
 /* ---- prazo do plano (comprado em..., suspensão automática em...) com cronômetro ---- */
@@ -3843,7 +3843,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
     try{if(typeof T!=='undefined'&&T==='vendas'&&typeof pVendas==='function'&&$('#vdl'))pVendas(true)}catch(x){}}
   if(d.tipo==='abrir'&&d.url){try{const u=new URL(d.url,location.origin);appUrl(u.searchParams);if(T==='vendas')adm('vendas')}catch(x){}}});
 /* aviso tocado: abre na aba Clientes e mostra o botão do WhatsApp do cliente */
-function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(qp.get('t')==='avisos')T='avisos';if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
+function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(qp.get('t')==='avisos')T='avisos';if(qp.get('t')==='sorteio')T='sorteio';if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
   const cq=qp.get('c');if(cq)setTimeout(()=>avAbreCli(cq),900);const wa=qp.get('wa');if(wa&&/^https:\/\/wa\.me\//.test(wa))setTimeout(()=>appWaBar(wa),600);
   if(qp.has('app')||qp.has('t')||qp.has('wa')){try{history.replaceState(null,'',location.pathname)}catch(e){}}}
 function appWaBar(wa){let b=document.getElementById('ap_wab');if(b)b.remove();b=document.createElement('div');b.id='ap_wab';b.className='ap-wab';
@@ -3889,9 +3889,118 @@ function appIniH(){let x=false,ep='';try{x=localStorage.getItem('ap_ini_x')==='1
    Cada aviso novo aparece animado na tela (com som e vibração) mesmo com o painel aberto no navegador:
    chega pelo Supabase Realtime e pelo service worker, sem repetir o mesmo aviso. */
 const appModo=()=>{try{return appStand()||sessionStorage.getItem('app_modo')==='1'}catch(e){return appStand()}};
+/* ===== Sorteio (Loteria Federal) ===== */
+let SRC=[],SRR=[],SRF='ativa',SRED=null;
+const srN5=s=>String(s==null?'':s).replace(/\D/g,'').slice(-5);
+const srDig=(N,reg)=>reg==='dezena'?2:reg==='centena'?3:reg==='milhar'?4:(N<=100?2:N<=1000?3:4);
+const srWrap=(x,N)=>((x-1)%N+N)%N+1;
+function srCalc(pr,N,dig){
+  const lim=Math.pow(10,dig),c=[];let ch=0,orig=0,aj=false;
+  for(let i=0;i<5;i++){const s=String(pr[i]||'').replace(/\D/g,'');if(s.length<5){c.push({k:i+1,v:null,ok:false});continue}
+    const raw=parseInt(s.slice(-dig),10),v=raw===0?lim:raw,ok=v<=N;c.push({k:i+1,v,ok});if(ok&&!ch){ch=v;orig=i+1}}
+  const pronto=c.every(x=>x.v!==null);
+  if(!ch&&pronto&&c[0]){ch=srWrap(c[0].v,N);orig=1;aj=true}
+  return{ch,orig,aj,c,pronto}}
+const srRank=(ch,cota,N)=>{const u=((cota-ch)%N+N)%N,d=((ch-cota)%N+N)%N;return u===0?0:(u<=d?2*u-1:2*d)};
+const srFila=(ch,N,k)=>{const o=[];for(let r=0;r<k&&r<N;r++){o.push(r===0?ch:(r%2?srWrap(ch+(r+1)/2,N):srWrap(ch-r/2,N)))}return o};
+const srP3=n=>String(n).padStart(3,'0');
+function srSP(){const f=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()),g={};f.forEach(p=>g[p.type]=p.value);return{y:+g.year,m:+g.month,d:+g.day,h:+g.hour,mi:+g.minute}}
+function srDia(off){const s=srSP(),dt=new Date(Date.UTC(s.y,s.m-1,s.d+off));return dt}
+const srISO=d=>d.toISOString().slice(0,10);
+const srBR=iso=>{const p=String(iso).slice(0,10).split('-');return p[2]+'/'+p[1]+'/'+p[0]};
+const srSem=d=>['domingo','segunda','terça','quarta','quinta','sexta','sábado'][d.getUTCDay()];
+function srProx(){const s=srSP(),apos=s.h*60+s.mi>=19*60+30;for(let i=0;i<8;i++){const d=srDia(i),w=d.getUTCDay();if((w===3||w===6)&&!(i===0&&apos))return{d,hoje:i===0}}return null}
+function srUlt(){const s=srSP(),antes=s.h*60+s.mi<19*60+30;for(let i=0;i>-8;i--){const d=srDia(i),w=d.getUTCDay();if((w===3||w===6)&&!(i===0&&antes))return d}return srDia(0)}
+async function pSorteio(){
+  const px=srProx(),ul=srISO(srUlt());
+  $('#pn').innerHTML=`<section class="sr-hero"><div class="sr-h1"><span class="sr-ic">🎰</span><div><h2>Quem foi sorteado?</h2><p>Descubra qual cota foi sorteada no consórcio e quais dos seus clientes estão na frente.</p></div></div>
+  <div class="sr-nx"><small>${px&&px.hoje?'Hoje':'Próxima extração'}</small><b>${px?srSem(px.d)+', '+srBR(srISO(px.d)):''}</b><span>resultado por volta das 19h (Brasília)</span></div></section>
+  <details class="card2 sr-how"><summary>Como funciona o sorteio do consórcio</summary><div class="sr-hb">
+  <p>Todo mês o grupo faz uma assembleia. Uma das formas de contemplar é o <b>sorteio</b>, e ele usa o resultado da <b>Loteria Federal</b> (extrações às <b>quartas e sábados</b>), para ninguém poder mexer no resultado.</p>
+  <ol><li>Cada cliente tem um número de <b>cota</b> dentro do grupo (ex.: cota 376 de um grupo de 1.000).</li>
+  <li>Pega-se o número do <b>1º prêmio</b> da Loteria Federal e usa-se só os últimos algarismos: 2 (dezena), 3 (centena) ou 4 (milhar), conforme o tamanho do grupo. Ex.: 1º prêmio <b>18.857</b> → cota <b>857</b>.</li>
+  <li>Se a cota sorteada não existe, já foi contemplada, está cancelada ou em atraso, a administradora procura a próxima <b>acima, depois abaixo, alternando</b> (857, 858, 856, 859…) até achar uma cota apta.</li>
+  <li>Só concorre quem está com as parcelas em dia. Cotas de grupos com mais de mil participantes costumam usar o milhar.</li>
+  <li>Se o número passa do tamanho do grupo, cada administradora tem um jeito (usar o prêmio seguinte ou subtrair o tamanho do grupo). Esta calculadora usa o prêmio seguinte.</li></ol>
+  <p class="sr-av"><b>Importante:</b> quem confirma a contemplação é a administradora (Consórcio Nacional Honda), na assembleia. Esta ferramenta é uma conferência rápida para você avisar o cliente; confirme sempre no regulamento e no resultado oficial do grupo.</p></div></details>
+  <section class="card2 sr-calc"><div class="card2-h"><h3>Conferir resultado</h3><small>Digite os 5 prêmios da extração</small></div>
+  <div class="sr-row"><label>Data da extração<input id="sr_d" type="date" value="${ul}" oninput="srRecalc()"></label><label>Concurso (opcional)<input id="sr_c" type="text" inputmode="numeric" placeholder="ex.: 6117" maxlength="6" oninput="srRecalc()"></label></div>
+  <div class="sr-pr">${[1,2,3,4,5].map(i=>`<label><span>${i}º prêmio</span><input id="sr_p${i}" type="text" inputmode="numeric" maxlength="6" placeholder="00000" autocomplete="off" oninput="srRecalc()"></label>`).join('')}</div>
+  <div class="sr-row"><label>Participantes do grupo<input id="sr_n" type="number" inputmode="numeric" min="2" max="99999" value="1000" oninput="srRecalc()"></label>
+  <label>Quantos algarismos usar<select id="sr_g" onchange="srRecalc()"><option value="auto">Automático (pelo tamanho do grupo)</option><option value="dezena">2 (dezena)</option><option value="centena">3 (centena)</option><option value="milhar">4 (milhar)</option></select></label></div>
+  <div id="sr_out" class="sr-out"></div>
+  <div class="sr-acts"><button class="btn red" onclick="srSalvaRes()">Salvar este resultado</button><button class="btn" onclick="srLimpa()">Limpar</button></div>
+  <div id="sr_hist"></div></section>
+  <section class="card2"><div class="card2-h"><h3>Cotas dos meus clientes</h3><small>Cadastre para conferir de uma vez</small></div>
+  <div class="sr-f">${[['ativa','Ativas'],['contemplada','Contempladas'],['cancelada','Canceladas'],['todas','Todas']].map(a=>`<button class="${SRF===a[0]?'on':''}" onclick="SRF='${a[0]}';srLista()">${a[1]}</button>`).join('')}</div>
+  <div id="sr_l"><div class="sk" style="height:64px;border-radius:14px"></div></div>
+  <details class="sr-add" id="sr_ad"><summary>＋ Cadastrar cota de cliente</summary><div id="sr_form"></div></details></section>`;
+  srForm();srRecalc();
+  const [a,b]=await Promise.all([sb.from('cotas_consorcio').select('*').order('criado',{ascending:false}).limit(500),sb.from('lf_resultados').select('*').order('data_apuracao',{ascending:false}).limit(12)]);
+  if(T!=='sorteio')return;
+  SRC=(a&&a.data)||[];SRR=(b&&b.data)||[];srLista();srHist();srRecalc()}
+function srLe(){const p=[1,2,3,4,5].map(i=>{const e=document.getElementById('sr_p'+i);return e?e.value:''}),n=parseInt((document.getElementById('sr_n')||{}).value,10)||0,g=(document.getElementById('sr_g')||{}).value||'auto';return{p,n,g}}
+let SRCUR=null;
+function srRecalc(){const o=document.getElementById('sr_out');if(!o)return;const{p,n,g}=srLe();SRCUR=null;
+  if(n<2){o.innerHTML='<p class="sr-mu">Informe quantos participantes tem o grupo.</p>';srLista();return}
+  const dig=srDig(n,g),r=srCalc(p,n,dig);
+  if(!r.c[0]||r.c[0].v===null){o.innerHTML='<p class="sr-mu">Digite o <b>1º prêmio</b> (5 números) para ver a cota sorteada.</p>';SRCUR=null;srLista();return}
+  if(!r.ch){o.innerHTML=`<div class="sr-cand">${r.c.map(x=>srCand(x)).join('')}</div><p class="sr-mu">O 1º prêmio passou do tamanho do grupo. Preencha os próximos prêmios.</p>`;srLista();return}
+  SRCUR={ch:r.ch,n,dig,orig:r.orig};
+  const fila=srFila(r.ch,n,8);
+  o.innerHTML=`<div class="sr-big"><small>Cota sorteada${r.orig>1?' (pelo '+r.orig+'º prêmio)':''}</small><b>${srP3(r.ch)}</b><span>grupo de ${n.toLocaleString('pt-BR')} participantes · ${dig} algarismos${r.aj?' · ajustado ao tamanho do grupo':''}</span></div>
+  <div class="sr-cand">${r.c.map(x=>srCand(x,r.orig)).join('')}</div>
+  <div class="sr-fl"><small>Se a cota sorteada não estiver apta, a ordem de busca é:</small><div>${fila.map((c,i)=>`<span class="${i===0?'on':''}">${srP3(c)}</span>`).join('')}</div></div>`;
+  srLista()}
+const srCand=(x,o)=>`<span class="${x.v===null?'':(x.ok?'ok':'no')}${o===x.k?' use':''}"><i>${x.k}º</i>${x.v===null?'—':srP3(x.v)}</span>`;
+function srLimpa(){[1,2,3,4,5].forEach(i=>{const e=document.getElementById('sr_p'+i);if(e)e.value=''});const c=document.getElementById('sr_c');if(c)c.value='';srRecalc()}
+async function srSalvaRes(){const{p}=srLe();if(p.some(x=>String(x).replace(/\D/g,'').length<5)){toast('Preencha os 5 prêmios (5 números cada).');return}
+  const d=document.getElementById('sr_d').value;if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast('Informe a data da extração.');return}
+  const cn=parseInt(document.getElementById('sr_c').value,10)||null;
+  const r=await sb.from('lf_resultados').upsert({vendedor_id:V.id,concurso:cn,data_apuracao:d,premios:p.map(srN5)},{onConflict:'vendedor_id,data_apuracao'}).select().single();
+  if(r.error){toast('Não consegui salvar. Tente de novo.');return}
+  SRR=[r.data].concat(SRR.filter(x=>x.data_apuracao!==r.data.data_apuracao)).sort((a,b)=>a.data_apuracao<b.data_apuracao?1:-1);srHist();toast('Resultado salvo!')}
+function srHist(){const e=document.getElementById('sr_hist');if(!e)return;if(!SRR.length){e.innerHTML='';return}
+  e.innerHTML=`<div class="sr-hh"><small>Resultados salvos</small><div>${SRR.map(x=>`<button onclick="srUsaRes(${x.id})">${srBR(x.data_apuracao)}${x.concurso?' · '+x.concurso:''}</button>`).join('')}</div></div>`}
+function srUsaRes(id){const x=SRR.find(o=>o.id===id);if(!x)return;document.getElementById('sr_d').value=x.data_apuracao;document.getElementById('sr_c').value=x.concurso||'';(x.premios||[]).forEach((v,i)=>{const e=document.getElementById('sr_p'+(i+1));if(e)e.value=v});srRecalc();document.querySelector('.sr-calc').scrollIntoView({behavior:'smooth',block:'start'})}
+function srForm(c){const x=c||{};SRED=c?c.id:null;const dl=(typeof VD!=='undefined'&&VD&&VD.length)?`<datalist id="sr_dl">${VD.slice(0,200).map(v=>`<option value="${esc(v.nome||'')}"></option>`).join('')}</datalist>`:'';
+  $('#sr_form').innerHTML=`${dl}<div class="sr-fm"><label>Nome do cliente<input id="sc_n" type="text" maxlength="120" list="sr_dl" value="${esc(x.cliente||'')}" onchange="srPre()"></label>
+  <label>WhatsApp<input id="sc_t" type="tel" inputmode="tel" maxlength="30" placeholder="(68) 99999-0000" value="${esc(x.telefone||'')}"></label>
+  <label>Moto<input id="sc_m" type="text" maxlength="120" value="${esc(x.moto||'')}"></label>
+  <label>Grupo<input id="sc_g" type="text" maxlength="30" placeholder="ex.: 1234" value="${esc(x.grupo||'')}"></label>
+  <label>Número da cota<input id="sc_c" type="number" inputmode="numeric" min="1" max="99999" value="${x.cota||''}"></label>
+  <label>Participantes do grupo<input id="sc_p" type="number" inputmode="numeric" min="2" max="99999" value="${x.participantes||(document.getElementById('sr_n')||{}).value||1000}"></label>
+  <label class="sr-w">Observação<input id="sc_o" type="text" maxlength="500" value="${esc(x.obs||'')}"></label></div>
+  <div class="sr-acts"><button class="btn red" onclick="srSalvaCota()">${c?'Salvar alterações':'Cadastrar cota'}</button>${c?'<button class="btn" onclick="srForm()">Cancelar</button>':''}</div>`}
+function srPre(){const n=document.getElementById('sc_n').value.trim().toLowerCase();if(!n||typeof VD==='undefined')return;const v=VD.find(o=>String(o.nome||'').trim().toLowerCase()===n);if(!v)return;const t=document.getElementById('sc_t'),m=document.getElementById('sc_m');if(t&&!t.value)t.value=v.telefone||'';if(m&&!m.value)m.value=v.moto_nome||''}
+async function srSalvaCota(){const g=id=>document.getElementById(id).value.trim(),cota=parseInt(g('sc_c'),10),part=parseInt(g('sc_p'),10),nome=g('sc_n');
+  if(!nome){toast('Digite o nome do cliente.');return}if(!(cota>0)||!(part>1)){toast('Informe a cota e o total de participantes.');return}if(cota>part){toast('A cota não pode ser maior que o total de participantes.');return}
+  const row={cliente:nome,telefone:g('sc_t')||null,moto:g('sc_m')||null,grupo:g('sc_g')||null,cota,participantes:part,obs:g('sc_o')||null,atualizado:new Date().toISOString()};
+  const r=SRED?await sb.from('cotas_consorcio').update(row).eq('id',SRED).select().single():await sb.from('cotas_consorcio').insert({...row,vendedor_id:V.id}).select().single();
+  if(r.error){toast('Não consegui salvar. Confira os números.');return}
+  SRC=SRED?SRC.map(o=>o.id===r.data.id?r.data:o):[r.data].concat(SRC);toast(SRED?'Cota atualizada!':'Cota cadastrada!');srForm();srLista();
+  const ad=document.getElementById('sr_ad');if(ad)ad.open=false}
+function srCurPara(c){if(!SRCUR)return null;const{p,g}=srLe(),dig=srDig(c.participantes,g),r=srCalc(p,c.participantes,dig);return r.ch?{ch:r.ch,rk:srRank(r.ch,c.cota,c.participantes)}:null}
+function srLista(){const e=document.getElementById('sr_l');if(!e)return;
+  const all=SRC,cnt={ativa:0,contemplada:0,cancelada:0};all.forEach(c=>cnt[c.situacao]++);
+  document.querySelectorAll('.sr-f button').forEach((b,i)=>{const k=['ativa','contemplada','cancelada','todas'][i];b.classList.toggle('on',SRF===k);b.dataset.n=k==='todas'?all.length:cnt[k]});
+  let L=all.filter(c=>SRF==='todas'||c.situacao===SRF);
+  const com=SRCUR?L.map(c=>({c,r:c.situacao==='ativa'?srCurPara(c):null})):L.map(c=>({c,r:null}));
+  if(SRCUR)com.sort((a,b)=>(a.r?a.r.rk:1e9)-(b.r?b.r.rk:1e9));
+  if(!L.length){e.innerHTML=`<div class="sr-vz"><b>${all.length?'Nenhuma cota nesta aba.':'Nenhuma cota cadastrada ainda.'}</b><span>Cadastre a cota de cada cliente de consórcio para conferir tudo de uma vez quando sair o resultado.</span></div>`;return}
+  e.innerHTML=com.map(({c,r})=>{const rk=r?r.rk:null,tag=rk===0?'<span class="sr-t g">🎉 É a cota sorteada</span>':rk!==null&&rk<=6?`<span class="sr-t y">Na frente: ${rk+1}ª da fila</span>`:rk!==null?`<span class="sr-t">${rk+1}ª da fila</span>`:'',
+    tel=String(c.telefone||'').replace(/\D/g,''),w=tel.length>=10?'55'+tel.replace(/^55(?=\d{10,11}$)/,''):'';
+    const msg=rk===0?`Olá, ${(c.cliente||'').split(' ')[0]}! Saiu a Loteria Federal e a sua cota ${c.cota}${c.grupo?' do grupo '+c.grupo:''} foi a sorteada. Vou confirmar com a administradora e já te falo.`:`Olá, ${(c.cliente||'').split(' ')[0]}! Passando para falar do seu consórcio${c.moto?' da '+c.moto:''}.`;
+    return `<article class="sr-c ${rk===0?'hit':''} ${c.situacao!=='ativa'?'off':''}"><div class="sr-cn"><b>${srP3(c.cota)}</b><small>cota</small></div><div class="sr-cb"><div class="sr-ct"><b>${esc(c.cliente)}</b>${tag}${c.situacao!=='ativa'?`<span class="sr-t ${c.situacao==='contemplada'?'g':''}">${c.situacao==='contemplada'?'Contemplada'+(c.contemplada_em?' em '+srBR(c.contemplada_em):''):'Cancelada'}</span>`:''}</div>
+    <small>${[c.moto,c.grupo?'Grupo '+esc(c.grupo):'',c.participantes.toLocaleString('pt-BR')+' participantes'].filter(Boolean).map(x=>x).join(' · ')}</small>${c.obs?`<small class="sr-ob">${esc(c.obs)}</small>`:''}
+    <div class="sr-ca">${w?`<a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/${w}?text=${encodeURIComponent(msg)}">WhatsApp</a>`:''}${c.situacao==='ativa'?`<button class="btn sm" onclick="srSit('${c.id}','contemplada')">Marcar contemplada</button>`:`<button class="btn sm" onclick="srSit('${c.id}','ativa')">Voltar para ativa</button>`}${c.situacao==='ativa'?`<button class="btn sm" onclick="srSit('${c.id}','cancelada')">Cancelada</button>`:''}<button class="btn sm" onclick="srEdita('${c.id}')">Editar</button><button class="btn sm sr-x" onclick="srDel('${c.id}')">Excluir</button></div></div></article>`}).join('')}
+async function srSit(id,s){const up={situacao:s,contemplada_em:s==='contemplada'?srISO(srDia(0)):null,atualizado:new Date().toISOString()},r=await sb.from('cotas_consorcio').update(up).eq('id',id).select().single();if(r.error){toast('Não consegui atualizar.');return}SRC=SRC.map(o=>o.id===id?r.data:o);srLista();toast(s==='contemplada'?'Cota marcada como contemplada.':'Cota atualizada.')}
+function srEdita(id){const c=SRC.find(o=>o.id===id);if(!c)return;srForm(c);const ad=document.getElementById('sr_ad');ad.open=true;ad.scrollIntoView({behavior:'smooth',block:'center'})}
+async function srDel(id){if(!confirm('Excluir esta cota?'))return;const r=await sb.from('cotas_consorcio').delete().eq('id',id);if(r.error){toast('Não consegui excluir.');return}SRC=SRC.filter(o=>o.id!==id);srLista();toast('Cota excluída.')}
+
 const NAV_APP=[['vendas','👥','Clientes'],['avisos','🔔','Notificações'],['personalizar','🎨','Personalizar'],['conta','⚙️','Configuração']];
 const navLista=()=>{if(appModo())return NAV_APP;const a=NAV.slice();a.splice(2,0,['avisos','🔔','Notificações']);return a};
-const AVIC={rascunho:['✍️','#2f6bff','Começou a preencher'],preguicoso:['😴','#f59e0b','Parou de preencher'],chat:['✅','#16a34a','Finalizou'],ficha:['✅','#16a34a','Finalizou'],contrato:['✅','#16a34a','Finalizou'],contato:['💬','#16a34a','Contato'],chat_inicio:['💬','#2f6bff','Começou o chat'],teste:['🔔','#7c3aed','Teste']};
+const AVIC={sorteio:['🎰','#7c3aed','Sorteio'],rascunho:['✍️','#2f6bff','Começou a preencher'],preguicoso:['😴','#f59e0b','Parou de preencher'],chat:['✅','#16a34a','Finalizou'],ficha:['✅','#16a34a','Finalizou'],contrato:['✅','#16a34a','Finalizou'],contato:['💬','#16a34a','Contato'],chat_inicio:['💬','#2f6bff','Começou o chat'],teste:['🔔','#7c3aed','Teste']};
 const avIc=t=>AVIC[t]||['🔔','#64748b','Aviso'];
 const avTit=t=>String(t||'').replace(/^(?:\p{Extended_Pictographic}|\uFE0F|\u200D)+\s*/u,'');
 const AVV=new Set();let AVCH=null,AVLST=[],AVF='todas',AVPREF=null,AVAC=null;
@@ -4282,6 +4391,34 @@ html body.fpr .sheet:not(.ch):not(.chbd) div[style*="border:1px solid var(--bd)"
 html body.fpr .mb{background:rgba(10,10,13,.92);border-top:1px solid #2a2b31}html body.fpr .mb button:not(.mr){background:#18181d;color:#f2eee6;border-color:#2a2b31}html body.fpr .mb svg{color:inherit}
 /* topo no celular: subtítulo/selo sem área própria esticavam a 1ª coluna e empurravam o nome para fora da tela */
 .hero .hin.hin>.hsub,.hero .hin.hin>.hbd{grid-column:1/-1;min-width:0}
+</style>
+<style id="vsr">/* sorteio */
+.sr-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;background:linear-gradient(135deg,#14141c 0%,#2a0d12 62%,#5a0f1a 130%);color:#fff;border-radius:22px;padding:24px 26px;margin-bottom:16px}
+.sr-h1{display:flex;gap:14px;align-items:center;flex:1 1 300px}.sr-ic{font-size:34px;width:58px;height:58px;border-radius:18px;background:#ffffff14;display:grid;place-items:center;flex:none}
+.sr-hero h2{margin:0 0 4px;font-size:22px;letter-spacing:-.01em}.sr-hero p{margin:0;color:#ffffffc4;font-size:14px;line-height:1.45;max-width:46ch}
+.sr-nx{background:#ffffff12;border:1px solid #ffffff22;border-radius:16px;padding:12px 16px;display:grid;gap:2px;min-width:200px}.sr-nx small{color:#ffffffa6;font-size:12px}.sr-nx b{font-size:17px;text-transform:capitalize}.sr-nx span{color:#ffffffa6;font-size:12px}
+.sr-how summary,.sr-add summary{cursor:pointer;font-weight:700;list-style:none}.sr-how summary::-webkit-details-marker,.sr-add summary::-webkit-details-marker{display:none}
+.sr-how summary::after{content:'＋';float:right;color:var(--r)}.sr-how[open] summary::after{content:'－'}
+.sr-hb{margin-top:12px;font-size:14px;line-height:1.55;color:#3a3a46}.sr-hb ol{padding-left:20px;margin:8px 0}.sr-hb li{margin:6px 0}
+.sr-av{background:#fff7e6;border:1px solid #ffe0a3;border-radius:12px;padding:10px 12px;color:#6b4a00}
+.sr-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.sr-pr{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
+.sr-calc label,.sr-fm label{display:block;font-size:12.5px;font-weight:600;color:#555;margin:0}.sr-calc input,.sr-calc select,.sr-fm input{margin-top:6px;padding:12px;font-size:16px}
+.sr-pr input{text-align:center;font-weight:800;letter-spacing:.06em}.sr-pr span{display:block}
+.sr-out{margin-top:16px}.sr-mu{color:#777;font-size:14px;margin:6px 0}
+.sr-big{background:linear-gradient(135deg,#14141c,#2a0d12);color:#fff;border-radius:18px;padding:16px 20px;display:grid;gap:2px;justify-items:start}.sr-big small{color:#ffffffa6}.sr-big b{font-size:52px;line-height:1;letter-spacing:.02em}.sr-big span{color:#ffffffb0;font-size:13px}
+.sr-cand{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.sr-cand span{display:inline-flex;gap:6px;align-items:baseline;border:1px solid #e2e2ea;border-radius:12px;padding:6px 10px;font-weight:800;font-size:15px;color:#999}.sr-cand i{font-style:normal;font-weight:600;font-size:11px;color:#999}
+.sr-cand .ok{color:#14141c;border-color:#c6c6d2}.sr-cand .no{text-decoration:line-through}.sr-cand .use{background:#fff1f1;border-color:var(--r);color:var(--r)}
+.sr-fl small{color:#666;font-size:12.5px}.sr-fl div{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.sr-fl span{background:#f3f3f7;border-radius:10px;padding:6px 10px;font-weight:700;font-size:14px}.sr-fl .on{background:var(--r);color:#fff}
+.sr-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.sr-hh{margin-top:14px}.sr-hh small{color:#666;font-size:12.5px}.sr-hh div{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.sr-hh button{border:1px solid #e2e2ea;background:#fff;border-radius:999px;padding:6px 12px;font:600 13px Inter,sans-serif;cursor:pointer}
+.sr-f{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.sr-f button{border:1px solid #e2e2ea;background:#fff;border-radius:999px;padding:7px 13px;font:600 13px Inter,sans-serif;cursor:pointer}.sr-f button.on{background:#14141c;color:#fff;border-color:#14141c}.sr-f button::after{content:' ' attr(data-n);opacity:.6}
+.sr-c{display:flex;align-items:flex-start;gap:14px;border:1px solid #ebebf1;border-radius:16px;padding:12px 14px;margin-bottom:10px;background:#fff}.sr-c.hit{border-color:#16a34a;background:#f0fdf4;box-shadow:0 0 0 3px #16a34a22}.sr-c.off{opacity:.78}
+.sr-cn{display:grid;place-items:center;min-width:64px;align-self:flex-start;background:#14141c;color:#fff;border-radius:14px;padding:8px}.sr-cn b{font-size:24px;line-height:1}.sr-cn small{font-size:10.5px;color:#ffffffa0}
+.sr-cb{flex:1;min-width:0;display:grid;gap:4px}.sr-cb small{color:#666}.sr-ct{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sr-ct b{font-size:15.5px}.sr-ob{font-style:italic}
+.sr-t{font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px;background:#f0f0f5;color:#555}.sr-t.g{background:#dcfce7;color:#166534}.sr-t.y{background:#fef3c7;color:#92400e}
+.sr-ca{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.sr-ca .btn{text-decoration:none}.sr-x{color:#b00020}
+.sr-vz{display:grid;gap:4px;text-align:center;padding:22px 12px;border:1px dashed #d8d8e2;border-radius:16px;color:#666}.sr-vz b{color:#222}
+.sr-add{margin-top:12px;border-top:1px solid #ebebf1;padding-top:12px}.sr-fm{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.sr-w{grid-column:1/-1}
+@media(max-width:620px){.sr-pr{grid-template-columns:repeat(3,1fr)}.sr-row,.sr-fm{grid-template-columns:1fr}.sr-big b{font-size:44px}.sr-hero{padding:18px}.sr-c{padding:10px}.sr-cn{min-width:54px}}
 </style>
 </body>
 </html>
