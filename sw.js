@@ -35,3 +35,49 @@ self.addEventListener('fetch', e => {
     } catch (err) { return fetch(r); }           // qualquer problema: pede normalmente
   })());
 });
+
+/* ===== AVISOS DO PAINEL DO VENDEDOR (Web Push, sem Firebase/Expo) =====
+   O servidor (função web-push do Supabase) manda o aviso criptografado; aqui ele vira notificação.
+   Tocar no aviso abre o WhatsApp do cliente com a mensagem pronta (ou o painel, se ainda não tem celular). */
+const UA = self.navigator.userAgent || '';
+const ehIOS = /iphone|ipad|ipod/i.test(UA) || (/macintosh/i.test(UA) && /safari/i.test(UA) && !/chrome|crios|edg|firefox/i.test(UA)); // Safari da Apple (iPhone/iPad/Mac)
+self.addEventListener('push', e => {
+  let d = {};
+  try { d = e.data ? e.data.json() : {}; } catch (x) { d = { t: 'Novo aviso', b: e.data ? e.data.text() : '' }; }
+  const base = d.slug ? `/${d.slug}/admin` : '/';
+  const url = d.slug ? `${base}?app=1&t=vendas${d.cid ? '&c=' + encodeURIComponent(d.cid) : ''}${d.wa ? '&wa=' + encodeURIComponent(d.wa) : ''}` : '/';
+  const acoes = [];
+  if (d.wa) acoes.push({ action: 'wa', title: '💬 Chamar no WhatsApp' });
+  acoes.push({ action: 'abrir', title: 'Abrir painel' });
+  e.waitUntil((async () => {
+    await self.registration.showNotification(d.t || 'Novo cliente no seu site', {
+      body: d.b || '', icon: '/app-icon-192.png', badge: '/app-badge.png',
+      tag: d.cid ? 'c-' + d.cid : 'n-' + (d.id || Date.now()), renotify: true,
+      requireInteraction: d.tp !== 'teste', vibrate: [200, 100, 200, 100, 300],
+      timestamp: d.em ? Date.parse(d.em) : Date.now(),
+      data: { url, wa: d.wa || null, id: d.id || null, tp: d.tp || '' }, actions: acoes,
+    });
+    try { if (self.navigator.setAppBadge && d.n > 0) await self.navigator.setAppBadge(d.n); } catch (x) {}
+    try { (await self.clients.matchAll({ type: 'window', includeUncontrolled: true })).forEach(c => c.postMessage({ tipo: 'push', d })); } catch (x) {}
+  })());
+});
+self.addEventListener('notificationclick', e => {
+  e.notification.close();
+  const dd = e.notification.data || {};
+  // No Android/computador o toque vai direto ao WhatsApp do cliente; no iPhone abre o painel com o botão do WhatsApp.
+  const alvo = e.action === 'abrir' ? dd.url : e.action === 'wa' ? dd.wa : (dd.wa && !ehIOS ? dd.wa : dd.url);
+  e.waitUntil((async () => {
+    if (!alvo) return;
+    if (alvo === dd.url) {
+      const cs = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+      const p = new URL(alvo, self.location.origin).pathname;
+      for (const c of cs) {
+        if (new URL(c.url).pathname === p && 'focus' in c) {
+          try { c.postMessage({ tipo: 'abrir', url: alvo }); } catch (x) {}
+          return c.focus();
+        }
+      }
+    }
+    return self.clients.openWindow(alvo);
+  })());
+});

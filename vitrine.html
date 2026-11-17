@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0d0d12">
+<script>/*app-vendedor: o painel /nome/admin vira um app instalável (Android, iPhone e computador)*/try{var am=/^\/([a-z0-9-]+)\/admin\/?$/i.exec(location.pathname);if(am){var ah=document.head,aa=function(t,o){var e=document.createElement(t);for(var k in o)e.setAttribute(k,o[k]);ah.appendChild(e)};aa('link',{rel:'manifest',href:'/'+am[1]+'/app.webmanifest'});aa('meta',{name:'apple-mobile-web-app-capable',content:'yes'});aa('meta',{name:'mobile-web-app-capable',content:'yes'});aa('meta',{name:'apple-mobile-web-app-title',content:'Meu Painel'});aa('meta',{name:'apple-mobile-web-app-status-bar-style',content:'default'});document.addEventListener('DOMContentLoaded',function(){var o=document.querySelectorAll('link[rel="apple-touch-icon"]');for(var i=0;i<o.length;i++)o[i].remove();aa('link',{rel:'apple-touch-icon',sizes:'180x180',href:'/app-icon-180.png'})})}}catch(e){}</script>
 <title>Vitrine de Motos Honda</title>
 <meta name="description" content="Escolha sua moto Honda com consórcio ou financiamento e fale direto com o vendedor pelo WhatsApp.">
 <meta property="og:type" content="website"><meta property="og:title" content="Vitrine de Motos Honda"><meta property="og:description" content="Consórcio e financiamento de motos Honda com atendimento direto pelo WhatsApp.">
@@ -619,6 +620,22 @@ html.tp-cor .hlz i{background:linear-gradient(180deg,transparent 0,#ffffff 40%,#
 @media(hover:none){.en-tip .tp-h{font-size:0!important}.en-tip .tp-h::before{content:"▶ Toque para assistir";font-size:12px}}
 .emp{display:flex;gap:6px;margin:10px 0 12px;padding:4px;border-radius:999px;background:rgba(127,127,127,.15)}.emp button{flex:1;border:0;border-radius:999px;padding:9px 6px;font:inherit;font-size:13px;font-weight:600;background:transparent;color:inherit;cursor:pointer}.emp button.on{background:#d71920;color:#fff}
 .avc{font-size:12px;line-height:1.45;margin:12px 0 4px}.avs{font-style:italic;text-align:center;font-size:14px;margin:6px 0 12px;opacity:.85}
+/* app do vendedor + avisos */
+.ap-av{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:14px 0 8px}.ap-av>div{border:1px solid #ebebf1;border-radius:14px;padding:12px;background:#fafafc}.ap-av b{display:block;font-size:14.5px}.ap-av span{display:block;font-size:12.5px;color:#666;margin-top:3px}
+@media(max-width:640px){.ap-av{grid-template-columns:1fr}}
+.ap-ps{display:flex;gap:14px;border-top:1px solid #ebebf1;padding:16px 0 4px}.ap-n{flex:none;width:32px;height:32px;border-radius:50%;background:#0d0d12;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800}
+.ap-c{flex:1;min-width:0}.ap-c h4{margin:4px 0 10px;font-size:16px}.ap-c p{margin:0 0 8px;font-size:14px}.ap-c .btn{margin-top:0}
+.ap-ol{margin:0 0 8px;padding-left:20px;font-size:14px;line-height:1.6}.ap-k{display:inline-block;min-width:22px;padding:0 6px;border:1px solid #d7d8e0;border-radius:6px;text-align:center;font-weight:700;background:#fff}
+.ap-ok,.ap-er,.ap-ts{border-radius:12px;padding:11px 13px;font-size:14px;margin:0 0 10px}.ap-ok{background:#e9f9ef;color:#0f6b35}.ap-er{background:#fdecec;color:#9b1c1c}.ap-ts{background:#eef3ff;color:#1d3f8f;margin-top:10px}
+.ap-row{display:flex;gap:10px;flex-wrap:wrap}.ap-row .btn{width:auto;flex:1 1 200px;margin:0}
+.ap-dt{margin:16px 0 0;border:1px solid #ebebf1;border-radius:12px;padding:10px 14px}.ap-dt summary{cursor:pointer;font-weight:700;font-size:14px}.ap-dt ul{margin:10px 0 2px;padding-left:18px;font-size:13.5px;line-height:1.55}
+.ap-dv>div{display:flex;align-items:center;gap:10px;border:1px solid #ebebf1;border-radius:12px;padding:10px 12px;margin-bottom:8px}.ap-dv>div>div{flex:1;min-width:0}.ap-dv small{display:block;color:#666;font-size:12px;margin-top:2px}.ap-dv .btn{width:auto;padding:9px 14px;margin:0;font-size:13px}
+.ap-eu{font-size:11px;background:#0d0d12;color:#fff;border-radius:6px;padding:1px 6px;margin-left:4px;font-weight:700}
+.ap-ini{display:flex;gap:16px;align-items:center;justify-content:space-between;flex-wrap:wrap;border-left:4px solid #e2121f}.ap-ini p{margin:4px 0 0;font-size:13.5px;color:#555}.ap-ini-a{display:flex;gap:8px}.ap-ini-a .btn{width:auto;margin:0;padding:11px 16px}
+@media(max-width:640px){.ap-ini-a{width:100%}.ap-ini-a .btn{flex:1}}
+.ap-wab{position:fixed;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:9999;display:flex;gap:8px;max-width:520px;margin:0 auto;animation:apw .25s ease-out}
+.ap-wab a{flex:1;background:#25d366;color:#05351a;font-weight:800;text-align:center;text-decoration:none;border-radius:999px;padding:15px;box-shadow:0 10px 30px -10px rgba(0,0,0,.4)}.ap-wab button{border:0;border-radius:50%;width:50px;background:#fff;box-shadow:0 10px 30px -10px rgba(0,0,0,.4);font-size:16px}
+@keyframes apw{from{transform:translateY(20px);opacity:0}}@media(prefers-reduced-motion:reduce){.ap-wab{animation:none}}
 </style>
 <style id="privcss">
 .ck{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:99999;max-width:760px;margin:0 auto;background:#14141a;color:#f3f3f5;border-radius:16px;padding:16px 18px;box-shadow:0 10px 40px rgba(0,0,0,.45);font:400 13px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;display:none}
@@ -1677,7 +1694,7 @@ async function pInicio(){ $('#pn').innerHTML='<div class="sk" style="height:150p
   INI={atu:Array.isArray(atu)?atu:[],vot:vot||{ativa:false},ren:ren||null};
   const hr=new Date().getHours(),sd=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',novos=VD.filter(vdNovo),hoje=VD.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()).length;
   const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length,link=siteUrl()+'/'+SLUG,nn=novos.length;
-  $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button></div></section>${renAvisoH()}<div id="ini_x">${iniPassosH()}${iniVotH()}${iniAtuH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
+  $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button></div></section>${renAvisoH()}${appIniH()}<div id="ini_x">${iniPassosH()}${iniVotH()}${iniAtuH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
 /* --- renovar o plano (Pix) --- */
 let RNM=2;
 async function renovaAbre(n){if(typeof n==='number')RNM=Math.min(24,Math.max(2,n));else{document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">🔄</div><h3>Renovar plano</h3><p>Calculando…</p>')}
@@ -1943,7 +1960,7 @@ async function init(){
 addEventListener('hashchange',route);
 async function route(){
   $('#modal').style.display='none';
-  if(isAdm()){if(DEMO){$('#app').innerHTML='<div class="ad"><h1>Área do vendedor</h1><p class="mu">Configure o Supabase no início do arquivo para usar o painel.</p><p class=\"mu\" style=\"font-size:12px\">O arquivo está lendo: URL = '+esc(SUPABASE_URL.slice(0,45))+' | chave com '+SUPABASE_KEY.length+' caracteres</p><a class="btn red" href="#">Voltar ao site</a></div>';return}const{data}=await sb.auth.getSession();await guard(data.session)?adm():login()}else{C='Todas';Q='';home();const d=/^#moto=(.+)/.exec(location.hash);if(d){const i=L.findIndex(x=>x.id===d[1]);if(i>=0)openM(i,soCon(L[i])?'con':'det')}}
+  if(isAdm()){if(DEMO){$('#app').innerHTML='<div class="ad"><h1>Área do vendedor</h1><p class="mu">Configure o Supabase no início do arquivo para usar o painel.</p><p class=\"mu\" style=\"font-size:12px\">O arquivo está lendo: URL = '+esc(SUPABASE_URL.slice(0,45))+' | chave com '+SUPABASE_KEY.length+' caracteres</p><a class="btn red" href="#">Voltar ao site</a></div>';return}const{data}=await sb.auth.getSession();appUrl();await guard(data.session)?adm():login()}else{C='Todas';Q='';home();const d=/^#moto=(.+)/.exec(location.hash);if(d){const i=L.findIndex(x=>x.id===d[1]);if(i>=0)openM(i,soCon(L[i])?'con':'det')}}
 }
 
 /* ================= CLIENTE ================= */
@@ -3003,7 +3020,7 @@ function enPre(){try{const c=navigator.connection;if(c&&(c.saveData||/(^|-)2g$/.
   const vs=[...document.querySelectorAll('.en-mp video')];const carga=v=>{if(v.getAttribute('src')||!v.dataset.src)return;v.preload='metadata';v.src=v.dataset.src+(v.dataset.src.includes('#')?'':'#t=0.1')};
   vs.slice(0,4).forEach(carga);const ws=[...document.querySelectorAll('.en-w')];const todos=w=>w.querySelectorAll('.en-mp video').forEach(carga);
   if(window.IntersectionObserver){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){todos(e.target);io.unobserve(e.target)}}),{rootMargin:'1000px 0px'});ws.forEach(w=>io.observe(w))}else ws.forEach(todos)}
-function adm(t){ if(t)T=t; if(T!=='personalizar')psRevert(); if(T==='personalizar'&&AC&&AC.limites&&!ehPrem()){T='inicio';persLock()}
+function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,1500)} if(t)T=t; if(T!=='personalizar')psRevert(); if(T==='personalizar'&&AC&&AC.limites&&!ehPrem()){T='inicio';persLock()}
   if(T==='resumo'||T==='playbook')T='inicio';
   if(T==='pedidos'||T==='leads')T='vendas';
   if(T==='site'||T==='perfil'){CTAB=T==='site'?'textos':'perfil';T='conta'}
@@ -3641,10 +3658,103 @@ async function ogSalvar(){const b=$('#og_b'),o=ogDados(),card=$('#og_c').checked
     toast('Prévia salva! Mande o link no WhatsApp para ver.')}catch(e){toast('Erro: '+(e&&e.message||e))}
   if(b){b.disabled=false;b.textContent='Salvar prévia'}}
 
+/* ===== APP DO VENDEDOR (instalar no celular) + AVISOS NA HORA (Web Push) =====
+   Sem Firebase e sem Expo: o próprio navegador (Chrome no Android, Safari no iPhone 16.4+) recebe os avisos.
+   Avisos: 1º dado que o cliente preenche, quando ele termina e se ele parar 3 min sem terminar. */
+const VAPID_PUB='BODYhOCo492gV8j4XwF0MGFDHOskgUKUqwr27CdekRgpDvVY06hzSvnD_INA9DLjhkuerki2AUInmFRZc3PQJlc';
+let APP_BIP=null,APP_ST=null,APP_TESTE=null;
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();APP_BIP=e;appRe()});
+addEventListener('appinstalled',()=>{APP_BIP=null;try{localStorage.setItem('app_inst','1')}catch(e){}toast('App instalado! Abra pelo ícone “Meu Painel”.');appRe()});
+const appIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+const appAndroid=()=>/android/i.test(navigator.userAgent);
+const appStand=()=>{try{return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true}catch(e){return false}};
+const appInApp=()=>/Instagram|FBAN|FBAV|FB_IAB|FBIOS|WhatsApp|Line\/|TikTok|musical_ly|Snapchat|; wv\)/i.test(navigator.userAgent);
+const appPushOk=()=>'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window;
+const appU8=s=>{s=String(s).replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';const r=atob(s),o=new Uint8Array(r.length);for(let i=0;i<r.length;i++)o[i]=r.charCodeAt(i);return o};
+function appAparelho(){const u=navigator.userAgent;const so=/iphone/i.test(u)?'iPhone':/ipad/i.test(u)||appIOS()?'iPad':/android/i.test(u)?((u.match(/Android[^;]*;\s*([^;)]+)/)||[])[1]||'Android').replace(/Build.*$/,'').trim():/windows/i.test(u)?'Windows':/mac os/i.test(u)?'Mac':'Computador';
+  const nv=/edg\//i.test(u)?'Edge':/samsungbrowser/i.test(u)?'Samsung Internet':/firefox|fxios/i.test(u)?'Firefox':/crios|chrome/i.test(u)?'Chrome':/safari/i.test(u)?'Safari':'Navegador';return (so+' · '+nv+(appStand()?' (app)':'')).slice(0,120)}
+async function appReg(){if(!('serviceWorker' in navigator))return null;let r=await navigator.serviceWorker.getRegistration('/');if(!r)r=await navigator.serviceWorker.register('/sw.js');return await navigator.serviceWorker.ready}
+async function appSubAtual(){try{if(!appPushOk())return null;const r=await navigator.serviceWorker.getRegistration('/');return r?await r.pushManager.getSubscription():null}catch(e){return null}}
+async function appAtivar(pedir){
+  if(!appPushOk())return{ok:false,m:appIOS()&&!appStand()?'ios':'suporte'};
+  let p=Notification.permission;if(p==='default'&&pedir)p=await Notification.requestPermission();
+  if(p!=='granted')return{ok:false,m:p==='denied'?'negado':'permissao'};
+  const r=await appReg();let s=await r.pushManager.getSubscription();
+  if(s){try{const k=new Uint8Array(s.options.applicationServerKey||[]),q=appU8(VAPID_PUB);if(k.length&&(k.length!==q.length||k.some((x,i)=>x!==q[i]))){await s.unsubscribe();s=null}}catch(e){}}
+  if(!s)s=await r.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:appU8(VAPID_PUB)});
+  const j=s.toJSON(),{error}=await sb.rpc('meu_push_inscrever',{p:{endpoint:j.endpoint,keys:j.keys,aparelho:appAparelho(),plataforma:appStand()?'app':'navegador'}});
+  if(error)return{ok:false,m:error.message};
+  try{localStorage.setItem('push_ep',j.endpoint)}catch(e){}
+  return{ok:true}}
+/* ao abrir o painel: se o aparelho já tinha permitido, renova a inscrição sem perguntar nada (troca de conta, reinstalação) */
+async function appAuto(){try{if(appPushOk()&&Notification.permission==='granted')await appAtivar(false)}catch(e){}
+  try{if(navigator.clearAppBadge)navigator.clearAppBadge()}catch(e){}
+  try{sb.from('app_notificacoes').update({lida:true}).eq('lida',false).then(()=>{},()=>{})}catch(e){}}
+async function appBtAtivar(){const b=$('#ap_at');if(b){b.disabled=true;b.textContent='Ativando…'}
+  let r;try{r=await appAtivar(true)}catch(e){r={ok:false,m:String(e&&e.message||e)}}
+  if(r.ok){toast('Avisos ativados neste aparelho!');await appStatus();appRe();setTimeout(appTeste,400);return}
+  toast(r.m==='negado'?'As notificações estão bloqueadas neste aparelho. Veja como liberar abaixo.':r.m==='ios'?'No iPhone, primeiro adicione o painel à Tela de Início.':r.m==='permissao'?'Você precisa tocar em “Permitir”.':'Não foi possível ativar: '+r.m);appRe()}
+async function appDesativar(){const s=await appSubAtual();if(s){try{await sb.rpc('meu_push_remover',{p_endpoint:s.endpoint})}catch(e){}try{await s.unsubscribe()}catch(e){}}try{localStorage.removeItem('push_ep')}catch(e){}toast('Avisos desativados neste aparelho');await appStatus();appRe()}
+async function appRemover(ep){if(!confirm('Parar de mandar avisos para esse aparelho?'))return;await sb.rpc('meu_push_remover',{p_endpoint:ep});const s=await appSubAtual();if(s&&s.endpoint===ep){try{await s.unsubscribe()}catch(e){}}await appStatus();appRe()}
+async function appStatus(){try{const r=await sb.rpc('meu_push_status');APP_ST=(r&&!r.error&&Array.isArray(r.data))?r.data:[]}catch(e){APP_ST=[]}return APP_ST}
+async function appTeste(){
+  const s=await appSubAtual();APP_TESTE={fase:'enviando',em:Date.now()};appRe();
+  const r=await sb.rpc('meu_push_teste');
+  if(r.error){APP_TESTE={fase:'erro',msg:/aguarde/.test(r.error.message)?'Espere 1 minuto para testar de novo.':r.error.message};appRe();return}
+  const ini=Date.now();
+  const chk=async()=>{if(!APP_TESTE||APP_TESTE.fase==='chegou')return;await appStatus();const meu=s&&(APP_ST||[]).find(x=>x.endpoint===s.endpoint);
+    if(meu&&meu.ultimo_envio&&Date.parse(meu.ultimo_envio)>=ini-5000){APP_TESTE.fase=meu.ultimo_status>=200&&meu.ultimo_status<300?(APP_TESTE.fase==='chegou'?'chegou':'aceito'):'erro';if(APP_TESTE.fase==='erro')APP_TESTE.msg=(meu.ultimo_erro||('código '+meu.ultimo_status))}
+    appRe();if(Date.now()-ini<15000&&APP_TESTE&&APP_TESTE.fase!=='chegou'&&APP_TESTE.fase!=='erro')setTimeout(chk,2500)};
+  setTimeout(chk,2500)}
+if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const d=e.data||{};
+  if(d.tipo==='push'){if(d.d&&d.d.tp==='teste'&&APP_TESTE){APP_TESTE.fase='chegou';appRe()}
+    try{if(typeof T!=='undefined'&&T==='vendas'&&typeof pVendas==='function'&&$('#vdl'))pVendas(true)}catch(x){}}
+  if(d.tipo==='abrir'&&d.url){try{const u=new URL(d.url,location.origin);appUrl(u.searchParams);if(T==='vendas')adm('vendas')}catch(x){}}});
+/* aviso tocado: abre na aba Clientes e mostra o botão do WhatsApp do cliente */
+function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
+  const wa=qp.get('wa');if(wa&&/^https:\/\/wa\.me\//.test(wa))setTimeout(()=>appWaBar(wa),600);
+  if(qp.has('app')||qp.has('t')||qp.has('wa')){try{history.replaceState(null,'',location.pathname)}catch(e){}}}
+function appWaBar(wa){let b=document.getElementById('ap_wab');if(b)b.remove();b=document.createElement('div');b.id='ap_wab';b.className='ap-wab';
+  b.innerHTML=`<a href="${esc(wa)}" target="_blank" rel="noopener" onclick="setTimeout(()=>{const x=document.getElementById('ap_wab');x&&x.remove()},300)">💬 Chamar o cliente no WhatsApp</a><button type="button" aria-label="Fechar" onclick="this.parentNode.remove()">✕</button>`;document.body.appendChild(b)}
+/* ----- tela "App e avisos" ----- */
+function appRe(){const el=document.getElementById('ap_box');if(el)el.innerHTML=appH();const c=document.getElementById('ap_ini');if(c)c.outerHTML=appIniH()}
+function appPassoInst(){
+  if(appStand())return`<div class="ap-ok">✅ Você está usando o app instalado.</div>`;
+  if(appInApp())return`<p>Você abriu o painel dentro de outro aplicativo (Instagram, WhatsApp…). Para instalar, abra no <b>${appIOS()?'Safari':'Chrome'}</b>:</p><button class="btn" onclick="navigator.clipboard.writeText(location.origin+'/'+SLUG+'/admin').then(()=>toast('Link copiado! Cole no ${appIOS()?'Safari':'Chrome'}.'))">📋 Copiar o link do painel</button>`;
+  if(appIOS())return`<ol class="ap-ol"><li>Abra este painel no <b>Safari</b>.</li><li>Toque em <b>Compartilhar</b> <span class="ap-k">⬆︎</span> (embaixo da tela).</li><li>Escolha <b>Adicionar à Tela de Início</b> e toque em <b>Adicionar</b>.</li><li>Abra o <b>Meu Painel</b> pelo ícone novo, entre com seu login e volte aqui para ativar os avisos.</li></ol><p class="mu" style="font-size:12.5px">No iPhone os avisos só funcionam pelo ícone da Tela de Início (iOS 16.4 ou mais novo).</p>`;
+  if(APP_BIP)return`<button class="btn red" onclick="APP_BIP.prompt();APP_BIP.userChoice.then(()=>{APP_BIP=null;appRe()})">📲 Instalar o app no ${appAndroid()?'celular':'computador'}</button>`;
+  return appAndroid()?`<p>Toque no menu <span class="ap-k">⋮</span> do Chrome e escolha <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>). O ícone <b>Meu Painel</b> aparece junto dos seus outros apps.</p>`:`<p>No Chrome ou Edge, clique no ícone de instalar <span class="ap-k">⊕</span> na barra de endereço, ou no menu <span class="ap-k">⋮</span> → <b>Instalar</b>.</p>`}
+function appPassoAvisos(on){
+  if(!appPushOk())return appIOS()&&!appStand()?`<p class="mu">Primeiro instale pelo passo 1. Depois, abrindo pelo ícone, o botão de ativar aparece aqui.</p>`:`<p class="mu">Este navegador não recebe avisos. Use o Chrome (Android/computador) ou o Safari pelo ícone da Tela de Início (iPhone).</p>`;
+  if(Notification.permission==='denied')return`<div class="ap-er">🔕 As notificações estão bloqueadas neste aparelho.</div><p style="font-size:14px">${appIOS()?'Abra os <b>Ajustes</b> do iPhone → <b>Notificações</b> → <b>Meu Painel</b> → ative <b>Permitir Notificações</b>.':appStand()?'Abra as <b>Configurações</b> do celular → <b>Apps</b> → <b>Meu Painel</b> (ou Chrome) → <b>Notificações</b> → <b>Permitir</b>.':'Toque no cadeado 🔒 ao lado do endereço do site → <b>Permissões</b> → <b>Notificações</b> → <b>Permitir</b>.'} Depois recarregue esta página.</p>`;
+  if(on)return`<div class="ap-ok">✅ Avisos ativos neste aparelho.</div><div class="ap-row"><button class="btn red" onclick="appTeste()">🔔 Enviar aviso de teste</button><button class="btn" onclick="appDesativar()">Desativar aqui</button></div>${appTesteH()}`;
+  return`<button class="btn red" id="ap_at" onclick="appBtAtivar()">🔔 Ativar avisos de clientes</button><p class="mu" style="font-size:12.5px;margin-top:8px">O celular vai perguntar se pode mostrar notificações: toque em <b>Permitir</b>.</p>`}
+function appTesteH(){const t=APP_TESTE;if(!t)return'';
+  if(t.fase==='enviando')return`<div class="ap-ts">⏳ Enviando o teste…</div>`;
+  if(t.fase==='aceito')return`<div class="ap-ts">📨 Entregue ao serviço de avisos do ${appIOS()?'iPhone (Apple)':'Google'}. A notificação deve aparecer em segundos.${document.hidden?'':' Se não aparecer, veja as dicas de bateria abaixo.'}</div>`;
+  if(t.fase==='chegou')return`<div class="ap-ok">🎉 O aviso chegou neste aparelho. Está tudo funcionando!</div>`;
+  return`<div class="ap-er">⚠️ O teste falhou: ${esc(t.msg||'erro')}. Toque em “Desativar aqui” e ative de novo.</div>`}
+function appH(){
+  const st=APP_ST||[],ep=(()=>{try{return localStorage.getItem('push_ep')||''}catch(e){return''}})();
+  const on=appPushOk()&&Notification.permission==='granted'&&st.some(x=>x.endpoint===ep);
+  const fmt=d=>d?new Date(d).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'—';
+  return`<h3 style="margin-top:0">📲 App e avisos de clientes</h3>
+  <p class="mu" style="margin-top:6px">Instale o painel como app no celular e receba um aviso na hora, mesmo com o app fechado. Não precisa de nenhuma conta ou configuração extra.</p>
+  <div class="ap-av"><div><b>✍️ Começou a preencher</b><span>assim que o cliente digita o primeiro dado</span></div><div><b>✅ Finalizou</b><span>quando ele termina o chat, a ficha CDC ou o pré-contrato CNH</span></div><div><b>😴 Cliente preguiçoso</b><span>se ele parar por 3 minutos sem terminar</span></div></div>
+  <p class="mu" style="font-size:13px">Tocando no aviso abre o <b>WhatsApp do cliente</b> com uma mensagem pronta para você mandar.</p>
+  <div class="ap-ps"><div class="ap-n">1</div><div class="ap-c"><h4>Instalar o app</h4>${appPassoInst()}</div></div>
+  <div class="ap-ps"><div class="ap-n">2</div><div class="ap-c"><h4>Ativar os avisos neste aparelho</h4>${appPassoAvisos(on)}</div></div>
+  <details class="ap-dt"><summary>O aviso não chega ou atrasa?</summary><ul><li>Em <b>Xiaomi, Redmi e Poco</b>: Configurações → Apps → <b>Chrome</b> → Economia de bateria → <b>Sem restrições</b>, e ative <b>Início automático</b>.</li><li>Em <b>Samsung</b>: Configurações → Bateria → Limites de uso em segundo plano → tire o <b>Chrome</b> (e o Meu Painel) das listas de suspensão.</li><li>Em <b>Motorola</b> e outros: Configurações → Apps → <b>Chrome</b> → Bateria → <b>Sem restrições</b>.</li><li>Confira se o modo <b>Não perturbe</b> está desligado.</li><li>No iPhone, use sempre o ícone da Tela de Início.</li></ul></details>
+  ${st.length?`<h4 style="margin:18px 0 8px">Aparelhos que recebem avisos (${st.length})</h4><div class="ap-dv">${st.map(x=>`<div><div><b>${esc(x.aparelho||'Aparelho')}${x.endpoint===ep?' <span class="ap-eu">este</span>':''}</b><small>Ativado em ${fmt(x.criado_em)} · último aviso: ${x.ultimo_envio?fmt(x.ultimo_envio)+(x.ultimo_status>=200&&x.ultimo_status<300?' ✅':' ⚠️ '+esc((x.ultimo_erro||'').slice(0,80))):'nenhum ainda'}</small></div><button class="btn" onclick="appRemover('${esc(x.endpoint)}')">Remover</button></div>`).join('')}</div>`:''}`}
+async function pApp(){$(PNS).innerHTML='<div id="ap_box"><p class="mu">Carregando…</p></div>';await appStatus();appRe()}
+function appIniH(){let x=false,ep='';try{x=localStorage.getItem('ap_ini_x')==='1';ep=localStorage.getItem('push_ep')||''}catch(e){}
+  if(x||(appPushOk()&&Notification.permission==='granted'&&ep))return'<div id="ap_ini"></div>';
+  return`<section class="card2 ap-ini" id="ap_ini"><div><b>📲 Receba cada cliente na hora, no celular</b><p>Instale o app do painel e ative os avisos: você fica sabendo quando o cliente começa, termina ou para de preencher.</p></div><div class="ap-ini-a"><button class="btn red" onclick="CTAB='app';adm('conta')">Configurar agora</button><button class="btn" onclick="try{localStorage.setItem('ap_ini_x','1')}catch(e){};document.getElementById('ap_ini').outerHTML='<div id=&quot;ap_ini&quot;></div>'">Agora não</button></div></section>`}
+
 function pConta(){
-  $('#pn').innerHTML=`<div class="seg">${[['perfil','Perfil e contato'],['entregas','Clientes felizes'],['textos','Textos do site'],['como','Como funciona o consórcio'],['previa','Prévia do link'],['entrega','Entrega de pedidos']].map(a=>`<button class="${CTAB===a[0]?'on':''}" onclick="CTAB='${a[0]}';pConta()">${a[1]}</button>`).join('')}</div><div id="pn3" class="card2"></div>`;
+  $('#pn').innerHTML=`<div class="seg">${[['app','📲 App e avisos'],['perfil','Perfil e contato'],['entregas','Clientes felizes'],['textos','Textos do site'],['como','Como funciona o consórcio'],['previa','Prévia do link'],['entrega','Entrega de pedidos']].map(a=>`<button class="${CTAB===a[0]?'on':''}" onclick="CTAB='${a[0]}';pConta()">${a[1]}</button>`).join('')}</div><div id="pn3" class="card2"></div>`;
   PNS='#pn3';
-  if(CTAB==='perfil')pPerfil();else if(CTAB==='textos')pSite();else if(CTAB==='entregas')pEntregas();else if(CTAB==='videos')pVideos();else if(CTAB==='como')pComo();else if(CTAB==='previa')pPrevia();else $('#pn3').innerHTML='<h3 style="margin-top:0">Entrega de pedidos</h3><p class="mu">Faz o mesmo que um cliente faz no seu site (chat, formulário e preenchimento) e mostra se cada pedido chegou ao seu painel. Se algo falhar, aparece o erro exato.</p><button class="btn red" onclick="testarEntrega()">🧪 Testar entrega agora</button><p class="mu" style="margin:14px 0 0;font-size:12.5px">Versão do painel: 01/11/2026</p>'}
+  if(CTAB==='app')pApp();else if(CTAB==='perfil')pPerfil();else if(CTAB==='textos')pSite();else if(CTAB==='entregas')pEntregas();else if(CTAB==='videos')pVideos();else if(CTAB==='como')pComo();else if(CTAB==='previa')pPrevia();else $('#pn3').innerHTML='<h3 style="margin-top:0">Entrega de pedidos</h3><p class="mu">Faz o mesmo que um cliente faz no seu site (chat, formulário e preenchimento) e mostra se cada pedido chegou ao seu painel. Se algo falhar, aparece o erro exato.</p><button class="btn red" onclick="testarEntrega()">🧪 Testar entrega agora</button><p class="mu" style="margin:14px 0 0;font-size:12.5px">Versão do painel: 01/11/2026</p>'}
 
 function pSite(){
   if(!('config' in V)){$(PNS).innerHTML='<p class="mu">Para personalizar os textos do site, rode o SQL opcional (coluna config) no Supabase e recarregue a página.</p>';return}
