@@ -16,19 +16,19 @@
   ],
   "icons": [
     {
-      "src": "/app-honda-192.png",
+      "src": "/app-honda2-192.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/app-honda-512.png",
+      "src": "/app-honda2-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/app-honda-maskable-512.png",
+      "src": "/app-honda2-maskable-512.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"
@@ -41,7 +41,7 @@
       "url": "./admin?app=1&t=vendas",
       "icons": [
         {
-          "src": "/app-honda-192.png",
+          "src": "/app-honda2-192.png",
           "sizes": "192x192"
         }
       ]
@@ -52,7 +52,7 @@
       "url": "./admin?app=1&t=avisos",
       "icons": [
         {
-          "src": "/app-honda-192.png",
+          "src": "/app-honda2-192.png",
           "sizes": "192x192"
         }
       ]

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0d0d12">
-<script>/*app-vendedor: o painel /nome/admin vira um app instalável (Android, iPhone e computador)*/try{var am=/^\/([a-z0-9-]+)\/admin\/?$/i.exec(location.pathname);if(am){var ah=document.head,aa=function(t,o){var e=document.createElement(t);for(var k in o)e.setAttribute(k,o[k]);ah.appendChild(e)};aa('link',{rel:'manifest',href:'/'+am[1]+'/app.webmanifest'});aa('meta',{name:'apple-mobile-web-app-capable',content:'yes'});aa('meta',{name:'mobile-web-app-capable',content:'yes'});aa('meta',{name:'apple-mobile-web-app-title',content:'Meu Painel'});aa('meta',{name:'apple-mobile-web-app-status-bar-style',content:'default'});document.addEventListener('DOMContentLoaded',function(){var o=document.querySelectorAll('link[rel="apple-touch-icon"]');for(var i=0;i<o.length;i++)o[i].remove();aa('link',{rel:'apple-touch-icon',sizes:'180x180',href:'/app-honda-180.png'})})}}catch(e){}</script>
+<script>/*app-vendedor: o painel /nome/admin vira um app instalável (Android, iPhone e computador)*/try{var am=/^\/([a-z0-9-]+)\/admin\/?$/i.exec(location.pathname);if(am){var ah=document.head,aa=function(t,o){var e=document.createElement(t);for(var k in o)e.setAttribute(k,o[k]);ah.appendChild(e)};aa('link',{rel:'manifest',href:'/'+am[1]+'/app.webmanifest'});aa('meta',{name:'apple-mobile-web-app-capable',content:'yes'});aa('meta',{name:'mobile-web-app-capable',content:'yes'});aa('meta',{name:'apple-mobile-web-app-title',content:'Meu Painel'});aa('meta',{name:'apple-mobile-web-app-status-bar-style',content:'default'});document.addEventListener('DOMContentLoaded',function(){var o=document.querySelectorAll('link[rel="apple-touch-icon"]');for(var i=0;i<o.length;i++)o[i].remove();aa('link',{rel:'apple-touch-icon',sizes:'180x180',href:'/app-honda2-180.png'})})}}catch(e){}</script>
 <title>Vitrine de Motos Honda</title>
 <meta name="description" content="Escolha sua moto Honda com consórcio ou financiamento e fale direto com o vendedor pelo WhatsApp.">
 <meta property="og:type" content="website"><meta property="og:title" content="Vitrine de Motos Honda"><meta property="og:description" content="Consórcio e financiamento de motos Honda com atendimento direto pelo WhatsApp.">
@@ -1328,6 +1328,29 @@ html.ho-videos #videos,html.ho-videos .tn-l a[href="#videos"],html.ho-entregas #
 #vdl .pdr{border-bottom-color:#dbe2ef}
 #vdl .empty2{background:#fff;border:2px dashed #b9c4db}
 @media(max-width:600px){#vs_c{padding:10px;border-radius:16px}#vdl .cl-h,#vdl .cl-d{padding-left:14px;padding-right:14px}#vdl .cl-f,#vdl .cl-a{margin-left:14px;margin-right:14px}}
+
+/* ===== cartão compacto + ficha do cliente ===== */
+#vdl .cl2{cursor:default}#vdl .cl2 .cl-h{cursor:pointer;align-items:center;position:relative;padding-right:40px}.cl2-go{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:26px;line-height:1;color:color-mix(in srgb,var(--fc) 70%,#556)}
+.fi-cs{display:flex;flex-wrap:wrap;gap:6px;padding:10px 18px 0;cursor:pointer}.fi-c{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;color:var(--cc);background:color-mix(in srgb,var(--cc) 12%,#fff);border:1px solid color-mix(in srgb,var(--cc) 30%,#fff)}
+#vdl .cl2 .cl-a{margin:12px 18px 0;padding-bottom:16px}#vdl .cl2 .cl-a{gap:7px}#vdl .cl2 .cl-a .btn{padding:10px 12px;font-size:13.5px}.cl2-v{background:#fff}
+.fi{position:fixed;inset:0;z-index:9000;background:rgba(14,16,26,.55);backdrop-filter:blur(3px);display:flex;align-items:flex-end;justify-content:center;animation:fiBg .2s ease-out}@keyframes fiBg{from{opacity:0}}
+.fi-s{width:min(640px,100%);max-height:94vh;max-height:94dvh;background:#f6f7fb;border-radius:24px 24px 0 0;display:flex;flex-direction:column;box-shadow:0 -20px 60px -20px #0008;animation:fiUp .32s cubic-bezier(.2,.9,.25,1.05);overflow:hidden}@keyframes fiUp{from{transform:translateY(60px);opacity:.4}}
+.fi-gp{width:42px;height:5px;border-radius:9px;background:#cfd3df;margin:9px auto 2px;flex:none}
+.fi-h{display:flex;gap:13px;align-items:center;padding:12px 18px 4px}.fi-h .cl-av{width:54px;height:54px;font-size:22px;box-shadow:0 0 0 3px #fff,0 0 0 5px color-mix(in srgb,var(--fc) 45%,#fff)}.fi-hm{min-width:0;flex:1}.fi-hm b{display:block;font-size:19px;line-height:1.2;color:#14203d;overflow-wrap:anywhere}.fi-hm small{display:block;color:#56627c;font-size:13px;line-height:1.4}
+.fi-x{border:0;background:#e8ebf3;border-radius:50%;width:36px;height:36px;font-size:15px;cursor:pointer;color:#334;flex:none}
+.fi-s>.fi-cs{cursor:default;padding:8px 18px 0}
+.fi-q{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;padding:14px 18px 6px}.fi-q .fi-qb{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;box-sizing:border-box;line-height:1.2;gap:3px;padding:11px 6px;border-radius:16px;background:#fff;border:1.5px solid #dde2ee;font:700 13px inherit;color:#1d2740;text-decoration:none;cursor:pointer}.fi-qb span{font-size:21px;line-height:1}.fi-qb.wa{background:#e8f8ee;border-color:#9fdcb4;color:#14663a}.fi-qb.red{background:var(--r);border-color:var(--r);color:#fff}.fi-qb.off{opacity:.4;pointer-events:none}
+.fi-b{overflow:auto;-webkit-overflow-scrolling:touch;padding:6px 18px 16px;flex:1;min-height:120px}
+.fi-g{background:#fff;border:1px solid #e1e5f0;border-radius:18px;padding:6px 14px 8px;margin-top:12px}.fi-g h4{margin:6px 0 4px;font-size:13px;letter-spacing:.3px;color:#2c3a5a;display:flex;gap:8px;align-items:center}.fi-g h4 span{font-size:17px}
+.fi-g pre{white-space:pre-wrap;overflow-wrap:anywhere;font:13px/1.5 inherit;color:#33405c;margin:6px 0}
+.fi-ctl{padding-bottom:12px}.fi-ctl .cl-f{margin:6px 0 0;padding:0;background:none;border:0}.fi-ctl .cl-a{margin:12px 0 0;padding:0}
+.fi-r{display:grid;grid-template-columns:minmax(92px,34%) 1fr auto;gap:10px;align-items:center;width:100%;text-align:left;background:none;border:0;border-top:1px solid #eef0f6;padding:11px 0;cursor:pointer;font:inherit;color:inherit}.fi-g h4+.fi-r{border-top:0}.fi-r span{font-size:12.5px;color:#6a7690}.fi-r b{font-size:14.5px;color:#14203d;font-weight:650;overflow-wrap:anywhere}.fi-r i{font-style:normal;font-size:11px;font-weight:700;color:#8a93a8;border:1px solid #dde2ee;border-radius:8px;padding:3px 7px}.fi-r:active{background:#f1f4fa}
+.fi-pg{margin-top:14px;font-size:12.5px;color:#56627c}.fi-pg i{display:block;height:7px;border-radius:9px;background:#e1e5f0;margin-top:6px;overflow:hidden}.fi-pg u{display:block;height:100%;background:linear-gradient(90deg,var(--fc),color-mix(in srgb,var(--fc) 60%,#fff));border-radius:9px;text-decoration:none}
+.fi-f{display:flex;gap:9px;padding:11px 18px calc(12px + env(safe-area-inset-bottom));background:#fff;border-top:1px solid #e1e5f0}.fi-f .btn{flex:1;width:auto;margin:0}.fi-del{color:#b42318}
+@media(min-width:700px){.fi{align-items:center}.fi-s{border-radius:24px}}
+@media(prefers-reduced-motion:reduce){.fi,.fi-s{animation:none}}
+/* notificações: apagar */
+.av-limpa{color:#b42318}.av-x{border:0;background:#eef0f6;color:#667;width:28px;height:28px;border-radius:50%;font-size:13px;cursor:pointer;margin-left:auto;flex:none}.av-x:active{background:#fbd5d5;color:#b42318}
 </style>
 <style id="alta-css">
 /* ===== CATEGORIA ALTA + FUNDO "PRETO LUXO" (tokens: claro = marfim, escuro = preto) ===== */
@@ -3108,19 +3131,51 @@ function vdView(){
   $('#vdk').innerHTML=`<div class="kp3"><div class="${c.novos?'n':''}"><b>${c.novos}</b><span>novos</span></div><div><b>${hj}</b><span>hoje</span></div><div><b>${c.todos}</b><span>no total</span></div></div>`;
   $('#vdf').innerHTML=fl.map(o=>`<button class="${VF===o[0]?'on':''}" onclick="VF='${o[0]}';vdView()">${esc(o[1])} <em>${c[o[0]]||0}</em></button>`).join('')+`<select class="fs2" onchange="VFASE=+this.value;vdView()" aria-label="Filtrar por fase"><option value="0">Todas as fases</option>${PB.map(p=>`<option value="${p.n}" ${VFASE===p.n?'selected':''}>${p.n}. ${p.nome}</option>`).join('')}</select><span class="vd-live${VLIVE?'':' off'}" id="vdlive" title="Novos clientes aparecem aqui sozinhos, na hora"><i></i><span>${VLIVE?'Ao vivo':'Reconectando…'}</span></span>`;
   $('#vdl').innerHTML=f.map(vdCard).join('')||'<div class="empty2"><b>Nenhum cliente aqui ainda.</b><span>Quando alguém preencher dados no seu site, aparece neste lugar na hora.</span></div>';
-  if(window.scrollY!==sy)window.scrollTo({top:sy,left:0,behavior:'instant'});if(mnt&&mnt.scrollTop!==sm)mnt.scrollTop=sm}
+  if(window.scrollY!==sy)window.scrollTo({top:sy,left:0,behavior:'instant'});if(mnt&&mnt.scrollTop!==sm)mnt.scrollTop=sm;if(FI)fiRe()}
 async function vdFase(s,id,f){
   f=parseInt(f,10);const x=VD.find(o=>o.id===id&&o._s===s);
   const r=await sb.from(VTAB[s]).update({fase:f}).eq('id',id);
   if(r&&r.error){toast(/fase/i.test(r.error.message||'')?'Rode o SQL atualizado no Supabase (campo "fase")':'Erro: '+r.error.message);return vdView()}
   for(const y of ((x&&x._all)||[]).filter(y=>!(y.id===id&&y._s===s))){try{await sb.from(VTAB[y._s]).update({fase:f}).eq('id',y.id)}catch(e){}}
   VRAW.forEach(y=>{if(y.id===id&&y._s===s||(x&&x._all&&x._all.some(z=>z.id===y.id&&z._s===y._s)))y.fase=f});vdAtu();toast('Movido para a fase '+f+' · '+PB[f-1].nome);vdView()}
+const FIG=[['📞','Contato',['telefone','telefone_recado','email','ref_nome','ref_telefone']],['🪪','Dados pessoais',['cpf','rg','rg_emissao','nascimento','cidade_nascimento','pai','mae']],['🏠','Endereço',['cep','rua','numero','bairro','cidade','estado']],['💼','Trabalho e renda',['profissao','ocupacao','renda']],['🏦','Banco',['banco','agencia','conta','debito_automatico']],['🏍️','Proposta',['tipo','pagamento','cor','entrada','parcela','forma_pagamento','troca','parcelamento_cartao','habilitacao','lance','lance_valor']]];
+const FICOR={novo:'#e11d48',atendimento:'#d97706',em_analise:'#d97706',contrato_enviado:'#d97706',concluido:'#16a34a',atendido:'#16a34a',aprovado:'#16a34a',assinado:'#16a34a',cancelado:'#6b7280',recusado:'#6b7280'};
+function fiVal(x,k){let v=x[k];if(v==null||String(v).trim()==='')return'';if(k==='cpf')v=pCpf(v);else if(k==='pagamento')v=VPG[v]||v;else if(k==='tipo')v=TL[v]||v;return String(v)}
+const fiTel=t=>{const d=String(t||'').replace(/\D/g,'').replace(/^55(?=\d{10,11}$)/,'');return d.length>=10?'tel:+55'+d:''};
+function fiChips(x){const s=x._s,k=x.status||'novo',stl=VST[s]||{},pg=vdPagTxt(x),f=faseDe(x),ph=PB[f-1],rasc=s==='rascunho'||(s==='chat'&&!x.completo);
+  const st=rasc?(x.concluido==='sim'?'Terminou o chat':'Preenchendo'):(stl[k]||'');
+  return`<span class="fi-c" style="--cc:${ph.cor}">${f}. ${esc(ph.nome)}</span>${st?`<span class="fi-c" style="--cc:${rasc?'#d97706':(FICOR[k]||'#64748b')}">${esc(st)}</span>`:''}${pg?`<span class="fi-c" style="--cc:#475569">${esc(pg)}</span>`:''}`}
 function vdCard(x){
-  const s=x._s,k=x.status||'novo',stl=VST[s],nm=x.nome_completo||x.nome||'Cliente',w=wlk(x.telefone),f=faseDe(x),ph=PB[f-1],novo=vdNovo(x),pg=vdPagTxt(x),rasc=s==='rascunho'||(s==='chat'&&!x.completo);
-  return `<article class="cl ${novo?'is-new':''}" style="--fc:${ph.cor}"><div class="cl-h"><div class="cl-av">${esc(nm.trim().charAt(0).toUpperCase())}</div><div class="cl-m"><b>${esc(nm)}${novo?'<span class="nw">novo</span>':''}</b><small>${esc(x.moto_nome||'Moto não informada')}${x.cor?' · '+esc(x.cor):''}${pg?' · '+esc(pg):''}</small><small class="t">${esc((x._src||[s]).map(k=>VSRC[k]).join(' + '))} · ${ago(x.created_at)}${rasc?(x.concluido==='sim'?' · <u class="okc">terminou o chat</u>':' · <u>não concluiu o envio</u>'):''}</small></div></div>
-  <div class="cl-f"><label>Fase da venda<select class="fs" onchange="vdFase('${s}','${x.id}',this.value)">${PB.map(p=>`<option value="${p.n}" ${p.n===f?'selected':''}>${p.n}. ${p.nome}</option>`).join('')}</select></label>${('status' in x&&Object.keys(stl).length)?`<label>Situação<select onchange="vdSt('${s}','${x.id}',this.value)">${Object.keys(stl).map(o=>`<option value="${o}" ${k===o?'selected':''}>${stl[o]}</option>`).join('')}</select></label>`:''}</div>
-  <div class="cl-a">${w?`<a class="btn wa sm" target="_blank" rel="noopener" href="${w}">WhatsApp</a>`:''}<button class="btn red sm" onclick="vdMsg('${s}','${x.id}')">✉ Mensagem</button>${ccBtns(s,x.id)}</div>
-  <details class="cl-d" data-k="${s}:${x.id}:d"${VOPEN.has(s+':'+x.id+':d')?' open':''}><summary>Ver todos os dados</summary><div class="pdg">${vdCampos(x).map(a=>dr(a[0],a[1])).join('')}</div>${x.detalhes?`<details data-k="${s}:${x.id}:t"${VOPEN.has(s+':'+x.id+':t')?' open':''}><summary>Detalhes</summary><pre>${esc(x.detalhes)}</pre></details>`:''}${x.mensagem?`<details data-k="${s}:${x.id}:m"${VOPEN.has(s+':'+x.id+':m')?' open':''}><summary>Mensagem enviada ao WhatsApp</summary><pre>${esc(x.mensagem)}</pre></details>`:''}<div class="cl-x"><button class="btn sm" onclick="vdCp('${s}','${x.id}')">Copiar dados</button><button class="btn sm" onclick="vdDel('${s}','${x.id}')">Excluir</button></div></details></article>`}
+  const s=x._s,nm=x.nome_completo||x.nome||'Cliente',w=wlk(x.telefone),f=faseDe(x),ph=PB[f-1],novo=vdNovo(x),rasc=s==='rascunho'||(s==='chat'&&!x.completo),tl=fiTel(x.telefone);
+  return `<article class="cl cl2 ${novo?'is-new':''}" style="--fc:${ph.cor}"><div class="cl-h" role="button" tabindex="0" aria-label="Abrir ficha de ${esc(nm)}" onclick="fiAbre('${s}','${x.id}')" onkeydown="if(event.key==='Enter')fiAbre('${s}','${x.id}')"><div class="cl-av">${esc(nm.trim().charAt(0).toUpperCase())}</div><div class="cl-m"><b>${esc(nm)}${novo?'<span class="nw">novo</span>':''}</b><small>${esc(x.moto_nome||'Moto não informada')}${x.cor?' · '+esc(x.cor):''}</small><small class="t">${esc((x._src||[s]).map(k=>VSRC[k]).join(' + '))} · ${ago(x.created_at)}${rasc?(x.concluido==='sim'?' · <u class="okc">terminou o chat</u>':' · <u>não concluiu o envio</u>'):''}</small></div><span class="cl2-go" aria-hidden="true">›</span></div>
+  <div class="fi-cs" onclick="fiAbre('${s}','${x.id}')">${fiChips(x)}</div>
+  <div class="cl-a">${w?`<a class="btn wa sm" target="_blank" rel="noopener" href="${w}">💬 WhatsApp</a>`:''}${tl?`<a class="btn sm" href="${tl}">📞 Ligar</a>`:''}<button class="btn red sm" onclick="vdMsg('${s}','${x.id}')">✉ Mensagem</button></div></article>`}
+/* ===== FICHA DO CLIENTE: abre ao tocar no cartão, com os dados em grupos e toque para copiar ===== */
+let FI=null;
+function fiAbre(s,id){const x=VD.find(o=>String(o.id)===String(id)&&o._s===s);if(!x)return;FI={s,id:x.id};let d=document.getElementById('fi');if(!d){d=document.createElement('div');d.id='fi';d.className='fi';d.onclick=e=>{if(e.target===d)fiFecha()};document.body.appendChild(d);document.body.style.overflow='hidden'}fiRe()}
+function fiFecha(){FI=null;const d=document.getElementById('fi');if(d)d.remove();document.body.style.overflow=''}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&FI)fiFecha()});
+function fiRe(){const d=document.getElementById('fi');if(!d||!FI)return;const x=VD.find(o=>String(o.id)===String(FI.id)&&o._s===FI.s);if(!x){fiFecha();return}
+  const sc=d.querySelector('.fi-b'),top=sc?sc.scrollTop:0,s=x._s,id=x.id,nm=x.nome_completo||x.nome||'Cliente',w=wlk(x.telefone),tl=fiTel(x.telefone),f=faseDe(x),ph=PB[f-1],k=x.status||'novo',stl=VST[s]||{};
+  const usados=new Set();let tot=0,ok=0;
+  const secs=FIG.map(g=>{const L=g[2].map(c=>{usados.add(c);tot++;const v=fiVal(x,c);if(v)ok++;return v?[VLB[c]||c,v,c]:null}).filter(Boolean);
+    return L.length?`<section class="fi-g"><h4><span>${g[0]}</span>${g[1]}</h4>${L.map(a=>`<button type="button" class="fi-r" data-v="${esc(a[1])}" onclick="cpTxt(this.dataset.v)"><span>${esc(a[0])}</span><b>${esc(a[1])}</b><i aria-hidden="true">copiar</i></button>`).join('')}</section>`:''}).join('');
+  const outros=Object.keys(VLB).filter(c=>!usados.has(c)).map(c=>[VLB[c],fiVal(x,c)]).filter(a=>a[1]);
+  const ou=outros.length?`<section class="fi-g"><h4><span>📋</span>Outros dados</h4>${outros.map(a=>`<button type="button" class="fi-r" data-v="${esc(a[1])}" onclick="cpTxt(this.dataset.v)"><span>${esc(a[0])}</span><b>${esc(a[1])}</b><i aria-hidden="true">copiar</i></button>`).join('')}</section>`:'';
+  const vazio=!secs&&!ou?`<p class="mu" style="text-align:center;padding:18px 0">Este cliente ainda não preencheu nenhum dado.</p>`:'';
+  d.innerHTML=`<div class="fi-s" role="dialog" aria-label="Ficha de ${esc(nm)}" style="--fc:${ph.cor}"><div class="fi-gp"></div>
+  <header class="fi-h"><div class="cl-av">${esc(nm.trim().charAt(0).toUpperCase())}</div><div class="fi-hm"><b>${esc(nm)}</b><small>${esc(x.moto_nome||'Moto não informada')}${x.cor?' · '+esc(x.cor):''}</small><small>${esc((x._src||[s]).map(q=>VSRC[q]).join(' + '))} · ${ago(x.created_at)}</small></div><button type="button" class="fi-x" onclick="fiFecha()" aria-label="Fechar">✕</button></header>
+  <div class="fi-cs">${fiChips(x)}</div>
+  <div class="fi-q">${w?`<a class="fi-qb wa" target="_blank" rel="noopener" href="${w}"><span>💬</span>WhatsApp</a>`:`<span class="fi-qb off"><span>💬</span>WhatsApp</span>`}${tl?`<a class="fi-qb" href="${tl}"><span>📞</span>Ligar</a>`:`<span class="fi-qb off"><span>📞</span>Ligar</span>`}<button type="button" class="fi-qb red" onclick="vdMsg('${s}','${id}')"><span>✉</span>Mensagem</button></div>
+  <div class="fi-b">
+   <section class="fi-g fi-ctl"><div class="cl-f"><label>Fase da venda<select class="fs" onchange="vdFase('${s}','${id}',this.value)">${PB.map(p=>`<option value="${p.n}" ${p.n===f?'selected':''}>${p.n}. ${p.nome}</option>`).join('')}</select></label>${('status' in x&&Object.keys(stl).length)?`<label>Situação<select onchange="vdSt('${s}','${id}',this.value)">${Object.keys(stl).map(o=>`<option value="${o}" ${k===o?'selected':''}>${stl[o]}</option>`).join('')}</select></label>`:''}</div><div class="cl-a">${ccBtns(s,id)}</div></section>
+   ${tot?`<div class="fi-pg"><span>${ok} de ${tot} campos preenchidos</span><i><u style="width:${Math.round(ok*100/tot)}%"></u></i></div>`:''}
+   ${secs}${ou}${vazio}
+   ${x.detalhes?`<section class="fi-g"><h4><span>📝</span>Detalhes</h4><pre>${esc(x.detalhes)}</pre></section>`:''}
+   ${x.mensagem?`<section class="fi-g"><h4><span>💬</span>Mensagem enviada ao WhatsApp</h4><pre>${esc(x.mensagem)}</pre></section>`:''}
+  </div>
+  <footer class="fi-f"><button type="button" class="btn" onclick="vdCp('${s}','${id}')">📋 Copiar tudo</button><button type="button" class="btn fi-del" onclick="vdDel('${s}','${id}')">🗑 Excluir</button></footer></div>`;
+  const b=d.querySelector('.fi-b');if(b)b.scrollTop=top}
 const vdOpts=()=>`<optgroup label="Mensagens prontas">${VAS.map(a=>`<option value="${a[0]}">${esc(a[1])}</option>`).join('')}</optgroup>`;
 
 /* ===== CALCULADORA DE CONSÓRCIO + COMPARAR PLANOS (por cliente) =====
@@ -3759,7 +3814,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
   if(d.tipo==='abrir'&&d.url){try{const u=new URL(d.url,location.origin);appUrl(u.searchParams);if(T==='vendas')adm('vendas')}catch(x){}}});
 /* aviso tocado: abre na aba Clientes e mostra o botão do WhatsApp do cliente */
 function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(qp.get('t')==='avisos')T='avisos';if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
-  const wa=qp.get('wa');if(wa&&/^https:\/\/wa\.me\//.test(wa))setTimeout(()=>appWaBar(wa),600);
+  const cq=qp.get('c');if(cq)setTimeout(()=>avAbreCli(cq),900);const wa=qp.get('wa');if(wa&&/^https:\/\/wa\.me\//.test(wa))setTimeout(()=>appWaBar(wa),600);
   if(qp.has('app')||qp.has('t')||qp.has('wa')){try{history.replaceState(null,'',location.pathname)}catch(e){}}}
 function appWaBar(wa){let b=document.getElementById('ap_wab');if(b)b.remove();b=document.createElement('div');b.id='ap_wab';b.className='ap-wab';
   b.innerHTML=`<a href="${esc(wa)}" target="_blank" rel="noopener" onclick="setTimeout(()=>{const x=document.getElementById('ap_wab');x&&x.remove()},300)">💬 Chamar o cliente no WhatsApp</a><button type="button" aria-label="Fechar" onclick="this.parentNode.remove()">✕</button>`;document.body.appendChild(b)}
@@ -3791,6 +3846,7 @@ function appH(){
   <p class="mu" style="font-size:13px">Tocando no aviso abre o <b>WhatsApp do cliente</b> com uma mensagem pronta para você mandar.</p>
   <div class="ap-ps"><div class="ap-n">1</div><div class="ap-c"><h4>Instalar o app</h4>${appPassoInst()}</div></div>
   <div class="ap-ps"><div class="ap-n">2</div><div class="ap-c"><h4>Ativar os avisos neste aparelho</h4>${appPassoAvisos(on)}</div></div>
+  <details class="ap-dt"><summary>🔔 O aviso só cai na central e não aparece no topo da tela?</summary><p style="font-size:14px;margin:8px 0">O aviso é enviado como urgente, mas quem decide mostrar o <b>banner flutuante</b> é o Android. Ative uma vez:</p><ul><li><b>Xiaomi, Redmi e Poco:</b> Configurações → Apps → Gerenciar apps → <b>Meu Painel</b> → Notificações → ative <b>Notificações flutuantes</b> (e <b>Tela de bloqueio</b>).</li><li><b>Outros Android:</b> segure o ícone do <b>Meu Painel</b> → Informações do app → Notificações → toque na categoria → escolha <b>Urgente</b> / <b>Alta</b> (som e banner na tela).</li><li>Teste: em <b>Notificações → Testar aviso</b>, o aviso chega em 5 segundos; saia do app para ver o banner.</li></ul></details>
   <details class="ap-dt"><summary>O aviso não chega ou atrasa?</summary><ul><li>Em <b>Xiaomi, Redmi e Poco</b>: Configurações → Apps → <b>Chrome</b> → Economia de bateria → <b>Sem restrições</b>, e ative <b>Início automático</b>.</li><li>Em <b>Samsung</b>: Configurações → Bateria → Limites de uso em segundo plano → tire o <b>Chrome</b> (e o Meu Painel) das listas de suspensão.</li><li>Em <b>Motorola</b> e outros: Configurações → Apps → <b>Chrome</b> → Bateria → <b>Sem restrições</b>.</li><li>Confira se o modo <b>Não perturbe</b> está desligado.</li><li>No iPhone, use sempre o ícone da Tela de Início.</li></ul></details>
   ${st.length?`<h4 style="margin:18px 0 8px">Aparelhos que recebem avisos (${st.length})</h4><div class="ap-dv">${st.map(x=>`<div><div><b>${esc(x.aparelho||'Aparelho')}${x.endpoint===ep?' <span class="ap-eu">este</span>':''}</b><small>Ativado em ${fmt(x.criado_em)} · último aviso: ${x.ultimo_envio?fmt(x.ultimo_envio)+(x.ultimo_status>=200&&x.ultimo_status<300?' ✅':' ⚠️ '+esc((x.ultimo_erro||'').slice(0,80))):'nenhum ainda'}</small></div><button class="btn" onclick="appRemover('${esc(x.endpoint)}')">Remover</button></div>`).join('')}</div>`:''}`}
 async function pApp(){$(PNS).innerHTML='<div id="ap_box"><p class="mu">Carregando…</p></div>';await appStatus();appRe()}
@@ -3834,7 +3890,7 @@ function avLive(){if(AVCH||!sb||!V||!V.id)return;try{AVCH=sb.channel('avisos-'+V
 async function pAvisos(){
   const on=await (async()=>{try{const s=await appSubAtual();return !!s&&Notification.permission==='granted'}catch(e){return false}})();
   $('#pn').innerHTML=`<section class="card2 av-top">${on?`<div class="av-on"><span class="av-dot"></span><div><b>Avisos ativos neste aparelho</b><small>Você é avisado quando o cliente começa, termina ou para de preencher.</small></div></div>`:`<div class="av-off"><div><b>🔕 Este aparelho ainda não recebe avisos com o app fechado</b><small>Com o painel aberto você já vê os avisos aqui. Para receber no celular a qualquer hora, ative:</small></div><button class="btn red" onclick="CTAB='app';adm('conta')">Ativar avisos</button></div>`}
-  <div class="av-acts"><button class="btn" onclick="avTeste()">🔔 Testar aviso</button><button class="btn" onclick="avLidas()">✓ Marcar todas como lidas</button></div></section>
+  <div class="av-acts"><button class="btn" onclick="avTeste()">🔔 Testar aviso</button><button class="btn" onclick="avLidas()">✓ Marcar todas como lidas</button><button class="btn av-limpa" onclick="avLimpar()">🗑 Apagar tudo</button></div></section>
   <div class="av-f">${[['todas','Todas'],['nao','Não lidas'],['rascunho','✍️ Começou'],['fim','✅ Finalizou'],['preguicoso','😴 Parou']].map(a=>`<button class="${AVF===a[0]?'on':''}" onclick="AVF='${a[0]}';avLista()">${a[1]}</button>`).join('')}</div>
   <div id="av_l" class="av-l"><div class="sk" style="height:76px;border-radius:16px"></div><div class="sk" style="height:76px;border-radius:16px;margin-top:10px"></div></div>
   <details class="card2 av-pf" id="av_pf"><summary>⚙️ Quais avisos receber</summary><div id="av_pfx"><p class="mu">Carregando…</p></div></details>`;
@@ -3847,7 +3903,7 @@ function avLista(){const el=document.getElementById('av_l');if(!el)return;
   if(!l.length){el.innerHTML=`<div class="av-vz"><div>🔔</div><b>${AVLST.length?'Nada neste filtro':'Nenhum aviso ainda'}</b><p>Quando um cliente começar a preencher no seu site, o aviso aparece aqui.</p></div>`;return}
   let dia='';el.innerHTML=l.map(n=>{const d=n.dados||{},[ic,cor,rot]=avIc(n.tipo),dd=new Date(n.criado),k=dd.toDateString(),hj=new Date().toDateString(),on=new Date(Date.now()-864e5).toDateString();
     const sep=k!==dia?`<h4 class="av-dia">${k===hj?'Hoje':k===on?'Ontem':dd.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'})}</h4>`:'';dia=k;
-    return sep+`<article class="av-i${n.lida?'':' nova'}" style="--avc:${cor}"><div class="av-ii">${ic}</div><div class="av-it"><div class="av-ih"><span class="av-tg">${rot}</span><time>${dd.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · ${avQuando(n.criado)}</time></div><b>${esc(avTit(n.titulo))}</b><p>${esc(n.corpo||'')}</p><div class="av-bt">${d.wa?`<a class="av-wa" href="${esc(d.wa)}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}<button type="button" class="av-ver" onclick="adm('vendas')">Ver clientes</button></div></div>${d.img?`<img class="av-th" src="${esc(d.img)}" alt="" loading="lazy" decoding="async">`:''}</article>`}).join('')}
+    return sep+`<article class="av-i${n.lida?'':' nova'}" style="--avc:${cor}"><div class="av-ii">${ic}</div><div class="av-it"><div class="av-ih"><span class="av-tg">${rot}</span><time>${dd.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · ${avQuando(n.criado)}</time><button type="button" class="av-x" aria-label="Apagar este aviso" onclick="avApaga(${+n.id})">✕</button></div><b>${esc(avTit(n.titulo))}</b><p>${esc(n.corpo||'')}</p><div class="av-bt">${d.wa?`<a class="av-wa" href="${esc(d.wa)}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}<button type="button" class="av-ver" onclick="avAbreCli('${esc(String(d.cid||''))}')">Ver cliente</button></div></div>${d.img?`<img class="av-th" src="${esc(d.img)}" alt="" loading="lazy" decoding="async">`:''}</article>`}).join('')}
 async function avPrefs(){const el=document.getElementById('av_pfx');if(!el)return;try{const r=await sb.rpc('app_prefs_ler');AVPREF=(r&&r.data)||{}}catch(e){AVPREF={}}
   const p=AVPREF,fim=p.chat!==false&&p.ficha!==false&&p.contrato!==false&&p.contato!==false,sw=(id,on,t,s,fn)=>`<label class="av-sw"><span><b>${t}</b><small>${s}</small></span><input type="checkbox" id="${id}" ${on?'checked':''} onchange="${fn}"><i></i></label>`;
   el.innerHTML=sw('pf_r',p.rascunho!==false,'✍️ Começou a preencher','Assim que o cliente digita o primeiro dado',"avPrefSalva({rascunho:this.checked})")
@@ -3856,7 +3912,16 @@ async function avPrefs(){const el=document.getElementById('av_pfx');if(!el)retur
    +`<h5>Neste aparelho</h5>`+sw('pf_s',avLoc('som',true),'🔊 Som no painel','Toca um aviso curto quando chega cliente com o painel aberto',"avLocSet('som',this.checked);if(this.checked){avSom('chat')}")
    +sw('pf_v',avLoc('vibrar',true),'📳 Vibrar','Vibra o celular com o painel aberto',"avLocSet('vibrar',this.checked)")}
 async function avPrefSalva(o){const r=await sb.rpc('app_prefs_salvar',{p:o});if(r.error)return toast('Não foi possível salvar: '+r.error.message);AVPREF=r.data;toast('Preferência salva')}
-async function avTeste(){const r=await sb.rpc('meu_push_teste');if(r.error)return toast(/aguarde/.test(r.error.message)?'Espere 1 minuto para testar de novo.':'Erro: '+r.error.message);toast('Aviso de teste enviado')}
+async function avTeste(){toast('Aviso de teste em 5 segundos. Saia do app para ver o banner no topo da tela.');await new Promise(r=>setTimeout(r,5000));const r=await sb.rpc('meu_push_teste');if(r.error)return toast(/aguarde/.test(r.error.message)?'Espere 1 minuto para testar de novo.':'Erro: '+r.error.message)}
+async function avApaga(id){const r=await sb.rpc('app_limpar_notificacoes',{p_ids:[id]});if(r.error)return toast('Não foi possível apagar: '+r.error.message);AVLST=AVLST.filter(n=>+n.id!==+id);avLista();avConta()}
+async function avAbreCli(cid){adm('vendas');if(!cid)return;for(let i=0;i<25&&!document.getElementById('vdl');i++)await new Promise(r=>setTimeout(r,150));
+  if(!VRAW.length)await vdLoad();const x=VD.find(o=>String(o.id)===String(cid)||(o._all||[]).some(y=>String(y.id)===String(cid)));if(x)fiAbre(x._s,x.id);else toast('Cliente não encontrado na lista')}
+async function avLimpar(){if(!AVLST.length&&!confirm('Não há avisos na lista. Limpar mesmo assim as notificações do celular?'))return;if(AVLST.length&&!confirm('Apagar todas as notificações? Isso zera a lista e tira os avisos da central do celular.'))return;
+  const r=await sb.rpc('app_limpar_notificacoes');if(r.error)return toast('Não foi possível limpar: '+r.error.message);
+  AVLST=[];AVV.clear();avLista();avConta();
+  try{const g=await navigator.serviceWorker.getRegistration();if(g){const l=await g.getNotifications();l.forEach(n=>n.close())}}catch(e){}
+  try{navigator.clearAppBadge&&navigator.clearAppBadge()}catch(e){}
+  toast('Notificações zeradas')}
 async function avLidas(){try{await sb.rpc('app_marcar_lidas',{p_ids:null})}catch(e){}AVLST.forEach(n=>n.lida=true);avLista();avConta();try{navigator.clearAppBadge&&navigator.clearAppBadge()}catch(e){}}
 
 function pConta(){

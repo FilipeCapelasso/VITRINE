@@ -57,10 +57,10 @@ self.addEventListener('push', e => {
     const naTela = !ehIOS && abertos.some(c => c.visibilityState === 'visible' && /\/admin\/?$/.test(new URL(c.url).pathname));
     if (naTela && d.tp !== 'teste') return;
     await self.registration.showNotification(d.t || 'Novo cliente no seu site', {
-      body: d.b || '', icon: '/app-honda-192.png', badge: '/app-honda-badge.png',
+      body: d.b || '', icon: '/app-honda2-192.png', badge: '/app-honda2-badge.png',
       ...(d.img ? { image: d.img } : {}),
       tag: d.cid ? 'c-' + d.cid : 'n-' + (d.id || Date.now()), renotify: true,
-      requireInteraction: d.tp !== 'teste', vibrate: [200, 100, 200, 100, 300],
+      requireInteraction: d.tp !== 'teste', silent: false, vibrate: [200, 100, 200, 100, 300],
       timestamp: d.em ? Date.parse(d.em) : Date.now(),
       data: { url, wa: d.wa || null, id: d.id || null, tp: d.tp || '' }, actions: acoes,
     });
