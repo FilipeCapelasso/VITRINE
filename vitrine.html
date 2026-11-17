@@ -447,6 +447,7 @@ button.vt-o:hover{border-color:#6d28d9;background:#f2edff;transform:translateY(-
 .pl-l{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-bottom:18px}.pl-l div{background:#f1f2fa;border:1px solid #e1e4f2;border-radius:16px;padding:16px 18px}.pl-l span{display:block;font-size:14.5px;color:#4a4a5a;margin-bottom:2px}.pl-l b{font-size:22px;color:#14141c}
 .pl-b{display:flex;gap:14px;flex-wrap:wrap}.ini-card .pl-b .btn{width:auto;padding:16px 28px;font-size:17px;font-weight:800;border-radius:14px;box-shadow:0 14px 26px -14px #000a}.ini-card .pl-b .btn.red{background:linear-gradient(135deg,#d90f24,#ff4d4d);color:#fff}
 .ini-card .pl-b .btn.pl-up{background:linear-gradient(135deg,#ffd75e,#f5a300);color:#3b2a00;border:0}.pl-n{margin:16px 0 0;font-size:15px;line-height:1.5;color:#3f3f50}
+.rec{margin:18px 0 0;border:1.5px solid #dfe3f5;border-radius:16px;padding:16px 18px;background:#fafbff}.rec h4{margin:0 0 6px;font-size:17px}.rec p{margin:6px 0 12px;font-size:15px;line-height:1.5;color:#3f3f50}.rec.on{border-color:#16a34a;background:#f1fbf4}.rec.warn{border-color:#f59e0b;background:#fff8ea}.rec .pl-b .btn{padding:13px 22px!important;font-size:15.5px!important}.rec details{margin-top:12px;font-size:14px}.rec summary{cursor:pointer;font-weight:700}.rec details>div{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid #e7e9f3}
 .at-ini{display:flex;gap:12px;flex-wrap:wrap}.at-ini .btn{width:auto;padding:14px 22px;font-size:15.5px;font-weight:700;background:#fff;color:#14141c;border:2px solid #d9dcec;border-radius:14px}.at-ini .btn:hover{border-color:#d90f24;color:#d90f24}
 .rn-t{font-size:16px}.rn-av .rn-b{font-size:16px;padding:14px 24px}
 @media(max-width:640px){.ini-hd{padding:16px 18px}.card2.ini-card .ini-hd h3{font-size:22px!important}.ini-bd{padding:18px}.ini-card .pl-b .btn{width:100%}}
@@ -1741,7 +1742,7 @@ const rnDias=()=>{if(!MP||!MP.vence)return null;const t=new Date(MP.vence).getTi
 const rnPer=p=>/^meses_\d+$/.test(p||'')?p.slice(6)+' meses':p==='anual'?'anual':p==='semestral'?'6 meses':'mensal';
 const rnN=d=>d<1?'menos de 1 dia':Math.ceil(d)+(Math.ceil(d)>1?' dias':' dia');
 const renBtn=()=>{const d=rnDias();return d!==null&&d<=7?'<button type="button" class="plc-up plc-rn" onclick="renovaAbre()">🔄 Renovar plano</button>':''};
-function renAvisoH(){const r=INI.ren;if(!r||!r.possivel)return'';const d=r.dias_restantes;if(!(r.vencido||d<=7))return'';const crit=r.vencido||d<=3;
+function renAvisoH(){const r=INI.ren;if(!r||!r.possivel)return'';const d=r.dias_restantes;if(!(r.vencido||d<=7))return'';if(!r.vencido&&INI.rec&&(INI.rec.assinaturas||[]).some(x=>x.status==='autorizada'))return'';const crit=r.vencido||d<=3;
   const txt=r.vencido?`Seu plano <b>venceu em ${esc(fdhv(r.vence))}</b>. Renove para o seu site voltar ao ar.`:`Seu plano vence em <b>${rnN(d)}</b> (${esc(fdhv(r.vence))}). Renove agora para não ficar sem o site no ar.`;
   return `<section class="rn-av${crit?' crit':''}" role="alert"><div class="rn-i" aria-hidden="true">${crit?'⚠️':'🔔'}</div><div class="rn-t">${txt}</div><button type="button" class="btn hero-bt rn-b" onclick="renovaAbre()">🔄 Renovar plano</button></section>`}
 function iniAtuH(){const L=INI.atu||[],V=INIALL?L:L.slice(0,3);
@@ -1760,8 +1761,8 @@ async function iniVotar(id){const o=((INI.vot||{}).opcoes||[]).find(x=>x.id===id
   catch(e){toast((e&&e.message)||'Não foi possível votar');try{const r=await sb.rpc('meu_votacao');if(r&&r.data){INI.vot=r.data;iniRedesenha()}}catch(_){}}}
 async function pInicio(){ $('#pn').innerHTML='<div class="sk" style="height:150px;border-radius:18px"></div><div class="sk" style="height:90px;border-radius:18px;margin-top:14px"></div>'; await vdLoad();if(T!=='inicio')return;
   const q=async(n)=>{try{const r=await sb.rpc(n);return(r&&!r.error)?r.data:null}catch(e){return null}};
-  const [atu,vot,ren]=await Promise.all([q('meu_atualizacoes'),q('meu_votacao'),q('meu_renovar_orcamento')]);if(T!=='inicio')return;
-  INI={atu:Array.isArray(atu)?atu:[],vot:vot||{ativa:false},ren:ren||null};
+  const [atu,vot,ren,rec]=await Promise.all([q('meu_atualizacoes'),q('meu_votacao'),q('meu_renovar_orcamento'),q('meu_mensal_status')]);if(T!=='inicio')return;
+  INI={atu:Array.isArray(atu)?atu:[],vot:vot||{ativa:false},ren:ren||null,rec:rec||null};
   const hr=new Date().getHours(),sd=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',novos=VD.filter(vdNovo),hoje=VD.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()).length;
   const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length,link=siteUrl()+'/'+SLUG,nn=novos.length;
   $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button></div></section>${renAvisoH()}${appIniH()}<div id="ini_x">${iniPassosH()}${iniVotH()}${iniAtuH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
@@ -1785,6 +1786,32 @@ function renEspera(tk){clearInterval(UPT);let n=0;UPT=setInterval(async()=>{if(!
     else if(s==='cancelado'||s==='expirado'){clearInterval(UPT);upModal(`<div class="lki">⌛</div><h3>Este Pix expirou</h3><p>Gere um novo para continuar.</p><button type="button" class="btn red" onclick="renovaAbre()">Gerar outro</button><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Fechar</button>`)}}
   catch(e){}},4000)}
 async function renovaPronto(){upFecha();MP=undefined;AC=null;try{await meuPlano()}catch(e){}adm('inicio')}
+/* --- mensal automático no cartão (Mercado Pago) --- */
+const recMes=x=>x?new Date(x).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}):'-';
+const recBrl=n=>'R$ '+Number(n).toFixed(2).replace('.',',');
+const recOk=u=>/^https:\/\/(www\.)?mercadopago\.[a-z.]+\//.test(String(u||''));
+function recH(){const q=INI.rec;if(!q||q.possivel===false)return'';
+  const L=q.assinaturas||[],a=L.find(x=>x.status!=='cancelada')||L[0],h=q.historico||[],val=q.valor_plano;let cl='',t='',b='';
+  if(!a){t=`<p>Pague <b>${recBrl(val)}</b> todo mês no cartão, sem precisar lembrar do vencimento. Você confirma uma vez no Mercado Pago e as próximas cobranças são automáticas.</p>`;b='<button type="button" class="btn red" onclick="recAbre()">💳 Ativar mensal automático</button>'}
+  else if(a.status==='pendente'){cl=' warn';t='<p>⏳ Falta só confirmar no Mercado Pago. Se você já confirmou, aguarde um instante.</p>';b='<button type="button" class="btn red" onclick="recAbre()">Continuar no Mercado Pago</button><button type="button" class="btn" onclick="recCancela()">Cancelar</button>'}
+  else if(a.status==='autorizada'){cl=' on';t=`<p>✅ <b>Ativo:</b> ${recBrl(a.valor)} por mês no cartão. ${a.proximo?'Próxima cobrança em <b>'+esc(recMes(a.proximo))+'</b>.':'A primeira cobrança acontece perto do vencimento.'} Cada pagamento soma 31 dias ao que ainda falta.</p>`;b='<button type="button" class="btn" onclick="recCancela()">Cancelar mensal automático</button>'}
+  else if(a.status==='pausada'){cl=' warn';t='<p>⚠️ <b>Pausado:</b> o cartão foi recusado. Troque o cartão ou assine de novo para não perder o plano.</p>';b='<button type="button" class="btn red" onclick="recRefaz()">Assinar de novo</button>'}
+  else{t=`<p>Mensal automático cancelado. Seu plano continua valendo até <b>${esc(recMes(a.valido_ate))}</b>.</p>`;b='<button type="button" class="btn red" onclick="recAbre()">💳 Ativar de novo</button>'}
+  return `<div class="rec${cl}"><h4>💳 Mensal automático</h4>${t}<div class="pl-b">${b}</div>${h.length?`<details><summary>Pagamentos automáticos (${h.length})</summary>${h.map(x=>`<div><span>${esc(recMes(x.pago))}</span><b>${recBrl(x.valor)}</b></div>`).join('')}</details>`:''}</div>`}
+async function recRecarrega(){try{const r=await sb.rpc('meu_mensal_status');if(r&&!r.error&&r.data){INI.rec=r.data;iniRedesenha()}}catch(e){}}
+async function recAbre(){upModal('<div class="lki">💳</div><h3>Mensal automático</h3><p>Preparando…</p>');
+  try{const r=await sb.rpc('meu_mensal_criar');if(r.error)throw r.error;const d=r.data||{};if(!recOk(d.init_point))throw new Error('Link de pagamento indisponível. Tente de novo.');
+    const v=(INI.rec&&INI.rec.valor_plano)||0;
+    upModal(`<div class="lki">💳</div><h3>Confirme no Mercado Pago</h3><p>Toque no botão abaixo. No Mercado Pago, <b>entre na sua conta ou informe o cartão</b>, confira ${v?'o valor de <b>'+recBrl(v)+'</b> por mês':'o valor mensal'} e confirme. Depois volte aqui: esta tela avisa sozinha.</p><a class="btn red" href="${esc(d.init_point)}" target="_blank" rel="noopener" style="display:block;text-align:center;text-decoration:none">Abrir o Mercado Pago</a><p class="up-n" id="up_st">⏳ Aguardando a confirmação…</p><button type="button" class="btn" onclick="upFecha();recRecarrega()">Fechar (a ativação continua)</button>`);recEspera()}
+  catch(e){upModal(`<div class="lki">⚠️</div><h3>Não foi possível iniciar</h3><p>${esc((e&&e.message)||e)}</p><button type="button" class="btn red" onclick="recAbre()">Tentar de novo</button><button type="button" class="btn" style="margin-top:8px" onclick="upFecha()">Fechar</button>`)}}
+function recEspera(){clearInterval(UPT);let n=0;UPT=setInterval(async()=>{if(!document.getElementById('upm')){clearInterval(UPT);return}if(++n>450){clearInterval(UPT);return}
+  try{const r=await sb.rpc('meu_mensal_verificar'),q=r&&r.data;if(!q)return;INI.rec=q;const a=(q.assinaturas||[]).find(x=>x.status==='autorizada');
+    if(a){clearInterval(UPT);upModal(`<div class="lki">🎉</div><h3>Mensal automático ativado!</h3><p>Pronto: ${recBrl(a.valor)} por mês no cartão. ${a.proximo?'Próxima cobrança em <b>'+esc(recMes(a.proximo))+'</b>.':'Você será avisado a cada pagamento.'}</p><button type="button" class="btn red" onclick="upFecha();iniRedesenha()">Ver meu plano</button>`);try{MP=undefined;const rr=await sb.rpc('meu_renovar_orcamento',{p_meses:2});if(rr&&rr.data)INI.ren=rr.data;iniRedesenha()}catch(e){}}}
+  catch(e){}},4000)}
+async function recCancela(){if(!confirm('Cancelar o mensal automático?\n\nO que você já pagou continua valendo até o vencimento. Depois, é só renovar pelo Pix ou ativar de novo.'))return;
+  try{const r=await sb.rpc('meu_mensal_cancelar');if(r.error)throw r.error;INI.rec=r.data||INI.rec;iniRedesenha();toast('Mensal automático cancelado')}
+  catch(e){toast((e&&e.message)||'Não foi possível cancelar agora')}}
+async function recRefaz(){try{const r=await sb.rpc('meu_mensal_cancelar');if(r.error)throw r.error;INI.rec=r.data||INI.rec}catch(e){toast((e&&e.message)||'Não foi possível continuar');return}recAbre()}
 
 /* ===== v20: Início com mais cor, letras maiores e botões em destaque ===== */
 const iniHd=(ic,t,s,cl)=>`<div class="ini-hd ${cl}"><span class="ini-ic" aria-hidden="true">${ic}</span><div><h3>${t}</h3>${s?`<p>${s}</p>`:''}</div></div>`;
@@ -1848,7 +1875,7 @@ function iniPlanoH(){const r=INI.ren;if(!r)return'';
 function iniPlanoH(){const r=INI.ren;if(!r)return'';
   if(!r.possivel)return `<section class="card2 ini-card ini-pl">${iniHd('🔔','Seu plano','','c3')}<div class="ini-bd"><p class="ini-vz">${esc(r.mensagem||'')}</p></div></section>`;
   const d=r.dias_restantes,perto=r.vencido||d<=7;
-  return `<section class="card2 ini-card ini-pl">${iniHd('🔔','Seu plano','Plano completo · '+esc(rnPer(r.periodo_atual)),'c3')}<div class="ini-bd"><div class="pl-l"><div><span>${r.vencido?'Venceu em':'Vence em'}</span><b>${esc(fdhv(r.vence))}</b></div><div><span>${r.vencido?'Situação':'Faltam'}</span><b>${r.vencido?'Plano vencido':rnN(d)}</b></div></div>${perto?'<div class="pl-b"><button type="button" class="btn red" onclick="renovaAbre()">🔄 Renovar plano</button></div>':''}<p class="pl-n">O seu plano já inclui tudo: vitrine, CDC, CNH, Personalizar, chat com o moderador e suporte prioritário.${perto?' Ao renovar, o novo prazo soma ao que ainda falta.':' Quando faltarem 7 dias para vencer, o botão de renovar aparece aqui.'}</p></div></section>`}
+  return `<section class="card2 ini-card ini-pl">${iniHd('🔔','Seu plano','Plano completo · '+esc(rnPer(r.periodo_atual)),'c3')}<div class="ini-bd"><div class="pl-l"><div><span>${r.vencido?'Venceu em':'Vence em'}</span><b>${esc(fdhv(r.vence))}</b></div><div><span>${r.vencido?'Situação':'Faltam'}</span><b>${r.vencido?'Plano vencido':rnN(d)}</b></div></div>${perto?'<div class="pl-b"><button type="button" class="btn red" onclick="renovaAbre()">🔄 Renovar plano</button></div>':''}${recH()}<p class="pl-n">O seu plano já inclui tudo: vitrine, CDC, CNH, Personalizar, chat com o moderador e suporte prioritário.${perto?' Ao renovar, o novo prazo soma ao que ainda falta.':' Quando faltarem 7 dias para vencer, o botão de renovar aparece aqui.'}</p></div></section>`}
 
 /* ===== v23: selo "valores conferidos" + Primeiros passos do vendedor ===== */
 let CAT_EM=null,INIVIS;
