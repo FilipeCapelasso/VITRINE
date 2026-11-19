@@ -3239,15 +3239,35 @@ function calcCore(o){
   if(lance<0)E.push('O lance não pode ser negativo.');
   if(cr>0&&lance>cr)E.push('O lance não pode passar do valor do crédito.');
   if(E.length)return{ok:false,erros:E};
-  const lc=Math.round(lance*100),pc=Math.round(pa*100),demais=rs-2;
+  /* Cota de reposição: o grupo já rodou (prazo - restantes) parcelas e essa cota deve ao grupo esse acumulado.
+     Quem assume paga esse valor de um jeito ou de outro — na entrada, ou diluído nas parcelas que faltam.
+     Nos dois casos o total fecha com o da cota cheia (prazo x parcela): é isso que mantém a conta correta. */
+  const pc=Math.round(pa*100),pagas=pz-rs,acum=pagas*pc;
+  const repo=pagas>0?(o.repo==='entrada'?'entrada':'diluir'):'';
+  const ent=repo==='entrada'?acum:0;
+  const pvc=repo==='diluir'?Math.round(pc*pz/rs):pc;          // parcela que o cliente realmente vai pagar
+  const lc=Math.round(lance*100),demais=rs-2;
+  /* o lance só é abatido da 3ª parcela em diante: acima disso o cliente pagaria sem receber abatimento */
+  const teto=demais*pvc;
+  if(lc>teto)return{ok:false,erros:[demais>0
+    ?`O lance não pode passar de ${cBrl(teto/100)}: é o máximo que as ${demais} parcelas seguintes absorvem.`
+    :'Com 2 parcelas restantes não sobra parcela para abater o lance. Tire o lance ou aumente as parcelas restantes.']};
   let q=0,red=0,sobra=0;
   if(lc>0){
-    if(o.quitar){q=Math.min(Math.floor(lc/pc),demais);sobra=(lc-q*pc)/100}
-    else if(demais>0){red=Math.min(Math.floor(lc/demais),pc)/100}
+    if(o.quitar){
+      q=Math.min(Math.floor(lc/pvc),demais);
+      let resto=lc-q*pvc,dmq=demais-q;                        // o que sobrou do lance não se perde:
+      if(resto>0&&dmq>0){red=Math.min(Math.floor(resto/dmq),pvc)/100;resto-=Math.round(red*100)*dmq}  // reduz as parcelas que ficaram
+      sobra=resto/100;                                        // só os centavos que não dividem
+    }
+    else if(demais>0){red=Math.min(Math.floor(lc/demais),pvc)/100}
   }
-  const dm=demais-q,val=Math.max(0,Math.round(pc-Math.round(red*100)))/100;
-  return{ok:true,credito:cr,parcela:pa,prazo:pz,restantes:rs,lance:lc/100,pct:Math.round(lc*10000/Math.round(cr*100))/100,quitar:!!o.quitar&&lc>0,
-    p1:pa,p2:pa,demais:dm,demaisValor:val,quitadas:q,reducao:red,sobra,aviso:(o.quitar&&lc>0&&q===0)?'O lance é menor que uma parcela: não quita parcelas do final.':''}}
+  const dm=demais-q,valc=Math.max(0,pvc-Math.round(red*100));
+  const totc=ent+lc+2*pvc+dm*valc;                            // tudo que o cliente desembolsa
+  return{ok:true,credito:cr,parcela:pa,prazo:pz,restantes:rs,pagas,repo,
+    acumulado:acum/100,entrada:ent/100,pv:pvc/100,total:totc/100,
+    lance:lc/100,pct:Math.round(lc*10000/Math.round(cr*100))/100,quitar:!!o.quitar&&lc>0,
+    p1:pvc/100,p2:pvc/100,demais:dm,demaisValor:valc/100,quitadas:q,reducao:red,sobra,aviso:(o.quitar&&lc>0&&q===0&&red===0)?'O lance é menor que uma parcela: não quita parcelas do final.':''}}
 /* dados do catálogo */
 const cPlanos=m=>((m&&m.planos)||[]).filter(p=>p&&+p.parcelas>=2&&+p.valor>0).sort((a,b)=>a.parcelas-b.parcelas);
 const cMotosOk=()=>M.filter(m=>cPlanos(m).length);
@@ -3258,6 +3278,10 @@ const cMotoDe=x=>{const L=cMotosOk();if(x.moto_id){const a=L.find(m=>m.id===x.mo
 const cCredito=m=>{const p=cPlanos(m).find(p=>+p.credito>0);return p?+p.credito:0};
 const cTemSS=m=>cPlanos(m).some(p=>+p.valor_sem_seguro>0);
 const cParcela=(m,prazo,ss)=>{const p=cPlanos(m).find(p=>+p.parcelas===+prazo);if(!p)return 0;const v=ss&&+p.valor_sem_seguro>0?+p.valor_sem_seguro:+p.valor;return v>0?v:0};
+/* parcela que o cliente vai pagar (a mesma conta do calcCore, para a tela mostrar antes de calcular) */
+const cPv=(par,prazo,rest,repo)=>{const p=Math.round(+par*100),z=Math.trunc(+prazo),r=Math.trunc(+rest);
+  if(!(p>0&&z>=2&&r>=2&&r<=z))return +par>0?+par:0;
+  return (r<z&&repo!=='entrada'?Math.round(p*z/r):p)/100};
 const cCliente=(s,id)=>(typeof VD!=='undefined'&&VD.find(o=>o.id===id&&o._s===s))||(s==='contato'&&typeof LD!=='undefined'?(LD.find(o=>o.id===id)&&{...LD.find(o=>o.id===id),_s:'contato'}):null)||null;
 const cNomeCli=x=>(x.nome_completo||x.nome||'').trim();
 const cHoje=()=>new Date().toLocaleDateString('pt-BR');
@@ -3317,14 +3341,19 @@ async function ccSalva(s,x,tipo,dados){
 /* ---------- texto da proposta ---------- */
 function ccObs(ss){return `*Observações:*\n*Valor da parcela pode variar de acordo com o aumento do bem.\n**Este orçamento pode sofrer alterações sem aviso prévio, conforme alteração na tabela de consórcio e/ou disponibilidade de cotas.\n***Oferta de lance não garante a contemplação.\n****Este é o plano ${ss?'sem':'com'} seguro prestamista, consulte opções ${ss?'com':'sem'} seguro prestamista.`}
 function ccAssin(){const l=[(V.nome||'').trim(),V.whatsapp?cdZap(V.whatsapp):'',V.instagram?'@'+String(V.instagram).replace(/^@|.*instagram\.com\//g,'').replace(/\/$/,''):'',(V.concessionaria||V.empresa||'').trim()].filter(Boolean);return l.join('\n')}
-function ccEfeito(r){if(r.lance<=0)return'Sem lance informado.';if(r.quitar)return r.quitadas>0?`Seu lance quitará ${r.quitadas} parcela(s) do final do plano.`:'O lance é menor que uma parcela: não quita parcelas do final.';return r.reducao>0?`Seu lance reduzirá ${cBrl(r.reducao)} de cada parcela.`:'Seu lance não altera o valor das parcelas.'}
+function ccEfeito(r){if(r.lance<=0)return'Sem lance informado.';
+  if(r.quitar){if(!r.quitadas)return r.reducao>0?`O lance não completa uma parcela inteira, então reduz ${cBrl(r.reducao)} de cada parcela.`:'O lance é menor que uma parcela: não quita parcelas do final.';
+    return `Seu lance quitará ${r.quitadas} parcela(s) do final do plano`+(r.reducao>0?` e o que sobrou reduz ${cBrl(r.reducao)} de cada parcela que ficou.`:'.')}
+  return r.reducao>0?`Seu lance reduzirá ${cBrl(r.reducao)} de cada parcela.`:'Seu lance não altera o valor das parcelas.'}
 function ccTexto(S,r){
   const nome=(S.nome||'').trim().split(' ')[0];
   return [`Olá${nome?', '+nome:''}! Confira as condições para sua ${S.motoNome}:`,'',
    `*Moto:* ${S.motoNome}`,`*Valor do crédito:* ${cBrl(r.credito)}`,`*Plano:* ${S.cota} · ${cPlanoTxt(S.ss)} · ${r.prazo}x${r.restantes!==r.prazo?` (${r.restantes} restantes)`:''}`,
+   ...(r.entrada>0?[`*Entrada para assumir a cota:* ${cBrl(r.entrada)} (${r.pagas} parcela${r.pagas>1?'s':''} já paga${r.pagas>1?'s':''} pelo grupo)`]:[]),
    `*Lance:* ${r.lance>0?cBrl(r.lance)+' ('+cPct(r.pct)+')':'sem lance'}`,
    `*1ª parcela/HOJE:* ${cBrl(r.p1)}`,`*2ª parcela/Próximo vencimento:* ${cBrl(r.p2)}`,
-   ...(r.demais>0?[`*${r.demais} parcelas de* ${cBrl(r.demaisValor)}`]:[]),'',ccEfeito(r),'',ccObs(S.ss),'','Agora me diz, esse é o plano ideal pra você, certo?','',ccAssin(),`Data: ${cHoje()}`].join('\n')}
+   ...(r.demais>0?[`*${r.demais} parcelas de* ${cBrl(r.demaisValor)}`]:[]),
+   `*Total:* ${cBrl(r.total)}`,'',ccEfeito(r),'',ccObs(S.ss),'','Agora me diz, esse é o plano ideal pra você, certo?','',ccAssin(),`Data: ${cHoje()}`].join('\n')}
 /* ---------- imagem da proposta ---------- */
 function cWrap(x,t,w){const out=[];let l='';String(t).split(/\s+/).forEach(p=>{const n=l?l+' '+p:p;if(x.measureText(n).width>w&&l){out.push(l);l=p}else l=n});if(l)out.push(l);return out}
 async function ccCabeca(x,W){
@@ -3344,10 +3373,12 @@ async function ccImgProposta(S,r){
   x.fillStyle='#5a5a68';x.font=`600 30px ${cdFam}`;const nm=(S.nome||'').trim();x.fillText(nm?`Preparada para ${nm}`:'Condições para a sua moto',W/2,326);
   if(im){const bw=560,bh=330,s=Math.min(bw/im.width,bh/im.height);x.drawImage(im,W/2-im.width*s/2,350+(bh-im.height*s)/2,im.width*s,im.height*s)}
   x.fillStyle='#14141c';cdFit(x,S.motoNome,940,52,800,30);x.fillText(S.motoNome,W/2,730);
-  x.fillStyle='#5a5a68';x.font=`600 30px ${cdFam}`;x.fillText(`Valor do crédito: ${cBrl(r.credito)}`,W/2,776);x.textAlign='left';
-  const rows=[['Plano',`${S.cota} · ${r.prazo}x · ${S.ss?'sem':'com'} seguro`],['Lance',r.lance>0?`${cBrl(r.lance)} (${cPct(r.pct)})`:'Sem lance'],['1ª parcela / hoje',cBrl(r.p1)],['2ª parcela / próximo vencimento',cBrl(r.p2)]];
+  x.fillStyle='#5a5a68';x.font=`600 27px ${cdFam}`;x.fillText(`Crédito: ${cBrl(r.credito)} · Total a pagar: ${cBrl(r.total)}`,W/2,776);x.textAlign='left';
+  const rows=[['Plano',`${S.cota} · ${r.prazo}x${r.restantes!==r.prazo?` (${r.restantes} restantes)`:''} · ${S.ss?'sem':'com'} seguro`]];
+  if(r.entrada>0)rows.push(['Entrada para assumir a cota',cBrl(r.entrada)]);
+  rows.push(['Lance',r.lance>0?`${cBrl(r.lance)} (${cPct(r.pct)})`:'Sem lance'],['1ª parcela / hoje',cBrl(r.p1)],['2ª parcela / próximo vencimento',cBrl(r.p2)]);
   if(r.demais>0)rows.push([`${r.demais} parcelas de`,cBrl(r.demaisValor)]);
-  const rh=62,y0=806;x.fillStyle='#fff';cdRr(x,60,y0,960,rows.length*rh+16,22);x.fill();
+  const rh=rows.length>5?56:62,y0=806;      // uma linha a mais (entrada) ainda cabe sem cortar o rodapéx.fillStyle='#fff';cdRr(x,60,y0,960,rows.length*rh+16,22);x.fill();
   rows.forEach((a,i)=>{const y=y0+8+i*rh;if(i){x.fillStyle='#eeeef3';x.fillRect(90,y,900,2)}x.fillStyle='#5a5a68';x.font=`600 28px ${cdFam}`;x.fillText(a[0],90,y+40);x.fillStyle='#14141c';x.font=`800 30px ${cdFam}`;x.textAlign='right';x.fillText(a[1],990,y+40);x.textAlign='left'});
   let y=y0+rows.length*rh+52;x.fillStyle='#14141c';x.font=`700 28px ${cdFam}`;x.textAlign='center';cWrap(x,ccEfeito(r),900).forEach(l=>{x.fillText(l,W/2,y);y+=36});
   x.fillStyle='#6a6a78';x.font=`500 21px ${cdFam}`;y+=6;cWrap(x,`Valor da parcela pode variar de acordo com o aumento do bem. Este orçamento pode sofrer alterações sem aviso prévio, conforme alteração na tabela de consórcio e/ou disponibilidade de cotas. Oferta de lance não garante a contemplação. Este é o plano ${S.ss?'sem':'com'} seguro prestamista, consulte opções ${S.ss?'com':'sem'} seguro prestamista.`,940).forEach(l=>{if(y<H-40){x.fillText(l,W/2,y);y+=28}});
@@ -3364,7 +3395,7 @@ async function ccBaixa(tipo){
 let CS=null;
 function calcIni(s,x){
   const m=cMotoDe(x),lv=cNum(x.lance_valor);
-  CS={s,x,motoId:m?m.id:'',nome:cNomeCli(x),tel:x.telefone||'',cota:'Nova',ss:false,prazo:0,restantes:0,lanceR:lv>0?cDec(lv):'',lanceP:'',quitar:false,res:null};
+  CS={s,x,motoId:m?m.id:'',nome:cNomeCli(x),tel:x.telefone||'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:lv>0?cDec(lv):'',lanceP:'',quitar:false,res:null};
   /* prazo: se a parcela do pedido bate com um plano do catálogo, já vem selecionado */
   if(m){const pv=cNum(x.parcela);if(pv>0){const p=cPlanos(m).find(p=>Math.abs(+p.valor-pv)<.011||Math.abs(+p.valor_sem_seguro-pv)<.011);if(p){CS.prazo=+p.parcelas;CS.restantes=+p.parcelas;CS.ss=!(Math.abs(+p.valor-pv)<.011)}}}
   ccPctDeR();CS.hist=x.id?1:0}
@@ -3379,6 +3410,8 @@ function calcForm(){
   const m=M.find(o=>o.id===CS.motoId),L=cMotosOk(),pls=m?cPlanos(m):[],c=m?cCredito(m):0,ss=m&&cTemSS(m);
   const prazos=[...new Set(pls.map(p=>+p.parcelas))],rest=CS.cota==='Reposição'&&CS.prazo?Array.from({length:CS.prazo-1},(_,i)=>CS.prazo-i):[];
   const par=m&&CS.prazo?cParcela(m,CS.prazo,CS.ss):0;
+  const rst=CS.cota==='Reposição'?(CS.restantes||CS.prazo):CS.prazo,pagas=rst&&rst<CS.prazo?CS.prazo-rst:0;
+  const pv=par>0?cPv(par,CS.prazo,rst,CS.repo):0;
   document.getElementById('cc_b').innerHTML=`<div class="cc-g">${CCPG?ccPick('calc'):''}
   <div class="full"><label class="cmp-l">Tabela</label><input type="text" readonly value="${esc(calcTabela())}"></div>
   <div><label class="cmp-l" for="cc_n">Nome do cliente</label><input type="text" id="cc_n" value="${esc(CS.nome)}" oninput="CS.nome=this.value" autocomplete="off"></div>
@@ -3389,7 +3422,9 @@ function calcForm(){
   <div><label class="cmp-l" for="cc_p">Plano</label><select id="cc_p" ${m?'':'disabled'} onchange="CS.ss=this.value==='1';CS.res=null;calcForm()"><option value="0" ${CS.ss?'':'selected'}>Com seguro prestamista</option>${ss?`<option value="1" ${CS.ss?'selected':''}>Sem seguro prestamista</option>`:''}</select></div>
   <div><label class="cmp-l" for="cc_z">Prazo original</label><select id="cc_z" ${m?'':'disabled'} onchange="CS.prazo=+this.value;CS.restantes=+this.value;CS.res=null;calcForm()"><option value="">Selecione um prazo</option>${prazos.map(z=>`<option value="${z}" ${z===CS.prazo?'selected':''}>${z}</option>`).join('')}</select></div>
   <div><label class="cmp-l" for="cc_r">Parcelas restantes</label><select id="cc_r" ${CS.cota==='Reposição'&&CS.prazo?'':'disabled'} onchange="CS.restantes=+this.value;CS.res=null;calcForm()">${CS.prazo?(CS.cota==='Reposição'?rest:[CS.prazo]).map(z=>`<option value="${z}" ${z===CS.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione um prazo</option>'}</select></div>
-  <div class="full"><label class="cmp-l">Valor da parcela</label><input type="text" readonly value="${par>0?cDec(par):''}" placeholder="Escolha o plano e o prazo"></div>
+  ${pagas>0?`<div><label class="cmp-l" for="cc_rp">O que o grupo já pagou</label><select id="cc_rp" onchange="CS.repo=this.value;CS.res=null;calcForm()"><option value="diluir" ${CS.repo==='entrada'?'':'selected'}>Diluir nas parcelas que faltam</option><option value="entrada" ${CS.repo==='entrada'?'selected':''}>Cobrar como entrada</option></select></div>
+  <div><label class="cmp-l">${pagas} parcela${pagas>1?'s':''} já paga${pagas>1?'s':''} pelo grupo</label><input type="text" readonly value="${cBrl(Math.round(pagas*par*100)/100)}"></div>`:''}
+  <div class="full"><label class="cmp-l">Valor da parcela${pagas>0&&CS.repo!=='entrada'?' <small>(recalculada: cota inteira em '+rst+'x)</small>':''}</label><input type="text" readonly value="${pv>0?cDec(pv):''}" placeholder="Escolha o plano e o prazo"></div>
   <div><label class="cmp-l" for="cc_lr">Valor do lance em R$ <small>(opcional)</small></label><input type="text" id="cc_lr" inputmode="decimal" value="${esc(CS.lanceR)}" placeholder="0,00" oninput="ccLr(this)" onblur="ccFmt(this)"></div>
   <div><label class="cmp-l" for="cc_lp">Valor do lance em % <small>(opcional)</small></label><input type="text" id="cc_lp" inputmode="decimal" value="${esc(CS.lanceP)}" placeholder="0,00" oninput="ccLp(this)" onblur="ccFmt(this)"></div>
   </div>
@@ -3399,13 +3434,15 @@ function calcForm(){
 function ccLr(el){CS.lanceR=el.value;const m=M.find(o=>o.id===CS.motoId),c=m?cCredito(m):0,r=cNum(el.value);const p=document.getElementById('cc_lp');if(p){p.value=c>0&&r>0?cDec(r*100/c):'';CS.lanceP=p.value}CS.res=null;ccRes()}
 function ccLp(el){CS.lanceP=el.value;const m=M.find(o=>o.id===CS.motoId),c=m?cCredito(m):0,p=cNum(el.value);const r=document.getElementById('cc_lr');if(r){r.value=c>0&&p>0?cDec(Math.round(c*p)/100):'';CS.lanceR=r.value}CS.res=null;ccRes()}
 function ccFmt(el){const n=cNum(el.value);if(isFinite(n)&&n>0)el.value=cDec(n)}
-function ccEntrada(){const m=M.find(o=>o.id===CS.motoId);if(!m)return null;return{credito:cCredito(m),parcela:CS.prazo?cParcela(m,CS.prazo,CS.ss):0,prazo:CS.prazo,restantes:CS.restantes||CS.prazo,lance:cNum(CS.lanceR),quitar:CS.quitar}}
+function ccEntrada(){const m=M.find(o=>o.id===CS.motoId);if(!m)return null;
+  const rs=CS.cota==='Reposição'?(CS.restantes||CS.prazo):CS.prazo;   // cota nova sempre vai até o fim do prazo
+  return{credito:cCredito(m),parcela:CS.prazo?cParcela(m,CS.prazo,CS.ss):0,prazo:CS.prazo,restantes:rs,repo:CS.repo,lance:cNum(CS.lanceR),quitar:CS.quitar}}
 function ccRes(){
   const el=document.getElementById('cc_res');if(!el)return;
   if(!CS.res){el.innerHTML='';return}
   if(!CS.res.ok){el.innerHTML=`<div class="cc-er"><b>Falta completar:</b><ul>${CS.res.erros.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></div>`;return}
   const r=CS.res,S=CS.snap;
-  el.innerHTML=`<div class="cc-rs"><div class="hl"><span>Valor do crédito</span><b>${cBrl(r.credito)}</b></div><div><span>Lance</span><b>${r.lance>0?cBrl(r.lance)+' ('+cPct(r.pct)+')':'sem lance'}</b></div><div><span>1ª parcela / hoje</span><b>${cBrl(r.p1)}</b></div><div><span>2ª parcela / próximo vencimento</span><b>${cBrl(r.p2)}</b></div>${r.demais>0?`<div><span>${r.demais} parcelas de</span><b>${cBrl(r.demaisValor)}</b></div>`:''}<div class="ef"><span>${esc(ccEfeito(r))}</span></div>${r.quitar&&r.quitadas>0&&r.sobra>0?`<div><span>Sobra do lance (não completa outra parcela)</span><b>${cBrl(r.sobra)}</b></div>`:''}</div>
+  el.innerHTML=`<div class="cc-rs"><div class="hl"><span>Valor do crédito</span><b>${cBrl(r.credito)}</b></div>${r.pagas>0?`<div><span>${r.pagas} parcela${r.pagas>1?'s':''} que o grupo já pagou</span><b>${cBrl(r.acumulado)}</b></div>`:''}${r.entrada>0?`<div><span>Entrada para assumir a cota</span><b>${cBrl(r.entrada)}</b></div>`:''}<div><span>Lance</span><b>${r.lance>0?cBrl(r.lance)+' ('+cPct(r.pct)+')':'sem lance'}</b></div><div><span>1ª parcela / hoje</span><b>${cBrl(r.p1)}</b></div><div><span>2ª parcela / próximo vencimento</span><b>${cBrl(r.p2)}</b></div>${r.demais>0?`<div><span>${r.demais} parcelas de</span><b>${cBrl(r.demaisValor)}</b></div>`:''}<div class="hl"><span>Total que o cliente vai pagar</span><b>${cBrl(r.total)}</b></div><div class="ef"><span>${esc(ccEfeito(r))}</span></div>${r.sobra>0?`<div><span>Sobra do lance (centavos que não dividem igual)</span><b>${cBrl(r.sobra)}</b></div>`:''}</div>
   ${r.aviso?`<div class="cc-av">${esc(r.aviso)}</div>`:''}
   <div class="cc-x"><label class="cmp-l" for="cc_tx">Proposta para enviar <small>(você pode editar antes de enviar)</small></label><textarea id="cc_tx"></textarea></div>
   <div class="cmp-f" style="padding:10px 0 0;border:0;background:none"><button type="button" class="btn red" onclick="calcZap()">Enviar no WhatsApp</button><button type="button" class="btn" onclick="calcCopia()">Copiar</button><button type="button" class="btn" onclick="ccBaixa('proposta')">Baixar imagem</button>${CS.x.id?`<button type="button" class="btn" onclick="cqAbre('${CS.s}','${CS.x.id}')">Comparar CDC x Consórcio</button>`:''}</div>`;
@@ -3418,18 +3455,18 @@ async function calcRoda(){
     window.CCX={nome:CS.nome,share:true,build:()=>ccImgProposta(CS.snap,CS.res)};
     if(btn){btn.disabled=true;btn.innerHTML='<span class="cc-ld"></span>Calculando…'}
     ccRes();
-    const sv=await ccSalva(CS.s,CS.x,'calculo',{motoId:m.id,motoNome:m.nome,cota:CS.cota,ss:CS.ss,plano:cPlanoTxt(CS.ss),nome:CS.nome,tel:CS.tel,prazo:r.prazo,restantes:r.restantes,credito:r.credito,parcela:r.parcela,lance:r.lance,pct:r.pct,quitar:r.quitar,quitadas:r.quitadas,reducao:r.reducao,demais:r.demais,demaisValor:r.demaisValor,tabela:calcTabela()});
+    const sv=await ccSalva(CS.s,CS.x,'calculo',{motoId:m.id,motoNome:m.nome,cota:CS.cota,ss:CS.ss,plano:cPlanoTxt(CS.ss),nome:CS.nome,tel:CS.tel,prazo:r.prazo,restantes:r.restantes,repo:r.repo,entrada:r.entrada,pv:r.pv,total:r.total,credito:r.credito,parcela:r.parcela,lance:r.lance,pct:r.pct,quitar:r.quitar,quitadas:r.quitadas,reducao:r.reducao,demais:r.demais,demaisValor:r.demaisValor,tabela:calcTabela()});
     if(btn){btn.disabled=false;btn.textContent='Calcular'}
     ccHist(CS.s,CS.x.id,document.getElementById('cc_hist'),'calcReabre');toast(CS.x.id?(sv?'Simulação pronta e salva no histórico':'Simulação pronta'):'Simulação pronta (avulsa: não fica no histórico de um cliente)')}
   else ccRes()}
 function calcReabre(i){const el=document.getElementById('cc_hist'),h=el&&el._h&&el._h[i];if(!h||h.tipo!=='calculo')return toast('Esta é uma comparação: abra em Comparar');const d=h.dados||{};
   if(!M.find(o=>o.id===d.motoId))return toast('A moto desta simulação não está mais no catálogo');
-  Object.assign(CS,{motoId:d.motoId,cota:d.cota||'Nova',ss:!!d.ss,prazo:+d.prazo||0,restantes:+d.restantes||+d.prazo||0,lanceR:d.lance>0?cDec(d.lance):'',quitar:!!d.quitar,res:null});ccPctDeR();calcForm();toast('Simulação carregada: confira os valores atuais e calcule de novo')}
+  Object.assign(CS,{motoId:d.motoId,cota:d.cota||'Nova',ss:!!d.ss,prazo:+d.prazo||0,restantes:+d.restantes||+d.prazo||0,repo:d.repo==='entrada'?'entrada':'diluir',lanceR:d.lance>0?cDec(d.lance):'',quitar:!!d.quitar,res:null});ccPctDeR();calcForm();toast('Simulação carregada: confira os valores atuais e calcule de novo')}
 function calcCopia(){const t=document.getElementById('cc_tx').value;navigator.clipboard.writeText(t).then(()=>toast('Proposta copiada!'),()=>toast('Não foi possível copiar'))}
 function calcZap(){const t=document.getElementById('cc_tx').value,w=wlk(CS.tel);if(!w)return toast('Informe um WhatsApp válido do cliente. Use Copiar.');window.open(w+'&text='+encodeURIComponent(t),'_blank')}
 /* ====================== COMPARAR ====================== */
 let CP=null;
-function cmpNovaCol(m,prazo,ss){return{motoId:m?m.id:'',cota:'Nova',ss:!!ss,prazo:prazo||0,restantes:prazo||0,lanceR:''}}
+function cmpNovaCol(m,prazo,ss){return{motoId:m?m.id:'',cota:'Nova',ss:!!ss,prazo:prazo||0,restantes:prazo||0,repo:'diluir',lanceR:''}}
 function cmpIni(s,x){
   const m=cMotoDe(x),pz=m?cPlanos(m).map(p=>+p.parcelas).sort((a,b)=>b-a):[],lv=cNum(x.lance_valor);
   const base=pz.slice(0,3);while(base.length&&base.length<2)base.push(base[0]);
@@ -3448,7 +3485,8 @@ function cmpCol(i){const c=CP.cols[i],m=M.find(o=>o.id===c.motoId),pls=m?cPlanos
   <label class="cmp-l">Tipo de cota</label><select onchange="cmpSet(${i},'cota',this.value,1)"><option ${c.cota==='Nova'?'selected':''}>Nova</option><option ${c.cota==='Reposição'?'selected':''}>Reposição</option></select>
   <label class="cmp-l">Plano</label><select ${m?'':'disabled'} onchange="cmpSet(${i},'ss',this.value==='1',1)"><option value="0" ${c.ss?'':'selected'}>Com seguro prestamista</option>${m&&cTemSS(m)?`<option value="1" ${c.ss?'selected':''}>Sem seguro prestamista</option>`:''}</select>
   <label class="cmp-l">Prazo original</label><select ${m?'':'disabled'} onchange="cmpSet(${i},'prazo',+this.value,1)"><option value="">Selecione</option>${prazos.map(z=>`<option value="${z}" ${z===c.prazo?'selected':''}>${z}x</option>`).join('')}</select>
-  <label class="cmp-l">Parcelas restantes</label><select ${c.cota==='Reposição'&&c.prazo?'':'disabled'} onchange="cmpSet(${i},'restantes',+this.value)">${rest.length?rest.map(z=>`<option value="${z}" ${z===c.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione o prazo</option>'}</select>
+  <label class="cmp-l">Parcelas restantes</label><select ${c.cota==='Reposição'&&c.prazo?'':'disabled'} onchange="cmpSet(${i},'restantes',+this.value,1)">${rest.length?rest.map(z=>`<option value="${z}" ${z===c.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione o prazo</option>'}</select>
+  ${c.cota==='Reposição'&&c.prazo&&c.restantes<c.prazo?`<label class="cmp-l">O que o grupo já pagou</label><select onchange="cmpSet(${i},'repo',this.value)"><option value="diluir" ${c.repo==='entrada'?'':'selected'}>Diluir nas parcelas</option><option value="entrada" ${c.repo==='entrada'?'selected':''}>Cobrar como entrada</option></select>`:''}
   <label class="cmp-l">Lance em R$ <small>(opcional)</small></label><input type="text" inputmode="decimal" value="${esc(c.lanceR)}" placeholder="0,00" onchange="cmpSet(${i},'lanceR',this.value);ccFmt(this)"></div>`}
 function cmpForm(){
   document.getElementById('cp_b').innerHTML=`<div class="cc-g">${CCPG?ccPick('pl'):''}<div><label class="cmp-l" for="cp_n">Nome do cliente</label><input type="text" id="cp_n" value="${esc(CP.nome)}" oninput="CP.nome=this.value"></div><div><label class="cmp-l" for="cp_t">WhatsApp do cliente</label><input type="tel" id="cp_t" value="${esc(CP.tel)}" oninput="CP.tel=this.value"></div></div>
@@ -3463,24 +3501,27 @@ function cmpAdd(){const b=CP.cols[0]||{};if(CP.cols.length<3){CP.cols.push({...c
 function cmpRm(i){if(CP.cols.length>2){CP.cols.splice(i,1);cmpForm()}}
 function cmpLanceTodos(v){const n=cNum(v),t=isFinite(n)&&n>0?cDec(n):'';CP.cols.forEach(c=>c.lanceR=t);cmpForm()}
 function cmpCalc(c){const m=M.find(o=>o.id===c.motoId);if(!m)return{ok:false,erros:['Escolha a moto.']};
-  const r=calcCore({credito:cCredito(m),parcela:c.prazo?cParcela(m,c.prazo,c.ss):0,prazo:c.prazo,restantes:c.restantes||c.prazo,lance:cNum(c.lanceR),quitar:false});
-  if(r.ok){const q=calcCore({credito:r.credito,parcela:r.parcela,prazo:r.prazo,restantes:r.restantes,lance:r.lance,quitar:true});r.alt=q.ok?q:null}return r}
+  const rs=c.cota==='Reposição'?(c.restantes||c.prazo):c.prazo;
+  const r=calcCore({credito:cCredito(m),parcela:c.prazo?cParcela(m,c.prazo,c.ss):0,prazo:c.prazo,restantes:rs,repo:c.repo,lance:cNum(c.lanceR),quitar:false});
+  if(r.ok){const q=calcCore({credito:r.credito,parcela:r.parcela,prazo:r.prazo,restantes:r.restantes,repo:r.repo,lance:r.lance,quitar:true});r.alt=q.ok?q:null}return r}
 /* linhas da comparação (a mesma tabela alimenta a tela, o texto e a imagem) */
 function cmpLinhas(){
   const R=CP.cols.map(c=>{const r=cmpCalc(c),m=M.find(o=>o.id===c.motoId);return{c,m,r}});
-  const okR=R.filter(o=>o.r.ok),min=okR.length>1?Math.min(...okR.map(o=>o.r.demaisValor||o.r.parcela)):null,ref=okR[0];
+  const okR=R.filter(o=>o.r.ok),min=okR.length>1?Math.min(...okR.map(o=>o.r.demaisValor||o.r.pv)):null,ref=okR[0];
   const ln=(rot,f,dif)=>({rot,cel:R.map((o,i)=>{if(!o.r.ok)return{t:'—'};const v=f(o);return{t:v}}),dif});
   const L=[
    ln('Moto',o=>o.m.nome,1),ln('Valor do crédito',o=>cBrl(o.r.credito),1),ln('Tipo de cota',o=>o.c.cota,1),ln('Plano',o=>cPlanoTxt(o.c.ss),1),
    ln('Prazo original',o=>o.r.prazo+'x',1),ln('Parcelas restantes',o=>String(o.r.restantes),1),
-   ln('Valor da parcela',o=>cBrl(o.r.parcela),1),
+   ln('Valor da parcela',o=>cBrl(o.r.pv),1),
+   ...(R.some(o=>o.r.ok&&o.r.entrada>0)?[ln('Entrada para assumir a cota',o=>o.r.entrada>0?cBrl(o.r.entrada):'—',1)]:[]),
    ln('Lance (R$)',o=>o.r.lance>0?cBrl(o.r.lance):'sem lance',1),ln('Lance (%)',o=>o.r.lance>0?cPct(o.r.pct):'—',1),
    ln('Parcelas que o lance quita (no final)',o=>o.r.alt?String(o.r.alt.quitadas):'0',1),
-   ln('Redução da parcela (lance diluído)',o=>o.r.reducao>0?cBrl(o.r.reducao):'—',1)];
+   ln('Redução da parcela (lance diluído)',o=>o.r.reducao>0?cBrl(o.r.reducao):'—',1),
+   ln('Total que o cliente vai pagar',o=>cBrl(o.r.total),1)];
   /* diferenças em relação à opção 1 e destaque da menor parcela */
   L.forEach(l=>{l.cel.forEach((c,i)=>{if(i>0&&R[i].r.ok&&R[0].r.ok&&l.dif&&c.t!==l.cel[0].t)c.df=1})});
   const par=L.find(l=>l.rot==='Valor da parcela');
-  if(par&&ref&&okR.length>1){par.cel.forEach((c,i)=>{const o=R[i];if(!o.r.ok)return;const d=o.r.parcela-R[0].r.parcela;if(i>0&&Math.abs(d)>=.005)c.n=(d>0?'+ ':'− ')+cBrl(Math.abs(d))+' vs opção 1';if(Math.abs(o.r.parcela-Math.min(...okR.map(z=>z.r.parcela)))<.005)c.bt=1})}
+  if(par&&ref&&okR.length>1){par.cel.forEach((c,i)=>{const o=R[i];if(!o.r.ok)return;const d=o.r.pv-R[0].r.pv;if(i>0&&Math.abs(d)>=.005)c.n=(d>0?'+ ':'− ')+cBrl(Math.abs(d))+' vs opção 1';if(Math.abs(o.r.pv-Math.min(...okR.map(z=>z.r.pv)))<.005)c.bt=1})}
   return{R,L}}
 function cmpRes(){
   const el=document.getElementById('cp_res');if(!el)return;const{R,L}=cmpLinhas(),n=R.filter(o=>o.r.ok).length;
@@ -3492,7 +3533,7 @@ function cmpRes(){
   window.CCX={nome:CP.nome,share:true,build:async()=>{const c=await cmpImg();cmpSalva();return c}}}
 function cmpTexto(){
   const{R}=cmpLinhas(),nome=(CP.nome||'').trim().split(' ')[0],ok=R.filter(o=>o.r.ok);
-  const blocos=ok.map((o,i)=>`*Opção ${i+1}: ${o.m.nome}*\n${o.c.cota} · ${cPlanoTxt(o.c.ss)} · ${o.r.prazo}x\nCrédito: ${cBrl(o.r.credito)}\nParcela: ${cBrl(o.r.parcela)}${o.r.lance>0?`\nLance: ${cBrl(o.r.lance)} (${cPct(o.r.pct)})${o.r.alt&&o.r.alt.quitadas>0?`\nQuita ${o.r.alt.quitadas} parcela(s) do final, ou reduz ${cBrl(o.r.reducao)} de cada parcela`:`\nReduz ${cBrl(o.r.reducao)} de cada parcela`}`:''}`);
+  const blocos=ok.map((o,i)=>`*Opção ${i+1}: ${o.m.nome}*\n${o.c.cota} · ${cPlanoTxt(o.c.ss)} · ${o.r.prazo}x\nCrédito: ${cBrl(o.r.credito)}${o.r.entrada>0?`\nEntrada para assumir a cota: ${cBrl(o.r.entrada)}`:''}\nParcela: ${cBrl(o.r.pv)}${o.r.restantes!==o.r.prazo?` (${o.r.restantes} restantes)`:''}\nTotal: ${cBrl(o.r.total)}${o.r.lance>0?`\nLance: ${cBrl(o.r.lance)} (${cPct(o.r.pct)})${o.r.alt&&o.r.alt.quitadas>0?`\nQuita ${o.r.alt.quitadas} parcela(s) do final, ou reduz ${cBrl(o.r.reducao)} de cada parcela`:`\nReduz ${cBrl(o.r.reducao)} de cada parcela`}`:''}`);
   return [`Olá${nome?', '+nome:''}! Montei uma comparação de consórcio para você:`,'',blocos.join('\n\n'),'',ccObs(false).replace(/\*\*\*\*Este é o plano[^\n]*/,'****Planos com e sem seguro prestamista conforme indicado em cada opção.'),'','Qual delas combina mais com você?','',ccAssin(),`Data: ${cHoje()}`].join('\n')}
 async function cmpImg(){
   const{R,L}=cmpLinhas(),ok=R.map((o,i)=>({o,i})).filter(a=>a.o.r.ok),N=ok.length||1;
@@ -3514,11 +3555,11 @@ async function cmpImg(){
 let CPSIG='';
 async function cmpSalva(){
   const{R}=cmpLinhas(),ok=R.filter(o=>o.r.ok);if(!ok.length)return;
-  const cols=ok.map(o=>({motoId:o.m.id,motoNome:o.m.nome,cota:o.c.cota,ss:o.c.ss,plano:cPlanoTxt(o.c.ss),prazo:o.r.prazo,restantes:o.r.restantes,credito:o.r.credito,parcela:o.r.parcela,lance:o.r.lance,pct:o.r.pct,reducao:o.r.reducao,quitadas:o.r.alt?o.r.alt.quitadas:0})),sig=JSON.stringify(cols);
+  const cols=ok.map(o=>({motoId:o.m.id,motoNome:o.m.nome,cota:o.c.cota,ss:o.c.ss,plano:cPlanoTxt(o.c.ss),prazo:o.r.prazo,restantes:o.r.restantes,repo:o.r.repo,entrada:o.r.entrada,pv:o.r.pv,total:o.r.total,credito:o.r.credito,parcela:o.r.parcela,lance:o.r.lance,pct:o.r.pct,reducao:o.r.reducao,quitadas:o.r.alt?o.r.alt.quitadas:0})),sig=JSON.stringify(cols);
   if(sig===CPSIG)return;CPSIG=sig;if(await ccSalva(CP.s,CP.x,'comparacao',{nome:CP.nome,cols,tabela:calcTabela()}))ccHist(CP.s,CP.x.id,document.getElementById('cp_hist'),'cmpReabre')}
 function cmpReabre(i){const el=document.getElementById('cp_hist'),h=el&&el._h&&el._h[i];if(!h||h.tipo!=='comparacao')return toast('Esta é uma simulação: abra em Calcular');
   const cs=(h.dados.cols||[]).filter(c=>M.find(o=>o.id===c.motoId)).slice(0,3);if(cs.length<2)return toast('As motos desta comparação não estão mais no catálogo');
-  CP.cols=cs.map(c=>({motoId:c.motoId,cota:c.cota||'Nova',ss:!!c.ss,prazo:+c.prazo||0,restantes:+c.restantes||+c.prazo||0,lanceR:c.lance>0?cDec(c.lance):''}));cmpForm();toast('Comparação carregada com os valores atuais do catálogo')}
+  CP.cols=cs.map(c=>({motoId:c.motoId,cota:c.cota||'Nova',ss:!!c.ss,prazo:+c.prazo||0,restantes:+c.restantes||+c.prazo||0,repo:c.repo==='entrada'?'entrada':'diluir',lanceR:c.lance>0?cDec(c.lance):''}));cmpForm();toast('Comparação carregada com os valores atuais do catálogo')}
 function cmpCopia(){const t=(document.getElementById('cp_tx')||{}).value;if(!t)return toast('Escolha as opções para gerar a proposta');navigator.clipboard.writeText(t).then(()=>{toast('Proposta copiada!');cmpSalva()},()=>toast('Não foi possível copiar'))}
 function cmpZap(){const t=(document.getElementById('cp_tx')||{}).value;if(!t)return toast('Escolha as opções para gerar a proposta');const w=wlk(CP.tel);if(!w)return toast('Informe um WhatsApp válido do cliente. Use Copiar.');window.open(w+'&text='+encodeURIComponent(t),'_blank');cmpSalva()}
 
@@ -3530,7 +3571,7 @@ function cqIni(s,x){
   const m=cMotoDe(x),lv=cNum(x.lance_valor);
   CQ={s,x,nome:cNomeCli(x),tel:x.telefone||'',motoId:m?m.id:'',
     f:{valor:m?cDec(cCredito(m)):'',entrada:'',n:'',parc:'',frete:'',taxas:''},
-    c:{cota:'Nova',ss:false,prazo:0,restantes:0,lanceR:lv>0?cDec(lv):'',quitar:false,frete:''},hist:x.id?1:0};
+    c:{cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:lv>0?cDec(lv):'',quitar:false,frete:''},hist:x.id?1:0};
   if(m){const pv=cNum(x.parcela);if(pv>0){const p=cPlanos(m).find(p=>Math.abs(+p.valor-pv)<.011||Math.abs(+p.valor_sem_seguro-pv)<.011);if(p){CQ.c.prazo=+p.parcelas;CQ.c.restantes=+p.parcelas;CQ.c.ss=!(Math.abs(+p.valor-pv)<.011)}}}}
 function cqAbre(s,id){
   const x=cCliente(s,id);if(!x)return toast('Cliente não encontrado');if(typeof vdFecha==='function')vdFecha();CCPG=false;cqIni(s,x);
@@ -3584,13 +3625,13 @@ function cqCalc(){
   if(!(n>=1))E.push('Financiamento: informe a quantidade de parcelas.');
   if(!(pc>0))E.push('Financiamento: informe o valor de cada parcela (da simulação real do banco).');
   if(valor>0&&ent>valor)E.push('Financiamento: a entrada não pode ser maior que o valor da moto.');
-  const r=calcCore({credito:cCredito(m),parcela:c.prazo?cParcela(m,c.prazo,c.ss):0,prazo:c.prazo,restantes:c.restantes||c.prazo,lance:cNum(c.lanceR),quitar:c.quitar});
+  const r=calcCore({credito:cCredito(m),parcela:c.prazo?cParcela(m,c.prazo,c.ss):0,prazo:c.prazo,restantes:c.cota==='Reposição'?(c.restantes||c.prazo):c.prazo,repo:c.repo,lance:cNum(c.lanceR),quitar:c.quitar});
   if(!r.ok)r.erros.forEach(e=>E.push('Consórcio: '+e));
   if(E.length)return{ok:false,erros:E};
-  const pcc=Math.round(r.parcela*100),lc=Math.round(r.lance*100),rs=r.restantes,red=Math.round(r.reducao*100);
+  const pcc=Math.round(r.pv*100),lc=Math.round(r.lance*100),rs=r.restantes,red=Math.round(r.reducao*100);
   let qtd=rs,pagas;
   if(r.quitar&&r.quitadas>0){qtd=rs-r.quitadas;pagas=qtd*pcc}else pagas=rs*pcc-(red>0?(rs-2)*red:0);
-  const totF=ent+n*pc+fr+tx,totC=pagas+lc+frc,mx=Math.max(totF,totC);
+  const totF=ent+n*pc+fr+tx,totC=pagas+lc+frc+Math.round(r.entrada*100),mx=Math.max(totF,totC);
   return{ok:true,m,r,fin:{valor,ent,n,pc,fr,tx,total:totF},con:{credito:Math.round(r.credito*100),pcc,qtd,rs,lc,pct:r.pct,frete:frc,pagas,total:totC,quitadas:r.quitar?r.quitadas:0,red,demaisValor:Math.round(r.demaisValor*100)},
     dif:Math.abs(totF-totC),pctEco:mx>0?Math.round(Math.abs(totF-totC)*10000/mx)/100:0,menor:totF===totC?'':totF<totC?'cdc':'con'}}
 function cqLinhas(k){const F=k.fin,C=k.con,nm=k.m.nome;
