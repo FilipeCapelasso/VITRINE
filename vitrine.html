@@ -1477,7 +1477,17 @@ body.alta .ch .chh{background:#0b0b0d;border-bottom:1px solid #26272c}
 .ah-id small{font-size:clamp(15.5px,1.45vw,19px);line-height:1.45;margin-top:6px;max-width:560px;color:#b4b0a6}
 .ah h1.ct{text-transform:none;font-size:clamp(36px,5.6vw,80px);line-height:1;letter-spacing:-.02em;font-stretch:112%}
 .ah h1.ct.lg{font-size:clamp(30px,4.2vw,60px)}
-</style><style id="cc-tab">.cc-tab{margin:10px 0 0;border:1px solid #ececf2;border-radius:14px;padding:10px 12px;background:#fafafc;color:#222}.cc-tab>b{font-size:13.5px}.cc-tab>small{display:block;color:#666;font-size:12px;margin-top:1px}.cc-tab ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}.cc-tab li{display:grid;grid-template-columns:1fr auto;gap:0 10px;align-items:baseline;font-size:13px}.cc-tab li em{font-style:normal;color:#888;font-size:12px}.cc-tab li b{font-variant-numeric:tabular-nums}.cc-tab li small{grid-column:2;text-align:right;color:#888;font-size:11.5px}</style></head>
+</style><style id="st-sites">.st-sec{border-radius:20px;padding:18px;margin-bottom:16px;border:1px solid #ebebf1;background:#fff}
+.st-cli{border-color:#bbf7d0;background:linear-gradient(180deg,#f0fdf4,#fff 120px)}.st-eu{border-color:#fde68a;background:linear-gradient(180deg,#fffbeb,#fff 120px)}
+.st-t h3{margin:0 0 4px;font-size:18px}.st-t p{margin:0 0 14px;color:#555;font-size:14px;line-height:1.5;max-width:70ch}
+.st-cli .st-t h3::before{content:'✅ '}.st-eu .st-t h3::before{content:'🔒 '}
+.st-g{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:12px}
+.st-c{border:1px solid #ebebf1;border-radius:16px;padding:14px;background:#fff;display:grid;gap:10px;align-content:start}
+.st-h{display:flex;gap:12px;align-items:flex-start}.st-i{font-size:24px;width:44px;height:44px;border-radius:13px;background:#f4f4f8;display:grid;place-items:center;flex:none}
+.st-h b{font-size:15.5px}.st-h p{margin:3px 0 0;color:#666;font-size:13px;line-height:1.45}
+.st-u code{display:block;background:#f6f6fa;border:1px dashed #dcdce6;border-radius:10px;padding:8px 10px;font-size:13px;word-break:break-all;color:#333}
+.st-a{display:flex;gap:6px;flex-wrap:wrap}.st-a .btn{text-decoration:none}.st-wa{background:#16a34a!important;border-color:#16a34a!important;color:#fff!important}
+@media(max-width:620px){.st-sec{padding:14px}.st-g{grid-template-columns:1fr}.st-a .btn{flex:1 1 auto;text-align:center}}</style><style id="cc-tab">.cc-tab{margin:10px 0 0;border:1px solid #ececf2;border-radius:14px;padding:10px 12px;background:#fafafc;color:#222}.cc-tab>b{font-size:13.5px}.cc-tab>small{display:block;color:#666;font-size:12px;margin-top:1px}.cc-tab ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}.cc-tab li{display:grid;grid-template-columns:1fr auto;gap:0 10px;align-items:baseline;font-size:13px}.cc-tab li em{font-style:normal;color:#888;font-size:12px}.cc-tab li b{font-variant-numeric:tabular-nums}.cc-tab li small{grid-column:2;text-align:right;color:#888;font-size:11.5px}</style></head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
 <script>
@@ -3113,7 +3123,7 @@ async function pPers0(keep){
  <section class="ps-c"><h3>Seções do site</h3><p class="sub">Escolha o que aparece para o cliente.</p>${PS_SEC.map(s=>`<div class="ps-t"><span>${s[1]} ${esc(s[2])}<small>${esc(s[3])}</small></span><label class="ps-sy"><input type="checkbox" ${(S.ocultar||[]).includes(s[0])?'':'checked'} onchange="psSec('${s[0]}',this.checked)" aria-label="Mostrar ${esc(s[2])}"><i></i></label></div>`).join('')}</section> ${psSobreH()}${psPedidoH()}
  </div>
  <aside class="ps-pv"><h4>Prévia ao vivo</h4><div id="ps_pv"></div></aside>
- <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['acessos','📈','Acessos'],['motos','🏍️','Motos'],['cota','🎯','Cota da Vez'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
+ <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['acessos','📈','Acessos'],['sites','🔗','Sites'],['motos','🏍️','Motos'],['cota','🎯','Cota da Vez'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
 let AC=null,PSS=null,PSAVED={},PSLIVE=false;
 async function acessoCarrega(){try{const r=await sb.rpc('meu_acesso');AC=(r&&r.data)||{}}catch(e){AC={}}}
 const ehPrem=()=>!!(AC&&AC.limites&&AC.limites.personalizar);
@@ -3138,14 +3148,14 @@ function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,150
   if(T==='resumo'||T==='playbook')T='inicio';
   if(T==='pedidos'||T==='leads')T='vendas';
   if(T==='site'||T==='perfil'){CTAB=T==='site'?'textos':'perfil';T='conta'}
-  if(appModo()&&!['vendas','acessos','cota','avisos','personalizar','conta'].includes(T))T='vendas';
+  if(appModo()&&!['vendas','acessos','sites','cota','avisos','personalizar','conta'].includes(T))T='vendas';
   if(!appModo()&&T==='avisos')T='inicio';
   PNS='#pn';
   const nav=navLista().map(a=>{const lk=a[0]==='personalizar'&&!ehPrem();return `<button class="nv ${T===a[0]?'on':''}${lk?' lockd':''}" onclick="${lk?'persLock()':`adm('${a[0]}')`}" ${lk?'aria-label="Personalizar (bloqueado: só Premium)"':''}><span class="ic">${a[1]}</span><span class="nlb">${a[2]}</span>${lk?'<span class="nlk" aria-hidden="true">🔒</span>':''}${a[0]==='personalizar'&&!lk&&AC&&AC.msgs_novas>0&&T!=='personalizar'?`<span class="nb" id="pe_nb">${AC.msgs_novas}</span>`:''}${a[0]==='vendas'?'<span class="nb" id="vdbg" hidden></span>':''}${a[0]==='avisos'?'<span class="nb" id="avbg" hidden></span>':''}</button>`}).join('');
-  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',cota:'Cota da Vez',acessos:'Acessos ao site',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
+  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',cota:'Cota da Vez',acessos:'Acessos ao site',sites:'Seus sites e links',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
   $('#app').innerHTML=`<div class="shell${appModo()?' apm':''}"><aside class="sd"><div class="sd-top">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}</b><small>Painel do vendedor</small></div></div><nav class="sd-nav">${nav}</nav><div class="sd-bot"><a class="lk" href="#">↗ Ver meu site</a><button class="lk" onclick="out()">Sair</button><small class="ver">Versão 01/11/2026</small></div></aside>
   <main class="mn"><div class="frase" id="frase">${fraseH(V&&V.frase_n,0,'fr-t')}</div><div id="plc"></div><header class="mt2"><h1>${tt}</h1><span class="mt2a"><a class="btn sm" href="#" style="text-decoration:none">Ver site</a><button class="btn sm" onclick="out()">Sair</button></span></header><span id="nb" hidden></span><div id="pn"></div></main></div>`;
-  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,cota:pCota,acessos:pAcessos,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
+  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,cota:pCota,acessos:pAcessos,sites:pSites,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
 }
 
 /* ---- prazo do plano (comprado em..., suspensão automática em...) com cronômetro ---- */
@@ -3392,7 +3402,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
     try{if(typeof T!=='undefined'&&T==='vendas'&&typeof pVendas==='function'&&$('#vdl'))pVendas(true)}catch(x){}}
   if(d.tipo==='abrir'&&d.url){try{const u=new URL(d.url,location.origin);appUrl(u.searchParams);if(T==='vendas')adm('vendas')}catch(x){}}});
 /* aviso tocado: abre na aba Clientes e mostra o botão do WhatsApp do cliente */
-function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(['avisos','cota','acessos'].includes(qp.get('t')))T=qp.get('t');if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
+function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(['avisos','cota','acessos','sites'].includes(qp.get('t')))T=qp.get('t');if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
   const cq=qp.get('c');if(cq)setTimeout(()=>avAbreCli(cq),900);const wa=qp.get('wa');if(wa&&/^https:\/\/wa\.me\//.test(wa))setTimeout(()=>appWaBar(wa),600);
   if(qp.has('app')||qp.has('t')||qp.has('wa')){try{history.replaceState(null,'',location.pathname)}catch(e){}}}
 function appWaBar(wa){let b=document.getElementById('ap_wab');if(b)b.remove();b=document.createElement('div');b.id='ap_wab';b.className='ap-wab';
@@ -3599,9 +3609,31 @@ function cvLista(){const e=document.getElementById('cv_l');if(!e)return;const cn
       <div class="cv-otl"><b>${esc(c.cliente)}</b>${tag}${c.lance_fixo?'<span class="cv-t lf">Lance Fixo ✓</span>':''}</div>
       <small>${[c.grupo?'Grupo '+esc(c.grupo):'Sem grupo',c.moto?esc(c.moto):'',r?'sorteada '+cvP3(r.ref):''].filter(Boolean).join(' · ')}</small>${c.obs?`<small class="cv-obs">${esc(c.obs)}</small>`:''}
       <div class="cv-ca">${at&&r?cvWa(c,pos,r.ref):''}<button class="btn sm" onclick="cvLF('${c.id}',${!c.lance_fixo})">${c.lance_fixo?'Tirar Lance Fixo':'Marcar Lance Fixo'}</button>${at?`<button class="btn sm" onclick="cvSit('${c.id}','contemplada')">Contemplada</button><button class="btn sm" onclick="cvSit('${c.id}','cancelada')">Cancelada</button>`:`<button class="btn sm" onclick="cvSit('${c.id}','ativa')">Voltar para ativa</button>`}<button class="btn sm" onclick="cvForm('${c.id}')">Editar</button><button class="btn sm cv-x" onclick="cvDel('${c.id}')">Excluir</button></div></div></article>`}).join('')}
+/* ===== Sites: todos os links do vendedor, separados entre o que vai para o cliente e o que é só dele ===== */
+function stLinks(){const b=siteUrl()+'/'+SLUG,cdc=fichaUrl(CFG.url_cdc||FICHA_CDC_URL,'cdc'),cnh=fichaUrl(CFG.url_cnh||FICHA_CNH_URL,'cnh');
+  return{cli:[
+    {k:'vit',ic:'🏍️',t:'Seu site (vitrine)',d:'Todas as suas motos, preços, simulação e o chat que leva o cliente ao seu WhatsApp. É o link principal para divulgar.',u:b,msg:'Olá! Confira as motos Honda, os preços e as condições no meu site:'},
+    {k:'cdc',ic:'📝',t:'Ficha de financiamento (CDC)',d:'Para o cliente preencher os dados da análise de crédito. Ao terminar, ele vem direto para o seu WhatsApp e a ficha cai no seu painel.',u:cdc,msg:'Olá! Para eu fazer a análise do seu financiamento, preencha a ficha neste link (leva poucos minutos):'},
+    {k:'cnh',ic:'🤝',t:'Pré-contrato de consórcio (CNH)',d:'Para o cliente preencher os dados do contrato do consórcio. Ao terminar, ele vem direto para o seu WhatsApp e o pré-contrato cai no seu painel.',u:cnh,msg:'Olá! Para adiantar o seu consórcio Honda, preencha o pré-contrato neste link:'}],
+   eu:[
+    {k:'adm',ic:'🧭',t:'Seu painel (este aqui)',d:'Clientes, motos, acessos, personalização e configuração do seu site.',u:b+'/admin'},
+    {k:'cdca',ic:'📂',t:'Fichas de financiamento recebidas',d:'Lista das fichas CDC que os clientes enviaram, com busca, status e exportação.',u:cdc.replace(/#.*$/,'')+'#admin'},
+    {k:'cnha',ic:'📁',t:'Pré-contratos recebidos',d:'Lista dos pré-contratos CNH que os clientes enviaram, com busca, status e exportação.',u:cnh.replace(/#.*$/,'')+'#admin'}]}}
+function stCopia(u,ok){const f=()=>toast(ok||'Link copiado!');try{navigator.clipboard.writeText(u).then(f,()=>prompt('Copie o link:',u))}catch(e){prompt('Copie o link:',u)}}
+function stZap(k){const x=stLinks().cli.find(o=>o.k===k);if(!x)return;waOpen('https://wa.me/?text='+encodeURIComponent(x.msg+'\n'+x.u))}
+async function stShare(k){const x=stLinks().cli.find(o=>o.k===k);if(!x)return;if(navigator.share){try{await navigator.share({title:x.t,text:x.msg,url:x.u});return}catch(e){if(e&&e.name==='AbortError')return}}stCopia(x.msg+'\n'+x.u,'Mensagem com o link copiada!')}
+function stCard(x,cli){const sh=cli&&typeof navigator!=='undefined'&&navigator.share;
+  return `<article class="st-c"><div class="st-h"><span class="st-i" aria-hidden="true">${x.ic}</span><div><b>${esc(x.t)}</b><p>${esc(x.d)}</p></div></div>
+   <div class="st-u"><code>${esc(x.u.replace(/^https?:\/\//,''))}</code></div>
+   <div class="st-a"><button class="btn sm" onclick="stCopia('${esc(x.u)}')">📋 Copiar link</button>${cli?`<button class="btn sm st-wa" onclick="stZap('${x.k}')">💬 Enviar no WhatsApp</button>${sh?`<button class="btn sm" onclick="stShare('${x.k}')">📤 Compartilhar</button>`:''}`:''}<a class="btn sm" href="${esc(x.u)}" target="_blank" rel="noopener">↗ Abrir</a></div></article>`}
+function pSites(){const L=stLinks();
+  $('#pn').innerHTML=`<section class="st-sec st-cli"><div class="st-t"><h3>Para enviar ao cliente</h3><p>Pode divulgar à vontade: no WhatsApp, Instagram, status e grupos. Tudo o que o cliente preencher chega no seu painel e ele é levado direto ao seu WhatsApp.</p></div>
+    <div class="st-g">${L.cli.map(x=>stCard(x,true)).join('')}</div></section>
+   <section class="st-sec st-eu"><div class="st-t"><h3>Só para você</h3><p>Áreas do vendedor. Pedem o seu login: <b>não envie esses links para clientes</b>.</p></div>
+    <div class="st-g">${L.eu.map(x=>stCard(x,false)).join('')}</div></section>`}
 async function pAcessos(){VISTAB='visitas';VISDATA=null;$('#pn').innerHTML='<div id="vs_v"></div>';visCarrega()}
 
-const NAV_APP=[['vendas','👥','Clientes'],['acessos','📈','Acessos'],['cota','🎯','Cota da Vez'],['avisos','🔔','Notificações'],['personalizar','🎨','Personalizar'],['conta','⚙️','Configuração']];
+const NAV_APP=[['vendas','👥','Clientes'],['acessos','📈','Acessos'],['sites','🔗','Sites'],['cota','🎯','Cota da Vez'],['avisos','🔔','Notificações'],['personalizar','🎨','Personalizar'],['conta','⚙️','Configuração']];
 const navLista=()=>appModo()?NAV_APP:NAV;
 const AVIC={sorteio:['🎰','#7c3aed','Sorteio'],rascunho:['✍️','#2f6bff','Começou a preencher'],preguicoso:['😴','#f59e0b','Parou de preencher'],chat:['✅','#16a34a','Finalizou'],ficha:['✅','#16a34a','Finalizou'],contrato:['✅','#16a34a','Finalizou'],contato:['💬','#16a34a','Contato'],chat_inicio:['💬','#2f6bff','Começou o chat'],teste:['🔔','#7c3aed','Teste']};
 const avIc=t=>AVIC[t]||['🔔','#64748b','Aviso'];
