@@ -3100,7 +3100,7 @@ async function pPers0(keep){
  <section class="ps-c"><h3>Seções do site</h3><p class="sub">Escolha o que aparece para o cliente.</p>${PS_SEC.map(s=>`<div class="ps-t"><span>${s[1]} ${esc(s[2])}<small>${esc(s[3])}</small></span><label class="ps-sy"><input type="checkbox" ${(S.ocultar||[]).includes(s[0])?'':'checked'} onchange="psSec('${s[0]}',this.checked)" aria-label="Mostrar ${esc(s[2])}"><i></i></label></div>`).join('')}</section> ${psSobreH()}${psPedidoH()}
  </div>
  <aside class="ps-pv"><h4>Prévia ao vivo</h4><div id="ps_pv"></div></aside>
- <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['acessos','📈','Acessos'],['cota','🎯','Cota da Vez'],['motos','🏍️','Motos'],['calculadora','🧮','Calculadora'],['comparar','⚖️','Comparar'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
+ <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['acessos','📈','Acessos'],['motos','🏍️','Motos'],['cota','🎯','Cota da Vez'],['calculadora','🧮','Calculadora'],['comparar','⚖️','Comparar'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
 let AC=null,PSS=null,PSAVED={},PSLIVE=false;
 async function acessoCarrega(){try{const r=await sb.rpc('meu_acesso');AC=(r&&r.data)||{}}catch(e){AC={}}}
 const ehPrem=()=>!!(AC&&AC.limites&&AC.limites.personalizar);
@@ -3929,9 +3929,9 @@ function cvDesenha(){
    <div class="cv-res">${P?`<small>${P.auto?'Loteria Federal · concurso '+P.concurso:'Simulação'}${P.data?' · '+cvSem(P.data)+', '+cvBR(P.data):''}</small><b>${esc(cvDig(P.premio).padStart(5,'0'))}</b><span>1º prêmio</span>`:'<small>Ainda sem resultado</small><b>—</b><span>Digite o 1º prêmio abaixo</span>'}</div></section>
   <section class="card2 cv-sim"><div class="cv-simr">
     <label for="cv_p">Simular com outro 1º prêmio<input id="cv_p" type="text" inputmode="numeric" maxlength="6" placeholder="ex.: 062545" autocomplete="off" value="${P&&!P.auto?esc(cvDig(P.premio)):''}" onkeydown="if(event.key==='Enter')cvSimula()"></label>
-    <button class="btn red" onclick="cvSimula()">Calcular</button>${P&&!P.auto&&CVR.length?'<button class="btn" onclick="cvOficial()">Voltar ao resultado oficial</button>':''}</div>
-    ${CVR.length?`<div class="cv-hist"><small>Últimas extrações</small><div>${CVR.map(x=>`<button class="${P&&P.auto&&P.concurso===x.concurso?'on':''}" onclick="cvUsa(${x.concurso})">${cvBR(x.data_sorteio).slice(0,5)} · ${esc(x.premios[0])}</button>`).join('')}</div></div>`:''}
-    <p class="cv-mu">O resultado entra sozinho todo dia às 20h30 e 22h30 (Brasília). Vale a extração de quarta ou sábado anterior à assembleia do grupo.</p></section>
+    <button class="btn red" onclick="cvSimula()">Calcular</button>${P&&(!P.auto||P.fixo)&&CVR.length?'<button class="btn" onclick="cvOficial()">Voltar ao automático</button>':''}</div>
+    ${CVR.length?`<div class="cv-hist"><small>Últimas extrações</small><div><button class="${P&&P.auto&&!P.fixo?'on':''}" onclick="cvOficial()">Automático por assembleia</button>${CVR.map(x=>`<button class="${P&&P.auto&&P.fixo&&P.concurso===x.concurso?'on':''}" onclick="cvUsa(${x.concurso})">${cvBR(x.data_sorteio).slice(0,5)} · ${esc(x.premios[0])}</button>`).join('')}</div></div>`:''}
+    <p class="cv-mu">O resultado entra sozinho logo depois do sorteio: o sistema confere a cada 15 minutos, das 18h às 20h45 (horário de Rio Branco - Acre). Cada grupo usa a extração de quarta ou sábado anterior à assembleia dele: cadastre a data da assembleia no grupo e ela avança sozinha todo mês.</p></section>
   <section class="card2"><div class="card2-h"><h3>Oportunidades de Lance Fixo</h3><label class="cv-jn">Até <select onchange="CVJ=+this.value;cvOport()">${[5,10,15,30].map(n=>`<option value="${n}" ${CVJ===n?'selected':''}>${n}</option>`).join('')}</select> cotas da sorteada</label></div>
     <div id="cv_op"></div></section>
   <section class="card2"><div class="card2-h"><h3>Meus grupos</h3><button class="btn sm" onclick="cvGForm()">＋ Grupo</button></div>
@@ -3951,8 +3951,21 @@ function cvDesenha(){
 
 function cvSimula(){const v=cvDig((document.getElementById('cv_p')||{}).value);if(v.length<4){toast('Digite o 1º prêmio (5 ou 6 números).');return}CVP={premio:v,auto:false};cvDesenha()}
 function cvOficial(){CVP=null;const u=CVR[0];if(u)CVP={premio:u.premios[0],concurso:u.concurso,data:u.data_sorteio,auto:true};cvDesenha()}
-function cvUsa(n){const u=CVR.find(x=>x.concurso===n);if(!u)return;CVP={premio:u.premios[0],concurso:u.concurso,data:u.data_sorteio,auto:true};cvDesenha()}
-function cvRef(gr){const N=cvMaxDo(gr);return CVP&&N?{ref:cvCota(CVP.premio,N),N}:null}
+function cvUsa(n){const u=CVR.find(x=>x.concurso===n);if(!u)return;CVP={premio:u.premios[0],concurso:u.concurso,data:u.data_sorteio,auto:true,fixo:true};cvDesenha()}
+const cvISO=d=>d.toISOString().slice(0,10);
+function cvMais1m(iso){const p=iso.split('-').map(Number),d=new Date(Date.UTC(p[0],p[1],1)),ult=new Date(Date.UTC(p[0],p[1]+1,0)).getUTCDate();d.setUTCDate(Math.min(p[2],ult));return cvISO(d)}
+function cvAssEf(a,ref){if(!a)return null;let x=String(a).slice(0,10),i=0;while(x<=ref&&i<60){x=cvMais1m(x);i++}return x}
+const cvDias=(a,b)=>Math.round((new Date(a+'T12:00:00Z')-new Date(b+'T12:00:00Z'))/864e5);
+/* qual extração vale para o grupo: a de quarta/sábado anterior à assembleia (a data avança sozinha mês a mês) */
+function cvDraw(g){if(!CVP)return null;
+  if(!CVP.auto||CVP.fixo||!g)return{premio:CVP.premio,concurso:CVP.concurso,data:CVP.data,nota:CVP.auto?'Extração escolhida por você':'Simulação'};
+  if(!g.proxima_assembleia){const u=CVR[0];return u?{premio:u.premios[0],concurso:u.concurso,data:u.data_sorteio,nota:'Última extração (cadastre a data da assembleia para usar a extração certa)',sem:true}:null}
+  const ontem=cvISO(new Date(Date.now()-864e5)),A=cvAssEf(g.proxima_assembleia,ontem),u=CVR.find(x=>x.data_sorteio<A);
+  const est=A!==String(g.proxima_assembleia).slice(0,10)?' (estimada)':'';
+  if(!u)return null;const fal=cvDias(A,u.data_sorteio);
+  return{premio:u.premios[0],concurso:u.concurso,data:u.data_sorteio,ass:A,
+    nota:fal<=4?`Vale para a assembleia de ${cvBR(A)}${est}`:`Prévia: ainda sai outra extração antes da assembleia de ${cvBR(A)}${est}`}}
+function cvRef(gr){const N=cvMaxDo(gr),g=CVG.find(o=>o.grupo===gr),d=cvDraw(g);return d&&N?{ref:cvCota(d.premio,N),N,d}:null}
 
 function cvWa(c,pos,ref){const tel=cvDig(c.telefone),w=tel.length>=10?'55'+tel.replace(/^55(?=\d{10,11}$)/,''):'';if(!w)return '';
   const n=(String(c.cliente||'').trim().split(/\s+/)[0])||'tudo bem';
@@ -3964,27 +3977,27 @@ function cvWa(c,pos,ref){const tel=cvDig(c.telefone),w=tel.length>=10?'55'+tel.r
 function cvOport(){const e=document.getElementById('cv_op');if(!e)return;
   if(!CVP){e.innerHTML='<div class="cv-vz"><b>Sem resultado da Loteria Federal ainda.</b><span>Digite o 1º prêmio acima para simular.</span></div>';return}
   if(!CVG.length||!CVC.length){e.innerHTML='<div class="cv-vz"><b>Cadastre seus grupos e as cotas dos clientes.</b><span>Depois disso, a cada resultado da Federal você vê aqui quem está perto da cota sorteada.</span></div>';return}
-  const L=[];CVC.filter(c=>c.situacao==='ativa'&&c.grupo).forEach(c=>{const r=cvRef(c.grupo);if(!r)return;const pos=cvPos(r.ref,c.cota,r.N);if(pos!==null&&Math.abs(c.cota-r.ref)<=CVJ)L.push({c,pos,ref:r.ref})});
+  const L=[];CVC.filter(c=>c.situacao==='ativa'&&c.grupo).forEach(c=>{const r=cvRef(c.grupo);if(!r)return;const pos=cvPos(r.ref,c.cota,r.N);if(pos!==null&&Math.abs(c.cota-r.ref)<=CVJ)L.push({c,pos,ref:r.ref,d:r.d})});
   L.sort((a,b)=>a.pos-b.pos||(b.c.lance_fixo?1:0)-(a.c.lance_fixo?1:0));
   if(!L.length){e.innerHTML=`<div class="cv-vz"><b>Nenhum cliente até ${CVJ} cotas da sorteada.</b><span>Aumente a distância ou confira na lista de cotas abaixo.</span></div>`;return}
-  e.innerHTML=L.map(({c,pos,ref})=>{const d=c.cota-ref,tag=pos===0?'<span class="cv-t g">🎉 É a cota sorteada</span>':`<span class="cv-t ${pos<=6?'y':''}">${pos+1}ª da fila</span>`;
-    return `<article class="cv-o ${pos===0?'hit':''}"><div class="cv-cn"><b>${cvP3(c.cota)}</b><small>${d===0?'sorteada':(d>0?'+':'−')+Math.abs(d)}</small></div><div class="cv-ob">
+  e.innerHTML=L.map(({c,pos,ref,d})=>{const dd=c.cota-ref,tag=pos===0?'<span class="cv-t g">🎉 É a cota sorteada</span>':`<span class="cv-t ${pos<=6?'y':''}">${pos+1}ª da fila</span>`;
+    return `<article class="cv-o ${pos===0?'hit':''}"><div class="cv-cn"><b>${cvP3(c.cota)}</b><small>${dd===0?'sorteada':(dd>0?'+':'−')+Math.abs(dd)}</small></div><div class="cv-ob">
       <div class="cv-otl"><b>${esc(c.cliente)}</b>${tag}${c.lance_fixo?'<span class="cv-t lf">Lance Fixo ✓</span>':''}</div>
-      <small>Grupo ${esc(c.grupo)} · cota sorteada ${cvP3(ref)}${c.moto?' · '+esc(c.moto):''}</small>
+      <small>Grupo ${esc(c.grupo)} · cota sorteada ${cvP3(ref)}${d&&d.concurso?' (Federal '+cvBR(d.data).slice(0,5)+')':''}${c.moto?' · '+esc(c.moto):''}</small>
       <div class="cv-ca">${cvWa(c,pos,ref)}${!c.lance_fixo&&pos>0?`<button class="btn sm" onclick="cvLF('${c.id}',true)">Marcar Lance Fixo</button>`:''}</div></div></article>`}).join('')}
 
 function cvGrupos(){const e=document.getElementById('cv_gl');if(!e)return;
   if(!CVG.length){e.innerHTML='<div class="cv-vz"><b>Nenhum grupo cadastrado.</b><span>Cadastre o número do grupo e o total de cotas dele (está no contrato do cliente).</span></div>';return}
-  e.innerHTML=CVG.map(g=>{const r=CVP?cvCota(CVP.premio,g.max_cotas):null,n=CVC.filter(c=>c.grupo===g.grupo&&c.situacao==='ativa').length,fila=r?cvFila(r,g.max_cotas,7):[];
-    return `<article class="cv-g"><div class="cv-gh"><div><b>Grupo ${esc(g.grupo)}</b><small>${cvNum(g.max_cotas)} cotas · ${n} cliente${n===1?'':'s'} ativo${n===1?'':'s'}${g.proxima_assembleia?' · assembleia '+cvBR(g.proxima_assembleia):''}</small></div>
+  e.innerHTML=CVG.map(g=>{const dw=cvDraw(g),r=dw?cvCota(dw.premio,g.max_cotas):null,n=CVC.filter(c=>c.grupo===g.grupo&&c.situacao==='ativa').length,fila=r?cvFila(r,g.max_cotas,7):[];
+    return `<article class="cv-g"><div class="cv-gh"><div><b>Grupo ${esc(g.grupo)}</b><small>${cvNum(g.max_cotas)} cotas · ${n} cliente${n===1?'':'s'} ativo${n===1?'':'s'}</small></div>
       ${r?`<div class="cv-gr"><small>Cota sorteada</small><b>${cvP3(r)}</b></div>`:''}</div>
-      ${r?`<div class="cv-fq" aria-label="Fila de aproximação">${fila.map((x,i)=>`<span class="${i===0?'on':''}">${cvP3(x)}</span>`).join('<i>›</i>')}</div><details class="cv-cc"><summary>Ver a conta</summary>${cvConta(CVP.premio,g.max_cotas)}</details>`:''}
+      ${dw?`<p class="cv-gn ${dw.sem?'w':''}">${dw.concurso?'Federal '+dw.concurso+' · '+cvBR(dw.data)+' · ':''}${esc(dw.nota)}</p>`:'<p class="cv-gn w">Ainda não saiu extração antes da assembleia deste grupo.</p>'}${r?`<div class="cv-fq" aria-label="Fila de aproximação">${fila.map((x,i)=>`<span class="${i===0?'on':''}">${cvP3(x)}</span>`).join('<i>›</i>')}</div><details class="cv-cc"><summary>Ver a conta</summary>${cvConta(dw.premio,g.max_cotas)}</details>`:''}
       ${g.id?`<div class="cv-ca"><button class="btn sm" onclick="cvGForm('${g.id}')">Editar</button><button class="btn sm cv-x" onclick="cvGDel('${g.id}')">Excluir</button></div>`:`<div class="cv-ca"><button class="btn sm" onclick="cvGForm(null,'${esc(g.grupo)}')">Confirmar total de cotas</button></div>`}</article>`}).join('')}
 
 function cvGForm(id,nome){const g=id?CVG.find(o=>o.id===id):(nome?CVG.find(o=>o.grupo===nome):null)||{};CVGED=id||null;const e=document.getElementById('cv_gf');if(!e)return;
   e.innerHTML=`<div class="cv-fm"><label>Número do grupo<input id="cg_g" type="text" maxlength="30" placeholder="ex.: 1234" value="${esc(g.grupo||'')}"></label>
    <label>Total de cotas do grupo<input id="cg_n" type="number" inputmode="numeric" min="2" max="99999" placeholder="ex.: 720" value="${g.max_cotas||''}"></label>
-   <label>Próxima assembleia (opcional)<input id="cg_a" type="date" value="${g.proxima_assembleia||''}"></label></div>
+   <label>Data da assembleia (avança sozinha todo mês)<input id="cg_a" type="date" value="${g.proxima_assembleia||''}"></label></div>
    <div class="cv-ca"><button class="btn red" onclick="cvGSalva()">${id?'Salvar grupo':'Cadastrar grupo'}</button><button class="btn" onclick="document.getElementById('cv_gf').innerHTML=''">Cancelar</button></div>`;
   document.getElementById('cg_g').focus()}
 async function cvGSalva(){const gv=id=>document.getElementById(id).value.trim(),gr=gv('cg_g'),n=parseInt(gv('cg_n'),10),a=gv('cg_a')||null;
@@ -4464,6 +4477,7 @@ html body.fpr .mb{background:rgba(10,10,13,.92);border-top:1px solid #2a2b31}htm
 .cv-gh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.cv-gh small{display:block;color:#666;font-size:12.5px;margin-top:2px}
 .cv-gr{text-align:right}.cv-gr small{color:#666;font-size:11.5px}.cv-gr b{display:block;font-size:28px;line-height:1;color:var(--r);font-variant-numeric:tabular-nums}
 .cv-fq{display:flex;gap:4px;align-items:center;flex-wrap:wrap}.cv-fq span{background:#f3f3f7;border-radius:9px;padding:4px 8px;font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}.cv-fq span.on{background:var(--r);color:#fff}.cv-fq i{font-style:normal;color:#bbb;font-size:12px}
+.cv-gn{margin:0;font-size:12.5px;color:#166534;background:#f0fdf4;border-radius:9px;padding:6px 9px}.cv-gn.w{color:#92400e;background:#fffbeb}
 .cv-cc summary{cursor:pointer;font-size:13px;font-weight:600;color:#555}.cv-ct{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}.cv-ct li{display:flex;justify-content:space-between;gap:10px;font-size:13px;background:#fafafc;border-radius:10px;padding:7px 10px}.cv-ct span{color:#666}.cv-ct b{font-variant-numeric:tabular-nums}
 .cv-fl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0 12px}.cv-fl input{flex:1 1 200px;margin:0;padding:8px 12px;font-size:14px}
 .cv-fm{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 4px}.cv-fm label{display:block;font-size:12.5px;font-weight:600;color:#555}.cv-fm input,.cv-fm select{margin-top:6px;padding:12px;font-size:16px}
