@@ -2881,7 +2881,7 @@ async function pVendas(quiet){
   if(!quiet)$('#pn').innerHTML='<div class="kp kg">'+'<div class="sk" style="height:84px"></div>'.repeat(3)+'</div>';
   const ok=await vdLoad();
   if(!ok){if(!quiet)$('#pn').innerHTML='<p class="mu">Não consegui carregar as vendas. Rode o SQL atualizado no Supabase e recarregue a página.</p>';return}
-  if(!quiet||!$('#vdl'))$('#pn').innerHTML=visBarraH()+'<div id="vs_c"'+(VISTAB==='visitas'?' hidden':'')+'><div id="vdk"></div><div class="pdf" id="vdf"></div><input type="search" id="vdq" aria-label="Buscar cliente" placeholder="Buscar por nome, telefone, CPF ou moto" value="'+esc(VQ)+'" oninput="VQ=this.value;vdView()" style="margin-bottom:12px"><div id="vdl"></div></div><div id="vs_v"'+(VISTAB==='visitas'?'':' hidden')+'></div>';if(VISTAB==='visitas')setTimeout(()=>visCarrega(),0);
+  if(!quiet||!$('#vdl'))$('#pn').innerHTML='<div id="vs_c"><div id="vdk"></div><div class="pdf" id="vdf"></div><input type="search" id="vdq" aria-label="Buscar cliente" placeholder="Buscar por nome, telefone, CPF ou moto" value="'+esc(VQ)+'" oninput="VQ=this.value;vdView()" style="margin-bottom:12px"><div id="vdl"></div></div>';
   const sg=vdSig();if(quiet&&$('#vdl')&&sg===VSIG){vdSeenSet();return}
   VSIG=sg;vdView();vdSeenSet()}
 /* ===== NOVOS CLIENTES EM TEMPO REAL: contador na aba, aviso e atualização sozinha ===== */
@@ -3100,7 +3100,7 @@ async function pPers0(keep){
  <section class="ps-c"><h3>Seções do site</h3><p class="sub">Escolha o que aparece para o cliente.</p>${PS_SEC.map(s=>`<div class="ps-t"><span>${s[1]} ${esc(s[2])}<small>${esc(s[3])}</small></span><label class="ps-sy"><input type="checkbox" ${(S.ocultar||[]).includes(s[0])?'':'checked'} onchange="psSec('${s[0]}',this.checked)" aria-label="Mostrar ${esc(s[2])}"><i></i></label></div>`).join('')}</section> ${psSobreH()}${psPedidoH()}
  </div>
  <aside class="ps-pv"><h4>Prévia ao vivo</h4><div id="ps_pv"></div></aside>
- <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['motos','🏍️','Motos'],['calculadora','🧮','Calculadora'],['comparar','⚖️','Comparar'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
+ <div class="ps-bar"><button type="button" class="btn grow" id="ps_sv" onclick="psSalvar()">Salvar e publicar</button><a class="btn" href="#">Ver meu site ↗</a>${PSTEM?'<button type="button" class="btn" id="ps_un" onclick="psDesfazer()">↶ Desfazer</button>':''}<button type="button" class="btn" onclick="psRestaurar()">Padrão</button></div></div>`;psSync();peCarrega()} const NAV=[['inicio','🏠','Início'],['vendas','👥','Clientes'],['acessos','📈','Acessos'],['cota','🎯','Cota da Vez'],['motos','🏍️','Motos'],['calculadora','🧮','Calculadora'],['comparar','⚖️','Comparar'],['conta','⚙️','Configuração'],['personalizar','🎨','Personalizar']];
 let AC=null,PSS=null,PSAVED={},PSLIVE=false;
 async function acessoCarrega(){try{const r=await sb.rpc('meu_acesso');AC=(r&&r.data)||{}}catch(e){AC={}}}
 const ehPrem=()=>!!(AC&&AC.limites&&AC.limites.personalizar);
@@ -3121,17 +3121,18 @@ function enPre(){try{const c=navigator.connection;if(c&&(c.saveData||/(^|-)2g$/.
   vs.slice(0,4).forEach(carga);const ws=[...document.querySelectorAll('.en-w')];const todos=w=>w.querySelectorAll('.en-mp video').forEach(carga);
   if(window.IntersectionObserver){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){todos(e.target);io.unobserve(e.target)}}),{rootMargin:'1000px 0px'});ws.forEach(w=>io.observe(w))}else ws.forEach(todos)}
 function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,1500)} if(t)T=t; if(T!=='personalizar')psRevert(); if(T==='personalizar'&&AC&&AC.limites&&!ehPrem()){T='inicio';persLock()}
-  if(T==='resumo'||T==='playbook'||T==='sorteio')T='inicio';
+  if(T==='sorteio')T='cota';if(T==='visitas')T='acessos';
+  if(T==='resumo'||T==='playbook')T='inicio';
   if(T==='pedidos'||T==='leads')T='vendas';
   if(T==='site'||T==='perfil'){CTAB=T==='site'?'textos':'perfil';T='conta'}
-  if(appModo()&&!['vendas','avisos','personalizar','conta'].includes(T))T='vendas';
+  if(appModo()&&!['vendas','acessos','cota','avisos','personalizar','conta'].includes(T))T='vendas';
   if(!appModo()&&T==='avisos')T='inicio';
   PNS='#pn';
   const nav=navLista().map(a=>{const lk=a[0]==='personalizar'&&!ehPrem();return `<button class="nv ${T===a[0]?'on':''}${lk?' lockd':''}" onclick="${lk?'persLock()':`adm('${a[0]}')`}" ${lk?'aria-label="Personalizar (bloqueado: só Premium)"':''}><span class="ic">${a[1]}</span><span class="nlb">${a[2]}</span>${lk?'<span class="nlk" aria-hidden="true">🔒</span>':''}${a[0]==='personalizar'&&!lk&&AC&&AC.msgs_novas>0&&T!=='personalizar'?`<span class="nb" id="pe_nb">${AC.msgs_novas}</span>`:''}${a[0]==='vendas'?'<span class="nb" id="vdbg" hidden></span>':''}${a[0]==='avisos'?'<span class="nb" id="avbg" hidden></span>':''}</button>`}).join('');
-  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',calculadora:'Calculadora de consórcio',sorteio:'Sorteio da Loteria Federal',comparar:'Comparar',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
+  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',calculadora:'Calculadora de consórcio',cota:'Cota da Vez',acessos:'Acessos ao site',comparar:'Comparar',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
   $('#app').innerHTML=`<div class="shell${appModo()?' apm':''}"><aside class="sd"><div class="sd-top">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}</b><small>Painel do vendedor</small></div></div><nav class="sd-nav">${nav}</nav><div class="sd-bot"><a class="lk" href="#">↗ Ver meu site</a><button class="lk" onclick="out()">Sair</button><small class="ver">Versão 01/11/2026</small></div></aside>
   <main class="mn"><div class="frase" id="frase">${fraseH(V&&V.frase_n,0,'fr-t')}</div><div id="plc"></div><header class="mt2"><h1>${tt}</h1><span class="mt2a"><a class="btn sm" href="#" style="text-decoration:none">Ver site</a><button class="btn sm" onclick="out()">Sair</button></span></header><span id="nb" hidden></span><div id="pn"></div></main></div>`;
-  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,calculadora:pCalculadora,sorteio:pSorteio,comparar:pComparar,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
+  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,calculadora:pCalculadora,cota:pCota,acessos:pAcessos,comparar:pComparar,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
 }
 
 /* ---- prazo do plano (comprado em..., suspensão automática em...) com cronômetro ---- */
@@ -3844,7 +3845,7 @@ if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('messag
     try{if(typeof T!=='undefined'&&T==='vendas'&&typeof pVendas==='function'&&$('#vdl'))pVendas(true)}catch(x){}}
   if(d.tipo==='abrir'&&d.url){try{const u=new URL(d.url,location.origin);appUrl(u.searchParams);if(T==='vendas')adm('vendas')}catch(x){}}});
 /* aviso tocado: abre na aba Clientes e mostra o botão do WhatsApp do cliente */
-function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(qp.get('t')==='avisos')T='avisos';if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
+function appUrl(qp){qp=qp||new URLSearchParams(location.search);if(qp.has('app')){try{sessionStorage.setItem('app_modo','1')}catch(e){}}if(['avisos','cota','acessos'].includes(qp.get('t')))T=qp.get('t');if(qp.get('t')==='vendas'){T='vendas';try{VF='todos'}catch(e){}}
   const cq=qp.get('c');if(cq)setTimeout(()=>avAbreCli(cq),900);const wa=qp.get('wa');if(wa&&/^https:\/\/wa\.me\//.test(wa))setTimeout(()=>appWaBar(wa),600);
   if(qp.has('app')||qp.has('t')||qp.has('wa')){try{history.replaceState(null,'',location.pathname)}catch(e){}}}
 function appWaBar(wa){let b=document.getElementById('ap_wab');if(b)b.remove();b=document.createElement('div');b.id='ap_wab';b.className='ap-wab';
@@ -3890,116 +3891,157 @@ function appIniH(){let x=false,ep='';try{x=localStorage.getItem('ap_ini_x')==='1
    Cada aviso novo aparece animado na tela (com som e vibração) mesmo com o painel aberto no navegador:
    chega pelo Supabase Realtime e pelo service worker, sem repetir o mesmo aviso. */
 const appModo=()=>{try{return appStand()||sessionStorage.getItem('app_modo')==='1'}catch(e){return appStand()}};
-/* ===== Sorteio (Loteria Federal) ===== */
-let SRC=[],SRR=[],SRF='ativa',SRED=null;
-const srN5=s=>String(s==null?'':s).replace(/\D/g,'').slice(-5);
-const srDig=(N,reg)=>reg==='dezena'?2:reg==='centena'?3:reg==='milhar'?4:(N<=100?2:N<=1000?3:4);
-const srWrap=(x,N)=>((x-1)%N+N)%N+1;
-function srCalc(pr,N,dig){
-  const lim=Math.pow(10,dig),c=[];let ch=0,orig=0,aj=false;
-  for(let i=0;i<5;i++){const s=String(pr[i]||'').replace(/\D/g,'');if(s.length<5){c.push({k:i+1,v:null,ok:false});continue}
-    const raw=parseInt(s.slice(-dig),10),v=raw===0?lim:raw,ok=v<=N;c.push({k:i+1,v,ok});if(ok&&!ch){ch=v;orig=i+1}}
-  const pronto=c.every(x=>x.v!==null);
-  if(!ch&&pronto&&c[0]){ch=srWrap(c[0].v,N);orig=1;aj=true}
-  return{ch,orig,aj,c,pronto}}
-const srRank=(ch,cota,N)=>{const u=((cota-ch)%N+N)%N,d=((ch-cota)%N+N)%N;return u===0?0:(u<=d?2*u-1:2*d)};
-const srFila=(ch,N,k)=>{const o=[];for(let r=0;r<k&&r<N;r++){o.push(r===0?ch:(r%2?srWrap(ch+(r+1)/2,N):srWrap(ch-r/2,N)))}return o};
-const srP3=n=>String(n).padStart(3,'0');
-function srSP(){const f=new Intl.DateTimeFormat('en-CA',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hourCycle:'h23'}).formatToParts(new Date()),g={};f.forEach(p=>g[p.type]=p.value);return{y:+g.year,m:+g.month,d:+g.day,h:+g.hour,mi:+g.minute}}
-function srDia(off){const s=srSP(),dt=new Date(Date.UTC(s.y,s.m-1,s.d+off));return dt}
-const srISO=d=>d.toISOString().slice(0,10);
-const srBR=iso=>{const p=String(iso).slice(0,10).split('-');return p[2]+'/'+p[1]+'/'+p[0]};
-const srSem=d=>['domingo','segunda','terça','quarta','quinta','sexta','sábado'][d.getUTCDay()];
-function srProx(){const s=srSP(),apos=s.h*60+s.mi>=19*60+30;for(let i=0;i<8;i++){const d=srDia(i),w=d.getUTCDay();if((w===3||w===6)&&!(i===0&&apos))return{d,hoje:i===0}}return null}
-function srUlt(){const s=srSP(),antes=s.h*60+s.mi<19*60+30;for(let i=0;i>-8;i--){const d=srDia(i),w=d.getUTCDay();if((w===3||w===6)&&!(i===0&&antes))return d}return srDia(0)}
-async function pSorteio(){
-  const px=srProx(),ul=srISO(srUlt());
-  $('#pn').innerHTML=`<section class="sr-hero"><div class="sr-h1"><span class="sr-ic">🎰</span><div><h2>Quem foi sorteado?</h2><p>Descubra qual cota foi sorteada no consórcio e quais dos seus clientes estão na frente.</p></div></div>
-  <div class="sr-nx"><small>${px&&px.hoje?'Hoje':'Próxima extração'}</small><b>${px?srSem(px.d)+', '+srBR(srISO(px.d)):''}</b><span>resultado por volta das 19h (Brasília)</span></div></section>
-  <details class="card2 sr-how"><summary>Como funciona o sorteio do consórcio</summary><div class="sr-hb">
-  <p>Todo mês o grupo faz uma assembleia. Uma das formas de contemplar é o <b>sorteio</b>, e ele usa o resultado da <b>Loteria Federal</b> (extrações às <b>quartas e sábados</b>), para ninguém poder mexer no resultado.</p>
-  <ol><li>Cada cliente tem um número de <b>cota</b> dentro do grupo (ex.: cota 376 de um grupo de 1.000).</li>
-  <li>Pega-se o número do <b>1º prêmio</b> da Loteria Federal e usa-se só os últimos algarismos: 2 (dezena), 3 (centena) ou 4 (milhar), conforme o tamanho do grupo. Ex.: 1º prêmio <b>18.857</b> → cota <b>857</b>.</li>
-  <li>Se a cota sorteada não existe, já foi contemplada, está cancelada ou em atraso, a administradora procura a próxima <b>acima, depois abaixo, alternando</b> (857, 858, 856, 859…) até achar uma cota apta.</li>
-  <li>Só concorre quem está com as parcelas em dia. Cotas de grupos com mais de mil participantes costumam usar o milhar.</li>
-  <li>Se o número passa do tamanho do grupo, cada administradora tem um jeito (usar o prêmio seguinte ou subtrair o tamanho do grupo). Esta calculadora usa o prêmio seguinte.</li></ol>
-  <p class="sr-av"><b>Importante:</b> quem confirma a contemplação é a administradora (Consórcio Nacional Honda), na assembleia. Esta ferramenta é uma conferência rápida para você avisar o cliente; confirme sempre no regulamento e no resultado oficial do grupo.</p></div></details>
-  <section class="card2 sr-calc"><div class="card2-h"><h3>Conferir resultado</h3><small>Digite os 5 prêmios da extração</small></div>
-  <div class="sr-row"><label>Data da extração<input id="sr_d" type="date" value="${ul}" oninput="srRecalc()"></label><label>Concurso (opcional)<input id="sr_c" type="text" inputmode="numeric" placeholder="ex.: 6117" maxlength="6" oninput="srRecalc()"></label></div>
-  <div class="sr-pr">${[1,2,3,4,5].map(i=>`<label><span>${i}º prêmio</span><input id="sr_p${i}" type="text" inputmode="numeric" maxlength="6" placeholder="00000" autocomplete="off" oninput="srRecalc()"></label>`).join('')}</div>
-  <div class="sr-row"><label>Participantes do grupo<input id="sr_n" type="number" inputmode="numeric" min="2" max="99999" value="1000" oninput="srRecalc()"></label>
-  <label>Quantos algarismos usar<select id="sr_g" onchange="srRecalc()"><option value="auto">Automático (pelo tamanho do grupo)</option><option value="dezena">2 (dezena)</option><option value="centena">3 (centena)</option><option value="milhar">4 (milhar)</option></select></label></div>
-  <div id="sr_out" class="sr-out"></div>
-  <div class="sr-acts"><button class="btn red" onclick="srSalvaRes()">Salvar este resultado</button><button class="btn" onclick="srLimpa()">Limpar</button></div>
-  <div id="sr_hist"></div></section>
-  <section class="card2"><div class="card2-h"><h3>Cotas dos meus clientes</h3><small>Cadastre para conferir de uma vez</small></div>
-  <div class="sr-f">${[['ativa','Ativas'],['contemplada','Contempladas'],['cancelada','Canceladas'],['todas','Todas']].map(a=>`<button class="${SRF===a[0]?'on':''}" onclick="SRF='${a[0]}';srLista()">${a[1]}</button>`).join('')}</div>
-  <div id="sr_l"><div class="sk" style="height:64px;border-radius:14px"></div></div>
-  <details class="sr-add" id="sr_ad"><summary>＋ Cadastrar cota de cliente</summary><div id="sr_form"></div></details></section>`;
-  srForm();srRecalc();
-  const [a,b]=await Promise.all([sb.from('cotas_consorcio').select('*').order('criado',{ascending:false}).limit(500),sb.from('lf_resultados').select('*').order('data_apuracao',{ascending:false}).limit(12)]);
-  if(T!=='sorteio')return;
-  SRC=(a&&a.data)||[];SRR=(b&&b.data)||[];srLista();srHist();srRecalc()}
-function srLe(){const p=[1,2,3,4,5].map(i=>{const e=document.getElementById('sr_p'+i);return e?e.value:''}),n=parseInt((document.getElementById('sr_n')||{}).value,10)||0,g=(document.getElementById('sr_g')||{}).value||'auto';return{p,n,g}}
-let SRCUR=null;
-function srRecalc(){const o=document.getElementById('sr_out');if(!o)return;const{p,n,g}=srLe();SRCUR=null;
-  if(n<2){o.innerHTML='<p class="sr-mu">Informe quantos participantes tem o grupo.</p>';srLista();return}
-  const dig=srDig(n,g),r=srCalc(p,n,dig);
-  if(!r.c[0]||r.c[0].v===null){o.innerHTML='<p class="sr-mu">Digite o <b>1º prêmio</b> (5 números) para ver a cota sorteada.</p>';SRCUR=null;srLista();return}
-  if(!r.ch){o.innerHTML=`<div class="sr-cand">${r.c.map(x=>srCand(x)).join('')}</div><p class="sr-mu">O 1º prêmio passou do tamanho do grupo. Preencha os próximos prêmios.</p>`;srLista();return}
-  SRCUR={ch:r.ch,n,dig,orig:r.orig};
-  const fila=srFila(r.ch,n,8);
-  o.innerHTML=`<div class="sr-big"><small>Cota sorteada${r.orig>1?' (pelo '+r.orig+'º prêmio)':''}</small><b>${srP3(r.ch)}</b><span>grupo de ${n.toLocaleString('pt-BR')} participantes · ${dig} algarismos${r.aj?' · ajustado ao tamanho do grupo':''}</span></div>
-  <div class="sr-cand">${r.c.map(x=>srCand(x,r.orig)).join('')}</div>
-  <div class="sr-fl"><small>Se a cota sorteada não estiver apta, a ordem de busca é:</small><div>${fila.map((c,i)=>`<span class="${i===0?'on':''}">${srP3(c)}</span>`).join('')}</div></div>`;
-  srLista()}
-const srCand=(x,o)=>`<span class="${x.v===null?'':(x.ok?'ok':'no')}${o===x.k?' use':''}"><i>${x.k}º</i>${x.v===null?'—':srP3(x.v)}</span>`;
-function srLimpa(){[1,2,3,4,5].forEach(i=>{const e=document.getElementById('sr_p'+i);if(e)e.value=''});const c=document.getElementById('sr_c');if(c)c.value='';srRecalc()}
-async function srSalvaRes(){const{p}=srLe();if(p.some(x=>String(x).replace(/\D/g,'').length<5)){toast('Preencha os 5 prêmios (5 números cada).');return}
-  const d=document.getElementById('sr_d').value;if(!/^\d{4}-\d{2}-\d{2}$/.test(d)){toast('Informe a data da extração.');return}
-  const cn=parseInt(document.getElementById('sr_c').value,10)||null;
-  const r=await sb.from('lf_resultados').upsert({vendedor_id:V.id,concurso:cn,data_apuracao:d,premios:p.map(srN5)},{onConflict:'vendedor_id,data_apuracao'}).select().single();
-  if(r.error){toast('Não consegui salvar. Tente de novo.');return}
-  SRR=[r.data].concat(SRR.filter(x=>x.data_apuracao!==r.data.data_apuracao)).sort((a,b)=>a.data_apuracao<b.data_apuracao?1:-1);srHist();toast('Resultado salvo!')}
-function srHist(){const e=document.getElementById('sr_hist');if(!e)return;if(!SRR.length){e.innerHTML='';return}
-  e.innerHTML=`<div class="sr-hh"><small>Resultados salvos</small><div>${SRR.map(x=>`<button onclick="srUsaRes(${x.id})">${srBR(x.data_apuracao)}${x.concurso?' · '+x.concurso:''}</button>`).join('')}</div></div>`}
-function srUsaRes(id){const x=SRR.find(o=>o.id===id);if(!x)return;document.getElementById('sr_d').value=x.data_apuracao;document.getElementById('sr_c').value=x.concurso||'';(x.premios||[]).forEach((v,i)=>{const e=document.getElementById('sr_p'+(i+1));if(e)e.value=v});srRecalc();document.querySelector('.sr-calc').scrollIntoView({behavior:'smooth',block:'start'})}
-function srForm(c){const x=c||{};SRED=c?c.id:null;const dl=(typeof VD!=='undefined'&&VD&&VD.length)?`<datalist id="sr_dl">${VD.slice(0,200).map(v=>`<option value="${esc(v.nome||'')}"></option>`).join('')}</datalist>`:'';
-  $('#sr_form').innerHTML=`${dl}<div class="sr-fm"><label>Nome do cliente<input id="sc_n" type="text" maxlength="120" list="sr_dl" value="${esc(x.cliente||'')}" onchange="srPre()"></label>
-  <label>WhatsApp<input id="sc_t" type="tel" inputmode="tel" maxlength="30" placeholder="(68) 99999-0000" value="${esc(x.telefone||'')}"></label>
-  <label>Moto<input id="sc_m" type="text" maxlength="120" value="${esc(x.moto||'')}"></label>
-  <label>Grupo<input id="sc_g" type="text" maxlength="30" placeholder="ex.: 1234" value="${esc(x.grupo||'')}"></label>
-  <label>Número da cota<input id="sc_c" type="number" inputmode="numeric" min="1" max="99999" value="${x.cota||''}"></label>
-  <label>Participantes do grupo<input id="sc_p" type="number" inputmode="numeric" min="2" max="99999" value="${x.participantes||(document.getElementById('sr_n')||{}).value||1000}"></label>
-  <label class="sr-w">Observação<input id="sc_o" type="text" maxlength="500" value="${esc(x.obs||'')}"></label></div>
-  <div class="sr-acts"><button class="btn red" onclick="srSalvaCota()">${c?'Salvar alterações':'Cadastrar cota'}</button>${c?'<button class="btn" onclick="srForm()">Cancelar</button>':''}</div>`}
-function srPre(){const n=document.getElementById('sc_n').value.trim().toLowerCase();if(!n||typeof VD==='undefined')return;const v=VD.find(o=>String(o.nome||'').trim().toLowerCase()===n);if(!v)return;const t=document.getElementById('sc_t'),m=document.getElementById('sc_m');if(t&&!t.value)t.value=v.telefone||'';if(m&&!m.value)m.value=v.moto_nome||''}
-async function srSalvaCota(){const g=id=>document.getElementById(id).value.trim(),cota=parseInt(g('sc_c'),10),part=parseInt(g('sc_p'),10),nome=g('sc_n');
-  if(!nome){toast('Digite o nome do cliente.');return}if(!(cota>0)||!(part>1)){toast('Informe a cota e o total de participantes.');return}if(cota>part){toast('A cota não pode ser maior que o total de participantes.');return}
-  const row={cliente:nome,telefone:g('sc_t')||null,moto:g('sc_m')||null,grupo:g('sc_g')||null,cota,participantes:part,obs:g('sc_o')||null,atualizado:new Date().toISOString()};
-  const r=SRED?await sb.from('cotas_consorcio').update(row).eq('id',SRED).select().single():await sb.from('cotas_consorcio').insert({...row,vendedor_id:V.id}).select().single();
-  if(r.error){toast('Não consegui salvar. Confira os números.');return}
-  SRC=SRED?SRC.map(o=>o.id===r.data.id?r.data:o):[r.data].concat(SRC);toast(SRED?'Cota atualizada!':'Cota cadastrada!');srForm();srLista();
-  const ad=document.getElementById('sr_ad');if(ad)ad.open=false}
-function srCurPara(c){if(!SRCUR)return null;const{p,g}=srLe(),dig=srDig(c.participantes,g),r=srCalc(p,c.participantes,dig);return r.ch?{ch:r.ch,rk:srRank(r.ch,c.cota,c.participantes)}:null}
-function srLista(){const e=document.getElementById('sr_l');if(!e)return;
-  const all=SRC,cnt={ativa:0,contemplada:0,cancelada:0};all.forEach(c=>cnt[c.situacao]++);
-  document.querySelectorAll('.sr-f button').forEach((b,i)=>{const k=['ativa','contemplada','cancelada','todas'][i];b.classList.toggle('on',SRF===k);b.dataset.n=k==='todas'?all.length:cnt[k]});
-  let L=all.filter(c=>SRF==='todas'||c.situacao===SRF);
-  const com=SRCUR?L.map(c=>({c,r:c.situacao==='ativa'?srCurPara(c):null})):L.map(c=>({c,r:null}));
-  if(SRCUR)com.sort((a,b)=>(a.r?a.r.rk:1e9)-(b.r?b.r.rk:1e9));
-  if(!L.length){e.innerHTML=`<div class="sr-vz"><b>${all.length?'Nenhuma cota nesta aba.':'Nenhuma cota cadastrada ainda.'}</b><span>Cadastre a cota de cada cliente de consórcio para conferir tudo de uma vez quando sair o resultado.</span></div>`;return}
-  e.innerHTML=com.map(({c,r})=>{const rk=r?r.rk:null,tag=rk===0?'<span class="sr-t g">🎉 É a cota sorteada</span>':rk!==null&&rk<=6?`<span class="sr-t y">Na frente: ${rk+1}ª da fila</span>`:rk!==null?`<span class="sr-t">${rk+1}ª da fila</span>`:'',
-    tel=String(c.telefone||'').replace(/\D/g,''),w=tel.length>=10?'55'+tel.replace(/^55(?=\d{10,11}$)/,''):'';
-    const msg=rk===0?`Olá, ${(c.cliente||'').split(' ')[0]}! Saiu a Loteria Federal e a sua cota ${c.cota}${c.grupo?' do grupo '+c.grupo:''} foi a sorteada. Vou confirmar com a administradora e já te falo.`:`Olá, ${(c.cliente||'').split(' ')[0]}! Passando para falar do seu consórcio${c.moto?' da '+c.moto:''}.`;
-    return `<article class="sr-c ${rk===0?'hit':''} ${c.situacao!=='ativa'?'off':''}"><div class="sr-cn"><b>${srP3(c.cota)}</b><small>cota</small></div><div class="sr-cb"><div class="sr-ct"><b>${esc(c.cliente)}</b>${tag}${c.situacao!=='ativa'?`<span class="sr-t ${c.situacao==='contemplada'?'g':''}">${c.situacao==='contemplada'?'Contemplada'+(c.contemplada_em?' em '+srBR(c.contemplada_em):''):'Cancelada'}</span>`:''}</div>
-    <small>${[c.moto,c.grupo?'Grupo '+esc(c.grupo):'',c.participantes.toLocaleString('pt-BR')+' participantes'].filter(Boolean).map(x=>x).join(' · ')}</small>${c.obs?`<small class="sr-ob">${esc(c.obs)}</small>`:''}
-    <div class="sr-ca">${w?`<a class="btn sm" target="_blank" rel="noopener" href="https://wa.me/${w}?text=${encodeURIComponent(msg)}">WhatsApp</a>`:''}${c.situacao==='ativa'?`<button class="btn sm" onclick="srSit('${c.id}','contemplada')">Marcar contemplada</button>`:`<button class="btn sm" onclick="srSit('${c.id}','ativa')">Voltar para ativa</button>`}${c.situacao==='ativa'?`<button class="btn sm" onclick="srSit('${c.id}','cancelada')">Cancelada</button>`:''}<button class="btn sm" onclick="srEdita('${c.id}')">Editar</button><button class="btn sm sr-x" onclick="srDel('${c.id}')">Excluir</button></div></div></article>`}).join('')}
-async function srSit(id,s){const up={situacao:s,contemplada_em:s==='contemplada'?srISO(srDia(0)):null,atualizado:new Date().toISOString()},r=await sb.from('cotas_consorcio').update(up).eq('id',id).select().single();if(r.error){toast('Não consegui atualizar.');return}SRC=SRC.map(o=>o.id===id?r.data:o);srLista();toast(s==='contemplada'?'Cota marcada como contemplada.':'Cota atualizada.')}
-function srEdita(id){const c=SRC.find(o=>o.id===id);if(!c)return;srForm(c);const ad=document.getElementById('sr_ad');ad.open=true;ad.scrollIntoView({behavior:'smooth',block:'center'})}
-async function srDel(id){if(!confirm('Excluir esta cota?'))return;const r=await sb.from('cotas_consorcio').delete().eq('id',id);if(r.error){toast('Não consegui excluir.');return}SRC=SRC.filter(o=>o.id!==id);srLista();toast('Cota excluída.')}
+/* ===== Cota da Vez: cota sorteada pela Loteria Federal + Lance Fixo (Regulamento CNH, cláusulas 9.2 a 9.4) ===== */
+let CVG=[],CVC=[],CVR=[],CVP=null,CVJ=15,CVF='ativa',CVED=null,CVGED=null,CVQ='';
+const cvDig=s=>String(s==null?'':s).replace(/\D/g,'');
+const cvNum=n=>Number(n).toLocaleString('pt-BR');
+/* divisão do 1º prêmio pelo máximo de cotas; fração × máximo = resto exato; resto 0 = maior cota do grupo */
+function cvCota(pr,N){const p=cvDig(pr);N=+N;if(!p||!(N>=2))return null;const r=parseInt(p,10)%N;return r===0?N:r}
+/* fila de aproximação: sorteada, +1, -1, +2, -2 ... (só cotas que existem no grupo) */
+function cvFila(ref,N,k){const o=[];if(!ref)return o;o.push(ref);for(let d=1;o.length<k&&d<=N;d++){if(ref+d<=N)o.push(ref+d);if(o.length<k&&ref-d>=1)o.push(ref-d)}return o}
+function cvPos(ref,c,N){if(!ref||!c)return null;if(c===ref)return 0;const d=Math.abs(c-ref);let p=0;for(let i=1;i<d;i++){if(ref+i<=N)p++;if(ref-i>=1)p++}if(c>ref)return p+1;return p+1+(ref+d<=N?1:0)}
+const cvP3=n=>String(n).padStart(3,'0');
+const cvBR=iso=>{const p=String(iso||'').slice(0,10).split('-');return p.length===3?p[2]+'/'+p[1]+'/'+p[0]:''};
+const cvSem=iso=>{const d=new Date(String(iso).slice(0,10)+'T12:00:00Z');return isNaN(d)?'':['domingo','segunda','terça','quarta','quinta','sexta','sábado'][d.getUTCDay()]};
+const cvMaxDo=g=>{const x=CVG.find(o=>o.grupo===g);return x?x.max_cotas:null};
+function cvConta(pr,N){const p=parseInt(cvDig(pr),10),q=p/N,f=q-Math.floor(q),r=cvCota(pr,N);
+  const fx=x=>x.toLocaleString('pt-BR',{minimumFractionDigits:6,maximumFractionDigits:6});
+  return `<ol class="cv-ct"><li><span>1º prêmio ÷ cotas do grupo</span><b>${cvNum(p)} ÷ ${cvNum(N)} = ${fx(q)}</b></li><li><span>Fração × cotas do grupo</span><b>${fx(f)} × ${cvNum(N)} = ${(f*N).toLocaleString('pt-BR',{maximumFractionDigits:2})}</b></li><li><span>${r===N&&p%N===0?'Deu zero: vale a maior cota do grupo':'Cota sorteada'}</span><b>${cvP3(r)}</b></li></ol>`}
 
-const NAV_APP=[['vendas','👥','Clientes'],['avisos','🔔','Notificações'],['personalizar','🎨','Personalizar'],['conta','⚙️','Configuração']];
+async function pCota(){
+  $('#pn').innerHTML='<div class="sk" style="height:190px;border-radius:22px"></div><div class="sk" style="height:220px;border-radius:20px;margin-top:14px"></div>';
+  const [g,c,r]=await Promise.all([
+    sb.from('consorcio_grupos').select('*').eq('vendedor_id',V.id).order('grupo'),
+    sb.from('cotas_consorcio').select('*').eq('vendedor_id',V.id).order('criado',{ascending:false}).limit(1000),
+    sb.from('loteria_federal').select('*').order('concurso',{ascending:false}).limit(10)]);
+  if(T!=='cota')return;
+  try{if(typeof VRAW!=='undefined'&&!VRAW.length&&typeof vdLoad==='function')vdLoad().catch(()=>{})}catch(e){}
+  CVG=(g&&g.data)||[];CVC=(c&&c.data)||[];CVR=(r&&r.data)||[];
+  if(!CVP||CVP.auto){const u=CVR[0];CVP=u?{premio:u.premios[0],concurso:u.concurso,data:u.data_sorteio,auto:true}:null}
+  /* grupos citados nas cotas antigas, sem cadastro de grupo: entram com o total que estava na cota */
+  const falta=[...new Set(CVC.map(x=>x.grupo).filter(x=>x&&!CVG.some(o=>o.grupo===x)))];
+  falta.forEach(gr=>{const m=Math.max(...CVC.filter(x=>x.grupo===gr).map(x=>x.participantes||0));if(m>=2)CVG.push({id:null,grupo:gr,max_cotas:m,proxima_assembleia:null})});
+  cvDesenha()}
+
+function cvDesenha(){
+  const P=CVP;
+  $('#pn').innerHTML=`<section class="cv-hero"><div class="cv-h1"><span class="cv-ic" aria-hidden="true">🎯</span><div><h2>Quem está perto da cota sorteada?</h2><p>A cota sorteada de cada grupo, calculada pela regra do regulamento com o 1º prêmio da Loteria Federal, e quais clientes seus estão perto dela para o <b>Lance Fixo</b>.</p></div></div>
+   <div class="cv-res">${P?`<small>${P.auto?'Loteria Federal · concurso '+P.concurso:'Simulação'}${P.data?' · '+cvSem(P.data)+', '+cvBR(P.data):''}</small><b>${esc(cvDig(P.premio).padStart(5,'0'))}</b><span>1º prêmio</span>`:'<small>Ainda sem resultado</small><b>—</b><span>Digite o 1º prêmio abaixo</span>'}</div></section>
+  <section class="card2 cv-sim"><div class="cv-simr">
+    <label for="cv_p">Simular com outro 1º prêmio<input id="cv_p" type="text" inputmode="numeric" maxlength="6" placeholder="ex.: 062545" autocomplete="off" value="${P&&!P.auto?esc(cvDig(P.premio)):''}" onkeydown="if(event.key==='Enter')cvSimula()"></label>
+    <button class="btn red" onclick="cvSimula()">Calcular</button>${P&&!P.auto&&CVR.length?'<button class="btn" onclick="cvOficial()">Voltar ao resultado oficial</button>':''}</div>
+    ${CVR.length?`<div class="cv-hist"><small>Últimas extrações</small><div>${CVR.map(x=>`<button class="${P&&P.auto&&P.concurso===x.concurso?'on':''}" onclick="cvUsa(${x.concurso})">${cvBR(x.data_sorteio).slice(0,5)} · ${esc(x.premios[0])}</button>`).join('')}</div></div>`:''}
+    <p class="cv-mu">O resultado entra sozinho todo dia às 20h30 e 22h30 (Brasília). Vale a extração de quarta ou sábado anterior à assembleia do grupo.</p></section>
+  <section class="card2"><div class="card2-h"><h3>Oportunidades de Lance Fixo</h3><label class="cv-jn">Até <select onchange="CVJ=+this.value;cvOport()">${[5,10,15,30].map(n=>`<option value="${n}" ${CVJ===n?'selected':''}>${n}</option>`).join('')}</select> cotas da sorteada</label></div>
+    <div id="cv_op"></div></section>
+  <section class="card2"><div class="card2-h"><h3>Meus grupos</h3><button class="btn sm" onclick="cvGForm()">＋ Grupo</button></div>
+    <div id="cv_gf"></div><div id="cv_gl" class="cv-gl"></div></section>
+  <section class="card2"><div class="card2-h"><h3>Cotas dos clientes</h3><button class="btn sm" onclick="cvForm()">＋ Cota</button></div>
+    <div id="cv_cf"></div>
+    <div class="cv-fl">${[['ativa','Ativas'],['contemplada','Contempladas'],['cancelada','Canceladas'],['todas','Todas']].map(a=>`<button data-f="${a[0]}" class="${CVF===a[0]?'on':''}" onclick="CVF='${a[0]}';cvLista()">${a[1]}</button>`).join('')}<input type="search" placeholder="Buscar cliente, grupo ou cota" value="${esc(CVQ)}" oninput="CVQ=this.value;cvLista()" aria-label="Buscar cota"></div>
+    <div id="cv_l"></div></section>
+  <details class="card2 cv-how"><summary>Como a cota sorteada é calculada</summary><div class="cv-hb">
+    <p>Pelo Regulamento do Consórcio Nacional Honda (cláusulas 9.1 a 9.4):</p>
+    <ol><li>Vale a <b>extração da Loteria Federal de quarta ou sábado que antecede a assembleia</b> do grupo (se não houver, a anterior).</li>
+    <li>Divide-se o <b>1º prêmio</b> pelo <b>número máximo de cotas do grupo</b> (ex.: 720, 936, 1.200, 2.000). A fração do resultado, multiplicada pelo mesmo número, é a cota sorteada. Se der <b>zero</b>, vale a maior cota do grupo.</li>
+    <li>Se essa cota não puder ser contemplada (atrasada, já contemplada...), passa para a de cima, depois a de baixo: +1, −1, +2, −2...</li>
+    <li><b>Lance Fixo:</b> ganha a cota com Lance Fixo registrado mais perto da cota contemplada no sorteio, alternando acima e abaixo. Por isso, quanto mais perto da cota sorteada, maior a chance.</li></ol>
+    <p class="cv-av"><b>É uma estimativa.</b> O sistema não sabe quais cotas do grupo estão em dia, então a cota de referência pode andar. Quem confirma é a assembleia da Honda: não prometa contemplação ao cliente.</p></div></details>`;
+  cvGrupos();cvOport();cvLista()}
+
+function cvSimula(){const v=cvDig((document.getElementById('cv_p')||{}).value);if(v.length<4){toast('Digite o 1º prêmio (5 ou 6 números).');return}CVP={premio:v,auto:false};cvDesenha()}
+function cvOficial(){CVP=null;const u=CVR[0];if(u)CVP={premio:u.premios[0],concurso:u.concurso,data:u.data_sorteio,auto:true};cvDesenha()}
+function cvUsa(n){const u=CVR.find(x=>x.concurso===n);if(!u)return;CVP={premio:u.premios[0],concurso:u.concurso,data:u.data_sorteio,auto:true};cvDesenha()}
+function cvRef(gr){const N=cvMaxDo(gr);return CVP&&N?{ref:cvCota(CVP.premio,N),N}:null}
+
+function cvWa(c,pos,ref){const tel=cvDig(c.telefone),w=tel.length>=10?'55'+tel.replace(/^55(?=\d{10,11}$)/,''):'';if(!w)return '';
+  const n=(String(c.cliente||'').trim().split(/\s+/)[0])||'tudo bem';
+  const conc=CVP&&CVP.auto?' (concurso '+CVP.concurso+')':'';
+  const msg=pos===0?`Olá, ${n}! Saiu a Loteria Federal${conc} e, pela conta do regulamento, a cota sorteada do seu grupo ${c.grupo} é a ${ref}: a sua! A confirmação oficial sai na assembleia da Honda e eu já estou acompanhando pra você.`
+    :`Olá, ${n}! Saiu a Loteria Federal${conc} e a sua cota ${c.cota} do grupo ${c.grupo} ficou bem perto da cota sorteada (${ref}). No Lance Fixo, o desempate é justamente pela proximidade com essa cota, então você está entre os primeiros da fila. Quer que eu registre o seu Lance Fixo para esta assembleia?`;
+  return `<a class="btn sm cv-wa" target="_blank" rel="noopener" href="https://wa.me/${w}?text=${encodeURIComponent(msg)}">💬 ${pos===0?'Avisar no WhatsApp':'Ofertar Lance Fixo no WhatsApp'}</a>`}
+
+function cvOport(){const e=document.getElementById('cv_op');if(!e)return;
+  if(!CVP){e.innerHTML='<div class="cv-vz"><b>Sem resultado da Loteria Federal ainda.</b><span>Digite o 1º prêmio acima para simular.</span></div>';return}
+  if(!CVG.length||!CVC.length){e.innerHTML='<div class="cv-vz"><b>Cadastre seus grupos e as cotas dos clientes.</b><span>Depois disso, a cada resultado da Federal você vê aqui quem está perto da cota sorteada.</span></div>';return}
+  const L=[];CVC.filter(c=>c.situacao==='ativa'&&c.grupo).forEach(c=>{const r=cvRef(c.grupo);if(!r)return;const pos=cvPos(r.ref,c.cota,r.N);if(pos!==null&&Math.abs(c.cota-r.ref)<=CVJ)L.push({c,pos,ref:r.ref})});
+  L.sort((a,b)=>a.pos-b.pos||(b.c.lance_fixo?1:0)-(a.c.lance_fixo?1:0));
+  if(!L.length){e.innerHTML=`<div class="cv-vz"><b>Nenhum cliente até ${CVJ} cotas da sorteada.</b><span>Aumente a distância ou confira na lista de cotas abaixo.</span></div>`;return}
+  e.innerHTML=L.map(({c,pos,ref})=>{const d=c.cota-ref,tag=pos===0?'<span class="cv-t g">🎉 É a cota sorteada</span>':`<span class="cv-t ${pos<=6?'y':''}">${pos+1}ª da fila</span>`;
+    return `<article class="cv-o ${pos===0?'hit':''}"><div class="cv-cn"><b>${cvP3(c.cota)}</b><small>${d===0?'sorteada':(d>0?'+':'−')+Math.abs(d)}</small></div><div class="cv-ob">
+      <div class="cv-otl"><b>${esc(c.cliente)}</b>${tag}${c.lance_fixo?'<span class="cv-t lf">Lance Fixo ✓</span>':''}</div>
+      <small>Grupo ${esc(c.grupo)} · cota sorteada ${cvP3(ref)}${c.moto?' · '+esc(c.moto):''}</small>
+      <div class="cv-ca">${cvWa(c,pos,ref)}${!c.lance_fixo&&pos>0?`<button class="btn sm" onclick="cvLF('${c.id}',true)">Marcar Lance Fixo</button>`:''}</div></div></article>`}).join('')}
+
+function cvGrupos(){const e=document.getElementById('cv_gl');if(!e)return;
+  if(!CVG.length){e.innerHTML='<div class="cv-vz"><b>Nenhum grupo cadastrado.</b><span>Cadastre o número do grupo e o total de cotas dele (está no contrato do cliente).</span></div>';return}
+  e.innerHTML=CVG.map(g=>{const r=CVP?cvCota(CVP.premio,g.max_cotas):null,n=CVC.filter(c=>c.grupo===g.grupo&&c.situacao==='ativa').length,fila=r?cvFila(r,g.max_cotas,7):[];
+    return `<article class="cv-g"><div class="cv-gh"><div><b>Grupo ${esc(g.grupo)}</b><small>${cvNum(g.max_cotas)} cotas · ${n} cliente${n===1?'':'s'} ativo${n===1?'':'s'}${g.proxima_assembleia?' · assembleia '+cvBR(g.proxima_assembleia):''}</small></div>
+      ${r?`<div class="cv-gr"><small>Cota sorteada</small><b>${cvP3(r)}</b></div>`:''}</div>
+      ${r?`<div class="cv-fq" aria-label="Fila de aproximação">${fila.map((x,i)=>`<span class="${i===0?'on':''}">${cvP3(x)}</span>`).join('<i>›</i>')}</div><details class="cv-cc"><summary>Ver a conta</summary>${cvConta(CVP.premio,g.max_cotas)}</details>`:''}
+      ${g.id?`<div class="cv-ca"><button class="btn sm" onclick="cvGForm('${g.id}')">Editar</button><button class="btn sm cv-x" onclick="cvGDel('${g.id}')">Excluir</button></div>`:`<div class="cv-ca"><button class="btn sm" onclick="cvGForm(null,'${esc(g.grupo)}')">Confirmar total de cotas</button></div>`}</article>`}).join('')}
+
+function cvGForm(id,nome){const g=id?CVG.find(o=>o.id===id):(nome?CVG.find(o=>o.grupo===nome):null)||{};CVGED=id||null;const e=document.getElementById('cv_gf');if(!e)return;
+  e.innerHTML=`<div class="cv-fm"><label>Número do grupo<input id="cg_g" type="text" maxlength="30" placeholder="ex.: 1234" value="${esc(g.grupo||'')}"></label>
+   <label>Total de cotas do grupo<input id="cg_n" type="number" inputmode="numeric" min="2" max="99999" placeholder="ex.: 720" value="${g.max_cotas||''}"></label>
+   <label>Próxima assembleia (opcional)<input id="cg_a" type="date" value="${g.proxima_assembleia||''}"></label></div>
+   <div class="cv-ca"><button class="btn red" onclick="cvGSalva()">${id?'Salvar grupo':'Cadastrar grupo'}</button><button class="btn" onclick="document.getElementById('cv_gf').innerHTML=''">Cancelar</button></div>`;
+  document.getElementById('cg_g').focus()}
+async function cvGSalva(){const gv=id=>document.getElementById(id).value.trim(),gr=gv('cg_g'),n=parseInt(gv('cg_n'),10),a=gv('cg_a')||null;
+  if(!gr){toast('Digite o número do grupo.');return}if(!(n>=2&&n<=99999)){toast('Informe o total de cotas do grupo.');return}
+  const maior=Math.max(0,...CVC.filter(c=>c.grupo===gr).map(c=>c.cota));if(maior>n){toast('Há cliente com cota '+maior+' neste grupo: o total não pode ser menor.');return}
+  const row={grupo:gr,max_cotas:n,proxima_assembleia:a,atualizado:new Date().toISOString()};
+  const r=CVGED?await sb.from('consorcio_grupos').update(row).eq('id',CVGED).select().single():await sb.from('consorcio_grupos').upsert({...row,vendedor_id:V.id},{onConflict:'vendedor_id,grupo'}).select().single();
+  if(r.error){toast('Não consegui salvar o grupo.');return}
+  await sb.from('cotas_consorcio').update({participantes:n,atualizado:new Date().toISOString()}).eq('vendedor_id',V.id).eq('grupo',gr);
+  CVC=CVC.map(c=>c.grupo===gr?{...c,participantes:n}:c);
+  CVG=CVG.filter(o=>o.grupo!==gr&&o.id!==r.data.id).concat([r.data]).sort((x,y)=>String(x.grupo).localeCompare(String(y.grupo),'pt-BR',{numeric:true}));
+  document.getElementById('cv_gf').innerHTML='';toast('Grupo salvo!');cvGrupos();cvOport();cvLista()}
+async function cvGDel(id){const g=CVG.find(o=>o.id===id);if(!g)return;const n=CVC.filter(c=>c.grupo===g.grupo).length;
+  if(!confirm(n?`O grupo ${g.grupo} tem ${n} cota(s) cadastrada(s). Excluir só o grupo? As cotas continuam na lista.`:`Excluir o grupo ${g.grupo}?`))return;
+  const r=await sb.from('consorcio_grupos').delete().eq('id',id);if(r.error){toast('Não consegui excluir.');return}CVG=CVG.filter(o=>o.id!==id);toast('Grupo excluído.');cvGrupos();cvOport()}
+
+function cvForm(id){const c=id?CVC.find(o=>o.id===id):{};CVED=id||null;const e=document.getElementById('cv_cf');if(!e)return;
+  if(!CVG.length){toast('Cadastre o grupo primeiro.');cvGForm();return}
+  const cli=(typeof VRAW!=='undefined'&&VRAW&&VRAW.length)?VRAW:[];
+  e.innerHTML=`${cli.length?`<datalist id="cv_dl">${[...new Map(cli.filter(v=>v.nome).map(v=>[String(v.nome).trim().toLowerCase(),v])).values()].slice(0,300).map(v=>`<option value="${esc(v.nome)}"></option>`).join('')}</datalist>`:''}
+   <div class="cv-fm"><label>Nome do cliente<input id="cc_n" type="text" maxlength="120" list="cv_dl" value="${esc(c.cliente||'')}" onchange="cvPre()"></label>
+   <label>WhatsApp<input id="cc_t" type="tel" inputmode="tel" maxlength="30" placeholder="(68) 99999-0000" value="${esc(c.telefone||'')}"></label>
+   <label>Grupo<select id="cc_g">${CVG.map(g=>`<option value="${esc(g.grupo)}" ${c.grupo===g.grupo?'selected':''}>${esc(g.grupo)} (${cvNum(g.max_cotas)} cotas)</option>`).join('')}</select></label>
+   <label>Número da cota<input id="cc_c" type="number" inputmode="numeric" min="1" max="99999" value="${c.cota||''}"></label>
+   <label>Moto<input id="cc_m" type="text" maxlength="120" value="${esc(c.moto||'')}"></label>
+   <label class="cv-ck"><input id="cc_lf" type="checkbox" ${c.lance_fixo?'checked':''}> Tem ou quer Lance Fixo</label>
+   <label class="cv-w">Observação<input id="cc_o" type="text" maxlength="500" value="${esc(c.obs||'')}"></label></div>
+   <div class="cv-ca"><button class="btn red" onclick="cvSalva()">${id?'Salvar cota':'Cadastrar cota'}</button><button class="btn" onclick="document.getElementById('cv_cf').innerHTML=''">Cancelar</button></div>`;
+  e.scrollIntoView({behavior:'smooth',block:'center'})}
+function cvPre(){const n=document.getElementById('cc_n').value.trim().toLowerCase();if(!n||typeof VRAW==='undefined'||!VRAW)return;const v=VRAW.find(o=>String(o.nome||'').trim().toLowerCase()===n);if(!v)return;
+  const t=document.getElementById('cc_t'),m=document.getElementById('cc_m');if(t&&!t.value)t.value=v.telefone||'';if(m&&!m.value)m.value=v.moto_nome||'';
+  const sOrig={chat:'pedidos_chat',ficha:'fichas',contrato:'contratos',contato:'leads'}[v._s]||null;window.CVORIG=sOrig&&v.id?{origem:sOrig,origem_id:v.id}:null}
+async function cvSalva(){const gv=id=>document.getElementById(id).value.trim(),nome=gv('cc_n'),gr=gv('cc_g'),cota=parseInt(gv('cc_c'),10),N=cvMaxDo(gr);
+  if(!nome){toast('Digite o nome do cliente.');return}if(!N){toast('Escolha o grupo.');return}if(!(cota>=1&&cota<=N)){toast('A cota deve estar entre 1 e '+N+'.');return}
+  const row={cliente:nome,telefone:gv('cc_t')||null,moto:gv('cc_m')||null,grupo:gr,cota,participantes:N,lance_fixo:document.getElementById('cc_lf').checked,obs:gv('cc_o')||null,atualizado:new Date().toISOString(),...(!CVED&&window.CVORIG?window.CVORIG:{})};
+  const r=CVED?await sb.from('cotas_consorcio').update(row).eq('id',CVED).select().single():await sb.from('cotas_consorcio').insert({...row,vendedor_id:V.id}).select().single();
+  window.CVORIG=null;if(r.error){toast('Não consegui salvar a cota.');return}
+  CVC=CVED?CVC.map(o=>o.id===r.data.id?r.data:o):[r.data].concat(CVC);document.getElementById('cv_cf').innerHTML='';toast(CVED?'Cota atualizada!':'Cota cadastrada!');cvGrupos();cvOport();cvLista()}
+async function cvUp(id,up,msg){const r=await sb.from('cotas_consorcio').update({...up,atualizado:new Date().toISOString()}).eq('id',id).select().single();if(r.error){toast('Não consegui atualizar.');return}CVC=CVC.map(o=>o.id===id?r.data:o);toast(msg);cvGrupos();cvOport();cvLista()}
+const cvLF=(id,v)=>cvUp(id,{lance_fixo:v},v?'Lance Fixo marcado.':'Lance Fixo desmarcado.');
+const cvSit=(id,s)=>cvUp(id,{situacao:s,contemplada_em:s==='contemplada'?new Date().toISOString().slice(0,10):null},s==='contemplada'?'Cota marcada como contemplada.':'Cota atualizada.');
+async function cvDel(id){if(!confirm('Excluir esta cota?'))return;const r=await sb.from('cotas_consorcio').delete().eq('id',id);if(r.error){toast('Não consegui excluir.');return}CVC=CVC.filter(o=>o.id!==id);toast('Cota excluída.');cvGrupos();cvOport();cvLista()}
+
+function cvLista(){const e=document.getElementById('cv_l');if(!e)return;const cnt={ativa:0,contemplada:0,cancelada:0};CVC.forEach(c=>cnt[c.situacao]=(cnt[c.situacao]||0)+1);
+  document.querySelectorAll('.cv-fl [data-f]').forEach(b=>{const k=b.dataset.f;b.classList.toggle('on',CVF===k);b.dataset.n=k==='todas'?CVC.length:(cnt[k]||0)});
+  const q=CVQ.trim().toLowerCase();
+  const L=CVC.filter(c=>(CVF==='todas'||c.situacao===CVF)&&(!q||[c.cliente,c.grupo,String(c.cota),c.moto].some(x=>String(x||'').toLowerCase().includes(q)))).map(c=>{const r=c.grupo?cvRef(c.grupo):null;return{c,r,pos:r?cvPos(r.ref,c.cota,r.N):null}})
+    .sort((a,b)=>(a.pos??1e9)-(b.pos??1e9));
+  if(!L.length){e.innerHTML=`<div class="cv-vz"><b>${CVC.length?'Nenhuma cota aqui.':'Nenhuma cota cadastrada ainda.'}</b><span>Cadastre a cota de cada cliente de consórcio (grupo e número da cota) para conferir tudo de uma vez.</span></div>`;return}
+  e.innerHTML=L.map(({c,r,pos})=>{const at=c.situacao==='ativa',tag=!at?`<span class="cv-t ${c.situacao==='contemplada'?'g':''}">${c.situacao==='contemplada'?'Contemplada'+(c.contemplada_em?' em '+cvBR(c.contemplada_em):''):'Cancelada'}</span>`:pos===0?'<span class="cv-t g">🎉 É a cota sorteada</span>':pos!==null?`<span class="cv-t ${pos<=6?'y':''}">${pos+1}ª da fila</span>`:'';
+    return `<article class="cv-c ${!at?'off':''}"><div class="cv-cn sm"><b>${cvP3(c.cota)}</b><small>cota</small></div><div class="cv-ob">
+      <div class="cv-otl"><b>${esc(c.cliente)}</b>${tag}${c.lance_fixo?'<span class="cv-t lf">Lance Fixo ✓</span>':''}</div>
+      <small>${[c.grupo?'Grupo '+esc(c.grupo):'Sem grupo',c.moto?esc(c.moto):'',r?'sorteada '+cvP3(r.ref):''].filter(Boolean).join(' · ')}</small>${c.obs?`<small class="cv-obs">${esc(c.obs)}</small>`:''}
+      <div class="cv-ca">${at&&r?cvWa(c,pos,r.ref):''}<button class="btn sm" onclick="cvLF('${c.id}',${!c.lance_fixo})">${c.lance_fixo?'Tirar Lance Fixo':'Marcar Lance Fixo'}</button>${at?`<button class="btn sm" onclick="cvSit('${c.id}','contemplada')">Contemplada</button><button class="btn sm" onclick="cvSit('${c.id}','cancelada')">Cancelada</button>`:`<button class="btn sm" onclick="cvSit('${c.id}','ativa')">Voltar para ativa</button>`}<button class="btn sm" onclick="cvForm('${c.id}')">Editar</button><button class="btn sm cv-x" onclick="cvDel('${c.id}')">Excluir</button></div></div></article>`}).join('')}
+async function pAcessos(){VISTAB='visitas';VISDATA=null;$('#pn').innerHTML='<div id="vs_v"></div>';visCarrega()}
+
+const NAV_APP=[['vendas','👥','Clientes'],['acessos','📈','Acessos'],['cota','🎯','Cota da Vez'],['avisos','🔔','Notificações'],['personalizar','🎨','Personalizar'],['conta','⚙️','Configuração']];
 const navLista=()=>appModo()?NAV_APP:NAV;
 const AVIC={sorteio:['🎰','#7c3aed','Sorteio'],rascunho:['✍️','#2f6bff','Começou a preencher'],preguicoso:['😴','#f59e0b','Parou de preencher'],chat:['✅','#16a34a','Finalizou'],ficha:['✅','#16a34a','Finalizou'],contrato:['✅','#16a34a','Finalizou'],contato:['💬','#16a34a','Contato'],chat_inicio:['💬','#2f6bff','Começou o chat'],teste:['🔔','#7c3aed','Teste']};
 const avIc=t=>AVIC[t]||['🔔','#64748b','Aviso'];
@@ -4043,7 +4085,7 @@ function avLista(){const el=document.getElementById('av_l');if(!el)return;
   if(!l.length){el.innerHTML=`<div class="av-vz"><div>🔔</div><b>${AVLST.length?'Nada neste filtro':'Nenhum aviso ainda'}</b><p>Quando um cliente começar a preencher no seu site, o aviso aparece aqui.</p></div>`;return}
   let dia='';el.innerHTML=l.map(n=>{const d=n.dados||{},[ic,cor,rot]=avIc(n.tipo),dd=new Date(n.criado),k=dd.toDateString(),hj=new Date().toDateString(),on=new Date(Date.now()-864e5).toDateString();
     const sep=k!==dia?`<h4 class="av-dia">${k===hj?'Hoje':k===on?'Ontem':dd.toLocaleDateString('pt-BR',{weekday:'long',day:'2-digit',month:'2-digit'})}</h4>`:'';dia=k;
-    return sep+`<article class="av-i${n.lida?'':' nova'}" style="--avc:${cor}"><div class="av-ii">${ic}</div><div class="av-it"><div class="av-ih"><span class="av-tg">${rot}</span><time>${dd.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · ${avQuando(n.criado)}</time><button type="button" class="av-x" aria-label="Apagar este aviso" onclick="avApaga(${+n.id})">✕</button></div><b>${esc(avTit(n.titulo))}</b><p>${esc(n.corpo||'')}</p><div class="av-bt">${d.wa?`<a class="av-wa" href="${esc(d.wa)}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}<button type="button" class="av-ver" onclick="avAbreCli('${esc(String(d.cid||''))}')">Ver cliente</button></div></div>${d.img?`<img class="av-th" src="${esc(d.img)}" alt="" loading="lazy" decoding="async">`:''}</article>`}).join('')}
+    return sep+`<article class="av-i${n.lida?'':' nova'}" style="--avc:${cor}"><div class="av-ii">${ic}</div><div class="av-it"><div class="av-ih"><span class="av-tg">${rot}</span><time>${dd.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})} · ${avQuando(n.criado)}</time><button type="button" class="av-x" aria-label="Apagar este aviso" onclick="avApaga(${+n.id})">✕</button></div><b>${esc(avTit(n.titulo))}</b><p>${esc(n.corpo||'')}</p><div class="av-bt">${d.wa?`<a class="av-wa" href="${esc(d.wa)}" target="_blank" rel="noopener">💬 WhatsApp</a>`:''}${d.fonte==='cota'?`<button type="button" class="av-ver" onclick="adm('cota')">Abrir Cota da Vez</button>`:`<button type="button" class="av-ver" onclick="avAbreCli('${esc(String(d.cid||''))}')">Ver cliente</button>`}</div></div>${d.img?`<img class="av-th" src="${esc(d.img)}" alt="" loading="lazy" decoding="async">`:''}</article>`}).join('')}
 async function avPrefs(){const el=document.getElementById('av_pfx');if(!el)return;try{const r=await sb.rpc('app_prefs_ler');AVPREF=(r&&r.data)||{}}catch(e){AVPREF={}}
   const p=AVPREF,fim=p.chat!==false&&p.ficha!==false&&p.contrato!==false&&p.contato!==false,sw=(id,on,t,s,fn)=>`<label class="av-sw"><span><b>${t}</b><small>${s}</small></span><input type="checkbox" id="${id}" ${on?'checked':''} onchange="${fn}"><i></i></label>`;
   el.innerHTML=sw('pf_r',p.rascunho!==false,'✍️ Começou a preencher','Assim que o cliente digita o primeiro dado',"avPrefSalva({rascunho:this.checked})")
@@ -4399,33 +4441,38 @@ html body.fpr .mb{background:rgba(10,10,13,.92);border-top:1px solid #2a2b31}htm
 /* topo no celular: subtítulo/selo sem área própria esticavam a 1ª coluna e empurravam o nome para fora da tela */
 .hero .hin.hin>.hsub,.hero .hin.hin>.hbd{grid-column:1/-1;min-width:0}
 </style>
-<style id="vsr">/* sorteio */
-.sr-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;background:linear-gradient(135deg,#14141c 0%,#2a0d12 62%,#5a0f1a 130%);color:#fff;border-radius:22px;padding:24px 26px;margin-bottom:16px}
-.sr-h1{display:flex;gap:14px;align-items:center;flex:1 1 300px}.sr-ic{font-size:34px;width:58px;height:58px;border-radius:18px;background:#ffffff14;display:grid;place-items:center;flex:none}
-.sr-hero h2{margin:0 0 4px;font-size:22px;letter-spacing:-.01em}.sr-hero p{margin:0;color:#ffffffc4;font-size:14px;line-height:1.45;max-width:46ch}
-.sr-nx{background:#ffffff12;border:1px solid #ffffff22;border-radius:16px;padding:12px 16px;display:grid;gap:2px;min-width:200px}.sr-nx small{color:#ffffffa6;font-size:12px}.sr-nx b{font-size:17px;text-transform:capitalize}.sr-nx span{color:#ffffffa6;font-size:12px}
-.sr-how summary,.sr-add summary{cursor:pointer;font-weight:700;list-style:none}.sr-how summary::-webkit-details-marker,.sr-add summary::-webkit-details-marker{display:none}
-.sr-how summary::after{content:'＋';float:right;color:var(--r)}.sr-how[open] summary::after{content:'－'}
-.sr-hb{margin-top:12px;font-size:14px;line-height:1.55;color:#3a3a46}.sr-hb ol{padding-left:20px;margin:8px 0}.sr-hb li{margin:6px 0}
-.sr-av{background:#fff7e6;border:1px solid #ffe0a3;border-radius:12px;padding:10px 12px;color:#6b4a00}
-.sr-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.sr-pr{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-top:12px}
-.sr-calc label,.sr-fm label{display:block;font-size:12.5px;font-weight:600;color:#555;margin:0}.sr-calc input,.sr-calc select,.sr-fm input{margin-top:6px;padding:12px;font-size:16px}
-.sr-pr input{text-align:center;font-weight:800;letter-spacing:.06em}.sr-pr span{display:block}
-.sr-out{margin-top:16px}.sr-mu{color:#777;font-size:14px;margin:6px 0}
-.sr-big{background:linear-gradient(135deg,#14141c,#2a0d12);color:#fff;border-radius:18px;padding:16px 20px;display:grid;gap:2px;justify-items:start}.sr-big small{color:#ffffffa6}.sr-big b{font-size:52px;line-height:1;letter-spacing:.02em}.sr-big span{color:#ffffffb0;font-size:13px}
-.sr-cand{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.sr-cand span{display:inline-flex;gap:6px;align-items:baseline;border:1px solid #e2e2ea;border-radius:12px;padding:6px 10px;font-weight:800;font-size:15px;color:#999}.sr-cand i{font-style:normal;font-weight:600;font-size:11px;color:#999}
-.sr-cand .ok{color:#14141c;border-color:#c6c6d2}.sr-cand .no{text-decoration:line-through}.sr-cand .use{background:#fff1f1;border-color:var(--r);color:var(--r)}
-.sr-fl small{color:#666;font-size:12.5px}.sr-fl div{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.sr-fl span{background:#f3f3f7;border-radius:10px;padding:6px 10px;font-weight:700;font-size:14px}.sr-fl .on{background:var(--r);color:#fff}
-.sr-acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.sr-hh{margin-top:14px}.sr-hh small{color:#666;font-size:12.5px}.sr-hh div{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.sr-hh button{border:1px solid #e2e2ea;background:#fff;border-radius:999px;padding:6px 12px;font:600 13px Inter,sans-serif;cursor:pointer}
-.sr-f{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 12px}.sr-f button{border:1px solid #e2e2ea;background:#fff;border-radius:999px;padding:7px 13px;font:600 13px Inter,sans-serif;cursor:pointer}.sr-f button.on{background:#14141c;color:#fff;border-color:#14141c}.sr-f button::after{content:' ' attr(data-n);opacity:.6}
-.sr-c{display:flex;align-items:flex-start;gap:14px;border:1px solid #ebebf1;border-radius:16px;padding:12px 14px;margin-bottom:10px;background:#fff}.sr-c.hit{border-color:#16a34a;background:#f0fdf4;box-shadow:0 0 0 3px #16a34a22}.sr-c.off{opacity:.78}
-.sr-cn{display:grid;place-items:center;min-width:64px;align-self:flex-start;background:#14141c;color:#fff;border-radius:14px;padding:8px}.sr-cn b{font-size:24px;line-height:1}.sr-cn small{font-size:10.5px;color:#ffffffa0}
-.sr-cb{flex:1;min-width:0;display:grid;gap:4px}.sr-cb small{color:#666}.sr-ct{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.sr-ct b{font-size:15.5px}.sr-ob{font-style:italic}
-.sr-t{font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px;background:#f0f0f5;color:#555}.sr-t.g{background:#dcfce7;color:#166534}.sr-t.y{background:#fef3c7;color:#92400e}
-.sr-ca{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}.sr-ca .btn{text-decoration:none}.sr-x{color:#b00020}
-.sr-vz{display:grid;gap:4px;text-align:center;padding:22px 12px;border:1px dashed #d8d8e2;border-radius:16px;color:#666}.sr-vz b{color:#222}
-.sr-add{margin-top:12px;border-top:1px solid #ebebf1;padding-top:12px}.sr-fm{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}.sr-w{grid-column:1/-1}
-@media(max-width:620px){.sr-pr{grid-template-columns:repeat(3,1fr)}.sr-row,.sr-fm{grid-template-columns:1fr}.sr-big b{font-size:44px}.sr-hero{padding:18px}.sr-c{padding:10px}.sr-cn{min-width:54px}}
+<style id="vsr">/* Cota da Vez (Loteria Federal + Lance Fixo) */
+.cv-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;background:linear-gradient(135deg,#14141c 0%,#2a0d12 62%,#5a0f1a 130%);color:#fff;border-radius:22px;padding:24px 26px;margin-bottom:16px}
+.cv-h1{display:flex;gap:14px;align-items:center;flex:1 1 320px}.cv-ic{font-size:32px;width:58px;height:58px;border-radius:18px;background:#ffffff14;display:grid;place-items:center;flex:none}
+.cv-hero h2{margin:0 0 4px;font-size:22px;letter-spacing:-.01em}.cv-hero p{margin:0;color:#ffffffc4;font-size:14px;line-height:1.5;max-width:52ch}.cv-hero p b{color:#fff}
+.cv-res{background:#ffffff12;border:1px solid #ffffff24;border-radius:18px;padding:14px 18px;display:grid;gap:2px;min-width:220px}.cv-res small{color:#ffffffb0;font-size:12px;text-transform:none}.cv-res b{font-size:38px;line-height:1.05;letter-spacing:.06em;font-variant-numeric:tabular-nums}.cv-res span{color:#ffffff9c;font-size:12px}
+.cv-simr{display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap}.cv-simr label{flex:1 1 220px;font-size:12.5px;font-weight:600;color:#555}.cv-simr input{margin-top:6px;padding:12px;font-size:17px;font-weight:700;letter-spacing:.08em}
+.cv-hist{margin-top:12px}.cv-hist small{color:#666;font-size:12.5px}.cv-hist div{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}
+.cv-hist button,.cv-fl button{border:1px solid #e2e2ea;background:#fff;border-radius:999px;padding:6px 12px;font:600 13px Inter,sans-serif;cursor:pointer;font-variant-numeric:tabular-nums}
+.cv-hist button.on,.cv-fl button.on{background:#14141c;color:#fff;border-color:#14141c}.cv-fl button::after{content:' ' attr(data-n);opacity:.6}
+.cv-mu{color:#777;font-size:12.5px;margin:10px 0 0}
+.cv-jn{font-size:13px;color:#555;display:flex;align-items:center;gap:6px}.cv-jn select{width:auto;padding:6px 8px;margin:0}
+.cv-vz{display:grid;gap:4px;text-align:center;padding:22px 12px;border:1px dashed #d8d8e2;border-radius:16px;color:#666;font-size:14px}.cv-vz b{color:#222}
+.cv-o,.cv-c{display:flex;align-items:flex-start;gap:14px;border:1px solid #ebebf1;border-radius:16px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.cv-o.hit{border-color:#16a34a;background:#f0fdf4;box-shadow:0 0 0 3px #16a34a22}.cv-c.off{opacity:.75}
+.cv-cn{display:grid;place-items:center;min-width:66px;background:#14141c;color:#fff;border-radius:14px;padding:8px 6px}.cv-cn b{font-size:24px;line-height:1;font-variant-numeric:tabular-nums}.cv-cn small{font-size:11px;color:#ffffffb0;margin-top:2px}.cv-cn.sm{min-width:56px}.cv-cn.sm b{font-size:20px}
+.cv-ob{flex:1;min-width:0;display:grid;gap:4px}.cv-ob small{color:#666}.cv-otl{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.cv-otl b{font-size:15.5px}.cv-obs{font-style:italic}
+.cv-t{font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px;background:#f0f0f5;color:#555}.cv-t.g{background:#dcfce7;color:#166534}.cv-t.y{background:#fef3c7;color:#92400e}.cv-t.lf{background:#e0e7ff;color:#3730a3}
+.cv-ca{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.cv-ca .btn{text-decoration:none}.cv-wa{background:#16a34a!important;border-color:#16a34a!important;color:#fff!important}.cv-x{color:#b00020}
+.cv-gl{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px}
+.cv-g{border:1px solid #ebebf1;border-radius:16px;padding:14px;background:#fff;display:grid;gap:10px;align-content:start}
+.cv-gh{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.cv-gh small{display:block;color:#666;font-size:12.5px;margin-top:2px}
+.cv-gr{text-align:right}.cv-gr small{color:#666;font-size:11.5px}.cv-gr b{display:block;font-size:28px;line-height:1;color:var(--r);font-variant-numeric:tabular-nums}
+.cv-fq{display:flex;gap:4px;align-items:center;flex-wrap:wrap}.cv-fq span{background:#f3f3f7;border-radius:9px;padding:4px 8px;font-weight:700;font-size:13px;font-variant-numeric:tabular-nums}.cv-fq span.on{background:var(--r);color:#fff}.cv-fq i{font-style:normal;color:#bbb;font-size:12px}
+.cv-cc summary{cursor:pointer;font-size:13px;font-weight:600;color:#555}.cv-ct{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:6px}.cv-ct li{display:flex;justify-content:space-between;gap:10px;font-size:13px;background:#fafafc;border-radius:10px;padding:7px 10px}.cv-ct span{color:#666}.cv-ct b{font-variant-numeric:tabular-nums}
+.cv-fl{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:4px 0 12px}.cv-fl input{flex:1 1 200px;margin:0;padding:8px 12px;font-size:14px}
+.cv-fm{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:4px 0 4px}.cv-fm label{display:block;font-size:12.5px;font-weight:600;color:#555}.cv-fm input,.cv-fm select{margin-top:6px;padding:12px;font-size:16px}
+.cv-ck{display:flex!important;align-items:center;gap:8px;align-self:end;padding-bottom:12px;font-size:14px!important;color:#222!important}.cv-ck input{width:20px;height:20px;margin:0}.cv-w{grid-column:1/-1}
+#cv_gf:not(:empty),#cv_cf:not(:empty){border:1px solid #ebebf1;border-radius:16px;padding:14px;margin-bottom:14px;background:#fcfcfe}
+.cv-how summary{cursor:pointer;font-weight:700;list-style:none}.cv-how summary::-webkit-details-marker{display:none}.cv-how summary::after{content:'＋';float:right;color:var(--r)}.cv-how[open] summary::after{content:'－'}
+.cv-hb{margin-top:12px;font-size:14px;line-height:1.55;color:#3a3a46}.cv-hb ol{padding-left:20px;margin:8px 0}.cv-hb li{margin:6px 0}
+.cv-av{background:#fff7e6;border:1px solid #ffe0a3;border-radius:12px;padding:10px 12px;color:#6b4a00}
+@media(max-width:620px){.cv-hero{padding:18px}.cv-res{min-width:0;flex:1 1 100%}.cv-res b{font-size:32px}.cv-fm{grid-template-columns:1fr}.cv-ck{padding-bottom:0}.cv-o,.cv-c{padding:10px;gap:10px}.cv-cn{min-width:56px}.cv-cn b{font-size:20px}.cv-ca .btn{flex:1 1 auto}.card2-h{flex-wrap:wrap;gap:8px}}
 </style>
 </body>
 </html>
