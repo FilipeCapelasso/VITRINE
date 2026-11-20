@@ -1516,6 +1516,54 @@ div.tbr{min-height:44px}
 .scon .tbbar{padding:8px 0 2px;margin-top:6px}.scon .tbbar .btn,.scon .btn.or,.scon .btn.red2{min-height:46px;padding-top:10px;padding-bottom:10px}
 .scon .mt{margin-bottom:6px}
 @media(max-width:560px){.scon .tbw.dois .tbr{min-height:54px;padding:7px 10px}}
+</style><style id="v75-chat-tela-cheia">
+.chh>.cha{flex:none}
+.chm>div.cha{padding:0;max-width:none;border-radius:50%;box-shadow:none;background:#444;color:#fff;font-size:12px;line-height:1}
+/* v75: no computador o chat ocupa a tela inteira (coluna central, fundo com brilho e linhas); no celular continua igual */
+@media(min-width:721px){
+html body .ch,html body.alta .ch,html body.fpr .ch{--cw:900px;--chl:var(--r,#c80000);--chp:max(18px,calc((100% - var(--cw))/2 + 22px));inset:0;margin:0;width:100%;max-width:none;height:100dvh;border:0;border-radius:0;box-shadow:none;isolation:isolate;background:repeating-linear-gradient(118deg,#ffffff06 0 1px,transparent 1px 56px),#080910}
+html body.alta .ch{--chl:#c8a96a}
+html body .ch.on{animation:chfs .45s cubic-bezier(.2,.8,.2,1)}
+@keyframes chfs{from{opacity:0;transform:scale(1.015)}}
+html body .chbd{display:none!important}
+html:has(body.chopen){overflow:hidden}
+/* brilhos de fundo (leve movimento lento) */
+html body .ch::before{content:"";position:absolute;inset:-18%;z-index:-1;pointer-events:none;
+ background:radial-gradient(44% 40% at 13% 9%,#c8000048,transparent 70%),radial-gradient(42% 40% at 90% 90%,#1fb89030,transparent 70%),radial-gradient(34% 34% at 80% 12%,#3b5bff22,transparent 70%),radial-gradient(40% 36% at 6% 94%,#c8000026,transparent 70%);
+ background:radial-gradient(44% 40% at 13% 9%,color-mix(in srgb,var(--r,#c80000) 42%,transparent),transparent 70%),radial-gradient(42% 40% at 90% 90%,#1fb89030,transparent 70%),radial-gradient(34% 34% at 80% 12%,#3b5bff22,transparent 70%),radial-gradient(40% 36% at 6% 94%,color-mix(in srgb,var(--r,#c80000) 24%,transparent),transparent 70%);
+ animation:chdrift 28s ease-in-out infinite alternate}
+@keyframes chdrift{to{transform:translate3d(3%,2.5%,0) scale(1.07)}}
+/* coluna central da conversa */
+html body .ch::after{content:"";position:absolute;z-index:-1;top:0;bottom:0;left:50%;width:min(var(--cw),100%);transform:translateX(-50%);pointer-events:none;background:linear-gradient(180deg,#ffffff0e,#ffffff05);border-inline:1px solid #ffffff14}
+/* topo */
+html body .ch .chh,html body.alta .ch .chh{position:relative;padding:14px max(72px,calc((100% - var(--cw))/2 + 22px)) 14px var(--chp);gap:14px;border:0;background:linear-gradient(90deg,transparent,var(--chl) 50%,transparent) bottom/100% 2px no-repeat,#0a0b10c4;-webkit-backdrop-filter:blur(16px);backdrop-filter:blur(16px)}
+html body .ch .chh b{font-size:17px}
+html body .ch .chh small{font-size:13px}
+html body .ch .chh .cha{width:46px;height:46px}
+html body .ch .chb{width:40px;height:40px;font-size:19px}
+html body .ch #chx{position:absolute;right:clamp(14px,2.2vw,34px);top:50%;transform:translateY(-50%);width:44px;height:44px;font-size:20px}
+html body .ch #chx:hover{transform:translateY(-50%) scale(1.06)}
+/* conversa */
+html body .ch .chl{padding:30px var(--chp) 16px;gap:12px;scrollbar-width:thin;scrollbar-color:#ffffff3a transparent}
+html body .ch .chm .cha{width:36px;height:36px;font-size:14px}
+html body .ch .chm>div:not(.wb):not(.chim):not(.cha){max-width:min(78%,660px);padding:13px 18px;font-size:16.5px;line-height:1.5;border-radius:18px 18px 18px 6px;box-shadow:0 12px 30px -16px #000b}
+html body .ch .chm.u>div{background:linear-gradient(135deg,#2bc597,#1f9a76);color:#fff;border-radius:18px 18px 6px 18px}
+html body .ch .chm>div.wb{max-width:min(88%,480px)}
+/* respostas rápidas */
+html body .ch .chq{padding:8px var(--chp) 10px;gap:10px;max-height:min(240px,32dvh)}
+html body .ch .chq button{background:#ffffff14;border:1.5px solid #ffffff3a;color:#fff;padding:11px 20px;font-size:15.5px;-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px)}
+html body .ch .chq button:hover{background:var(--r,#c80000);border-color:var(--r,#c80000);color:#fff;transform:translateY(-2px);box-shadow:0 14px 28px -14px var(--r,#c80000)}
+html body .ch .chq button:focus-visible{outline:2px solid #fff;outline-offset:2px}
+/* campo de resposta */
+html body .ch .chf{padding:12px var(--chp) 24px;gap:10px;background:linear-gradient(180deg,transparent,#05060acc 60%)}
+html body .ch .chf input{padding:16px 18px;border-radius:16px;font-size:17px;border-color:#ffffff30;box-shadow:0 16px 36px -20px #000}
+html body .ch .chf button{padding:0 30px;border-radius:16px;font-size:16px}
+}
+/* telas grandes: coluna mais larga e letras maiores */
+@media(min-width:1500px){html body .ch{--cw:980px}html body .ch .chm>div:not(.wb):not(.chim):not(.cha){font-size:17.5px;max-width:min(78%,720px)}html body .ch .chq button{font-size:16.5px}}
+@media(min-width:2000px){html body .ch{--cw:1100px}html body .ch .chh b{font-size:19px}html body .ch .chm>div:not(.wb):not(.chim):not(.cha){font-size:19px;padding:15px 21px;max-width:min(78%,800px)}html body .ch .chm .cha{width:42px;height:42px}html body .ch .chq button{font-size:17.5px;padding:13px 24px}html body .ch .chf input{font-size:19px;padding:19px 21px}html body .ch .chf button{font-size:18px}}
+/* telas baixas (notebook pequeno, janela achatada) */
+@media(min-width:721px) and (max-height:640px){html body .ch .chh{padding-top:9px;padding-bottom:9px}html body .ch .chl{padding-top:16px}html body .ch .chf{padding-bottom:14px}}
 </style></head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
