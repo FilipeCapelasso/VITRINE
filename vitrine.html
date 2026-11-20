@@ -1564,7 +1564,24 @@ html body .ch .chf button{padding:0 30px;border-radius:16px;font-size:16px}
 @media(min-width:2000px){html body .ch{--cw:1100px}html body .ch .chh b{font-size:19px}html body .ch .chm>div:not(.wb):not(.chim):not(.cha){font-size:19px;padding:15px 21px;max-width:min(78%,800px)}html body .ch .chm .cha{width:42px;height:42px}html body .ch .chq button{font-size:17.5px;padding:13px 24px}html body .ch .chf input{font-size:19px;padding:19px 21px}html body .ch .chf button{font-size:18px}}
 /* telas baixas (notebook pequeno, janela achatada) */
 @media(min-width:721px) and (max-height:640px){html body .ch .chh{padding-top:9px;padding-bottom:9px}html body .ch .chl{padding-top:16px}html body .ch .chf{padding-bottom:14px}}
-</style></head>
+</style><script id="anti-inspecao">
+/* Dificulta o clique direito e os atalhos do inspecionar. E apenas um incomodo para curiosos: nao protege dados
+   (a protecao real esta no banco, com RLS e funcoes que checam quem chama). Campos de texto continuam com o menu
+   normal (colar, copiar) e nada de teclado comum e bloqueado. Para desativar, apague este bloco. */
+(function(){
+  function campo(t){ return !!(t && t.closest && t.closest('input,textarea,select,[contenteditable="true"]')); }
+  document.addEventListener('contextmenu', function(e){ if(!campo(e.target)) e.preventDefault(); }, true);
+  document.addEventListener('keydown', function(e){
+    var k = (e.key || '').toLowerCase(), c = e.ctrlKey || e.metaKey;
+    var bloqueia = e.key === 'F12'
+      || (c && e.shiftKey && (k === 'i' || k === 'j' || k === 'c' || k === 'k'))
+      || (c && !e.shiftKey && k === 'u')
+      || (e.metaKey && e.altKey && (k === 'i' || k === 'j' || k === 'c' || k === 'u'));
+    if(bloqueia){ e.preventDefault(); e.stopPropagation(); }
+  }, true);
+})();
+</script>
+</head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
 <script>
