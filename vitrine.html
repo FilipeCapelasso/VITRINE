@@ -1505,6 +1505,17 @@ div.tbr{min-height:44px}
 @media(max-width:560px){.tbw.dois .tbr{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;column-gap:10px;row-gap:0;align-content:center;padding:9px 10px;min-height:60px}.tbw.dois label.tbr input{grid-row:1/3;align-self:center}.tbw.dois .tbr-n{font-size:13px;line-height:1.2}.tbw.dois .tbr-v{margin-left:0;font-size:16px;line-height:1.25}.tbw.dois div.tbr{grid-template-columns:1fr}.tbw.dois .tbc-l{padding:8px}.tbw.dois .tbc-h{padding:10px 12px}.tbw.dois .tbc-h b{font-size:14px}}
 @media(max-width:340px){.tbw.dois{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.tbr{transition:none}}
+</style><style id="v74-compacto">
+.mp{min-width:0}.mp small{color:var(--mu,#555);font-size:13px;line-height:1.35}
+.mhl{flex:none;display:flex;align-items:center;justify-content:center;height:48px;max-width:110px;border-radius:12px}.mhl img{display:block;height:100%;width:auto;max-width:100%;object-fit:contain}
+.mhl.esc{background:#111;padding:6px 10px}.mhl.cla{background:#fff;border:1px solid var(--bd);padding:4px 8px}
+@media(max-width:560px){.mhl{height:40px;max-width:84px}}
+@media(min-width:720px){.sheet.scon{max-width:600px;padding:18px 24px 26px}}
+.scon .tbw{margin:8px 0 4px}.scon .carta{margin:4px 0 2px}.scon .avc{margin:6px 0 2px;font-size:11.5px;line-height:1.35}.scon .avs{margin:0 0 4px}
+.scon .tbc-l{gap:5px;padding:8px}.scon .tbr{min-height:42px;padding:5px 12px}.scon div.tbr{min-height:38px}.scon .tbr-n{font-size:14px}.scon .tbr-v{font-size:16px}
+.scon .tbbar{padding:8px 0 2px;margin-top:6px}.scon .tbbar .btn,.scon .btn.or,.scon .btn.red2{min-height:46px;padding-top:10px;padding-bottom:10px}
+.scon .mt{margin-bottom:6px}
+@media(max-width:560px){.scon .tbw.dois .tbr{min-height:54px;padding:7px 10px}}
 </style></head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -2006,6 +2017,7 @@ function waOpen(u){try{const w=window.open(u,'_blank');if(!w)location.href=u}cat
 function siteUrl(){return String((typeof CFG!=='undefined'&&CFG&&CFG.url_vitrine)||location.origin).replace(/\/+$/,'')}
 function cfUrl(){const c=((CF()||{}).como_funciona||{}).u;return /^https?:\/\//i.test(c||'')?c:CFG['video_como_funciona']}
 function logoOk(){return !!(/^https?:\/\//i.test(LOGO_U()))}
+const mhLogo=()=>{try{if(!logoOk())return'';const f=FORA()?'':(LOGO_F()==='claro'?' cla':LOGO_F()==='nenhum'?'':' esc');return `<span class="mhl${f}"><img src="${esc(LOGO_U())}" alt="${esc(FORA()?(V.concessionaria||'Concessionária'):'Logo da loja')}" decoding="async" onerror="this.parentNode.remove()"></span>`}catch(e){return''}};
 function logoH(){if(!logoOk())return'';const u=LOGO_U();const f=LOGO_F();return `<div class="hlg-w"><div class="hlg hlg-${f}"><img src="${esc(u)}" alt="Logo da empresa" decoding="async" onerror="var h=document.querySelector('.hero');this.closest('.hlg-w').remove();if(h)h.classList.remove('hasl')"></div></div>`}
 async function cfSave(o){const config={...CF()};if(o)config.como_funciona=o;else delete config.como_funciona;const{error}=await sb.from('vendedores').update({config}).eq('id',V.id);if(error)throw error;V.config=config}
 function cfRm(u){try{const m=/\/object\/public\/midia\/(.+)$/.exec(String(u||''));if(m){const p=decodeURIComponent(m[1]);if(p.startsWith(V.id+'/'))sb.storage.from('midia').remove([p])}}catch(e){}}
@@ -2414,7 +2426,7 @@ function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visT
   ${m.descricao?`<div class="dt-sec"><h3>Descrição e ficha técnica</h3><div class="desc">${fmtDesc(m.descricao)}</div></div>`:''}
   <div class="dt-bar"><button class="btn red2" onclick="shareM()">Compartilhar</button><a class="btn red wa" target="_blank" rel="noopener" href="${wa('Olá! Tenho interesse na '+hn(m)+corTxt(m)+'. Gostaria de tirar uma dúvida.')}">Tirar dúvida</a></div>`}
   if(v==='con'){const p=planosV(m);b=`<div style="display:flex;justify-content:space-between;align-items:center;gap:10px"><h3>Tabela de consórcio</h3><button class="btn red pill" onclick="howOrVideo()">▶ Como funciona?</button></div>${cartaH(p)} ${how('Você entra em um grupo e paga parcelas mensais sem juros (há taxa de administração). A moto é liberada por sorteio ou lance. Fale com o vendedor para tirar suas dúvidas.')}
-    ${f[0]?`<div style="border:1px solid var(--bd);border-radius:14px;margin:12px 0;overflow:hidden"><img ${IMGA(f[0],'det')} alt="${esc(m.nome)}" style="display:block;width:100%;${soCon(m)?'max-height:340px':'height:230px'};object-fit:contain"></div>`:''}
+    ${f[0]?`<div style="border:1px solid var(--bd);border-radius:14px;margin:8px 0;overflow:hidden"><img ${IMGA(f[0],'det')} alt="${esc(m.nome)}" style="display:block;width:100%;max-height:150px;object-fit:contain"></div>`:''}
     ${empTog(m,'con')}${ptH(m,true)||'<p class="mu">Consulte os planos com o vendedor.</p>'}
     ${AVISO_CON()}
     <div class="stk tbbar"><div class="tbs" role="status" aria-live="polite"><small>Parcela escolhida</small><b id="ps_v">-</b></div><button class="btn red" onclick="chatOpen(null,'${m.id}','consorcio')">Simular e preencher meus dados</button></div><button class="btn or" onclick="conWa(1)">QUERO UM REPASSE DE CONSÓRCIO</button><button class="btn red2" onclick="shareM()">📤 Compartilhar</button>`}
@@ -2424,8 +2436,8 @@ function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visT
     <p class="mu" style="font-size:12px;border-top:1px solid var(--bd);padding-top:12px">Ao preencher ou enviar, você concorda com nossa <a href="#" onclick="priv();return false">Política de Privacidade</a>. O que você digita já fica disponível ao vendedor, para ele poder te ajudar, mesmo que você não conclua o envio.</p>
     <button class="btn wa" onclick="finSend()">Enviar para o vendedor</button>`;
   const mo=$('#modal');if(mo.style.display!=='block'){history.pushState({m:1},'');FO=document.activeElement}
-  const lg='';
-  mo.innerHTML=`<div class="sheet"><div class="mh"><div class="mp">${lg}${av(V.foto_url,'s')}<div><small style="color:var(--tx)">${tel()}</small><br><small>${V.instagram?'@'+esc(V.instagram):''}</small></div></div>${(v==='det'&&cfUrl())?`<button type="button" class="wab" onclick="comoFunciona()"><span class="wl">▶ Como funciona o consórcio</span><span class="ws">▶ Como funciona</span></button>`:''}</div>
+  const lg=mhLogo();
+  mo.innerHTML=`<div class="sheet${v==='con'?' scon':''}"><div class="mh"><div class="mp">${lg}${av(V.foto_url,'s')}<div><small style="color:var(--tx)">${tel()}</small><br><small>${V.instagram?'@'+esc(V.instagram):''}</small></div></div>${(v==='det'&&cfUrl())?`<button type="button" class="wab" onclick="comoFunciona()"><span class="wl">▶ Como funciona o consórcio</span><span class="ws">▶ Como funciona</span></button>`:''}</div>
   <div class="mt"><div><h2>${esc(m.nome)}</h2><small>${[m.categoria,m.modelo].filter(Boolean).map(esc).join(' · ')}</small>${m.selo?`<span class="sb2">${esc(m.selo)}</span>`:''}</div><span><b role="button" tabindex="0" aria-label="Moto anterior" onclick="nav(-1)">‹</b><b role="button" tabindex="0" aria-label="Próxima moto" onclick="nav(1)">›</b><b role="button" tabindex="0" aria-label="Fechar" onclick="closeM()">✕</b></span></div>${b}</div>`;
   mo.style.display='block';mo.scrollTop=0;bindSwipe();if(v==='con')pcSel();{const x=mo.querySelector('[aria-label=Fechar]');x&&x.focus({preventScroll:true})}
 }
