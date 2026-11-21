@@ -2686,6 +2686,7 @@ function lista(an){
   L=A.filter(m=>(C==='Todas'||(C===FVC?FV.includes(m.id):m.categoria===C))&&(!FP||((minP(m)||{}).valor||1e12)<=FP)&&nz((m.nome||'')+' '+(m.modelo||'')+' '+(m.categoria||'')+' '+(m.selo||'')).includes(q));
   if(SO)L.sort((a,b)=>SO==='az'?a.nome.localeCompare(b.nome):SO==='mx'?(minP(b)?.valor||0)-(minP(a)?.valor||0):SO==='pn'?(a.preco>0?a.preco:1e12)-(b.preco>0?b.preco:1e12):SO==='px'?(b.preco||0)-(a.preco||0):(minP(a)?.valor||1e9)-(minP(b)?.valor||1e9));
   L=[...L.filter(m=>!soCon(m)),...L.filter(soCon)];
+  if(!SO&&!ALTA()){const pp=L.filter(m=>/^POP\s*110I?\s*ES/i.test(m.nome||'')).sort((a,b)=>(a.nome||'').length-(b.nome||'').length);if(pp.length)L=[...pp,...L.filter(m=>!pp.includes(m))]}   /* as POP 110i ES ficam sempre nas 2 primeiras posições (lado a lado), a menos que o cliente escolha outra ordenação */
   if(ALTA()&&!SO)L=[...L.filter(m=>!soCon(m)).sort((a,b)=>ccOf(b)-ccOf(a)),...L.filter(soCon)];
   const fm=L.findIndex(soCon),dv=fm>0;
   const g=$('#ls');g.className='grid'+(an?' an':'');
