@@ -1565,20 +1565,25 @@ html body .ch .chf button{padding:0 30px;border-radius:16px;font-size:16px}
 /* telas baixas (notebook pequeno, janela achatada) */
 @media(min-width:721px) and (max-height:640px){html body .ch .chh{padding-top:9px;padding-bottom:9px}html body .ch .chl{padding-top:16px}html body .ch .chf{padding-bottom:14px}}
 </style><script id="anti-inspecao">
-/* Dificulta o clique direito e os atalhos do inspecionar. E apenas um incomodo para curiosos: nao protege dados
-   (a protecao real esta no banco, com RLS e funcoes que checam quem chama). Campos de texto continuam com o menu
-   normal (colar, copiar) e nada de teclado comum e bloqueado. Para desativar, apague este bloco. */
+/* Dificulta o clique direito, os atalhos do inspecionar e o salvar/imprimir da pagina, e impede
+   arrastar as fotos para fora. E apenas um incomodo para curiosos: NAO protege dados nem impede
+   copia (o menu do proprio navegador, outro navegador ou um script continuam vendo tudo o que o
+   navegador recebe). A protecao real esta no banco: RLS, permissoes por papel e funcoes que
+   checam quem chama. Campos de texto continuam com o menu normal (colar, copiar) e nada de
+   teclado comum e bloqueado: Ctrl+C, Ctrl+V, Ctrl+X, Ctrl+A, Ctrl+F, Ctrl+Z e as letras seguem
+   livres. Para desativar, apague este bloco. */
 (function(){
   function campo(t){ return !!(t && t.closest && t.closest('input,textarea,select,[contenteditable="true"]')); }
   document.addEventListener('contextmenu', function(e){ if(!campo(e.target)) e.preventDefault(); }, true);
   document.addEventListener('keydown', function(e){
     var k = (e.key || '').toLowerCase(), c = e.ctrlKey || e.metaKey;
     var bloqueia = e.key === 'F12'
-      || (c && e.shiftKey && (k === 'i' || k === 'j' || k === 'c' || k === 'k'))
-      || (c && !e.shiftKey && k === 'u')
+      || (c && e.shiftKey && (k === 'i' || k === 'j' || k === 'c' || k === 'k' || k === 'e' || k === 'm' || k === 'p' || k === 's'))
+      || (c && !e.shiftKey && (k === 'u' || k === 's' || k === 'p'))
       || (e.metaKey && e.altKey && (k === 'i' || k === 'j' || k === 'c' || k === 'u'));
     if(bloqueia){ e.preventDefault(); e.stopPropagation(); }
   }, true);
+  document.addEventListener('dragstart', function(e){ if(e.target && e.target.tagName === 'IMG') e.preventDefault(); }, true);
 })();
 </script>
 </head>
