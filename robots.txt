@@ -1,0 +1,37 @@
+# Robos de IA (treino de modelo, busca e assistentes que leem a pagina a pedido do usuario): nao leem este site.
+User-agent: GPTBot
+User-agent: ChatGPT-User
+User-agent: OAI-SearchBot
+User-agent: ClaudeBot
+User-agent: Claude-User
+User-agent: Claude-SearchBot
+User-agent: Claude-Web
+User-agent: anthropic-ai
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: Google-Extended
+User-agent: GoogleOther
+User-agent: Applebot-Extended
+User-agent: CCBot
+User-agent: Bytespider
+User-agent: Amazonbot
+User-agent: meta-externalagent
+User-agent: meta-externalfetcher
+User-agent: cohere-ai
+User-agent: cohere-training-data-crawler
+User-agent: Diffbot
+User-agent: YouBot
+User-agent: MistralAI-User
+User-agent: DuckAssistBot
+User-agent: Timpibot
+User-agent: ImagesiftBot
+User-agent: omgili
+User-agent: AI2Bot
+User-agent: PanguBot
+Disallow: /
+
+# Demais robos (Google, Bing, previa de link do WhatsApp/Facebook/Instagram/Telegram): podem ler o site,
+# mas nao os paineis.
+User-agent: *
+Disallow: /*/admin
+Disallow: /*/supervisor
