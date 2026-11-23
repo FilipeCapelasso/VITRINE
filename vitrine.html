@@ -4144,6 +4144,30 @@ html body.fpr .sheet:not(.ch):not(.chbd) input,html body.fpr .sheet:not(.ch):not
 html body.fpr .sheet:not(.ch):not(.chbd) a:not(.btn){color:#d8c192}
 html body.fpr .sheet:not(.ch):not(.chbd) div[style*="border:1px solid var(--bd)"]{background:radial-gradient(62% 68% at 50% 54%,#30313a,#0c0c0f 82%)}
 html body.fpr .mb{background:rgba(10,10,13,.92);border-top:1px solid #2a2b31}html body.fpr .mb button:not(.mr){background:#18181d;color:#f2eee6;border-color:#2a2b31}html body.fpr .mb svg{color:inherit}
+/* v53: tema escuro, tabela de parcelas do consórcio escura (era branca) */
+html body.fpr .sheet:not(.ch):not(.chbd) .carta{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0 6px;padding:11px 14px;border-radius:14px;background:linear-gradient(135deg,#1c1416,#121013);border:1px solid #4a2227;color:#d9d4c8;font-size:13.5px;font-weight:600}
+html body.fpr .sheet:not(.ch):not(.chbd) .carta b{color:#ff5a5a;font-size:18px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap}
+html body.fpr .sheet:not(.ch):not(.chbd) .tbc{background:linear-gradient(180deg,#1a1b20,#131418);border:1px solid #2c2d33;box-shadow:inset 0 1px 0 #ffffff0a,0 18px 34px -24px #000}
+html body.fpr .sheet:not(.ch):not(.chbd) .tbc-h{border-bottom:1px solid #2c2d33}
+html body.fpr .sheet:not(.ch):not(.chbd) .tbc-l{background:transparent}
+html body.fpr .sheet:not(.ch):not(.chbd) .tbr{background:linear-gradient(180deg,#202127,#181a1e);border:1px solid #30313a;color:#f2eee6;box-shadow:inset 0 1px 0 #ffffff08}
+html body.fpr .sheet:not(.ch):not(.chbd) .tbr-n{color:#b4b0a6;font-weight:700;letter-spacing:.01em}
+html body.fpr .sheet:not(.ch):not(.chbd) .tbr-v{color:#f2eee6;font-weight:800}
+html body.fpr .sheet:not(.ch):not(.chbd) label.tbr:hover{border-color:color-mix(in srgb,var(--r) 55%,#30313a);background:linear-gradient(180deg,#25262d,#1b1c21)}
+html body.fpr .sheet:not(.ch):not(.chbd) label.tbr:has(input:checked){border-color:var(--r);background:linear-gradient(135deg,color-mix(in srgb,var(--r) 30%,#1a1b20),color-mix(in srgb,var(--r) 8%,#141519));box-shadow:0 0 0 3px color-mix(in srgb,var(--r) 22%,transparent),0 10px 22px -14px var(--r)}
+html body.fpr .sheet:not(.ch):not(.chbd) label.tbr:has(input:checked) .tbr-n{color:#ff8a8a}
+html body.fpr .sheet:not(.ch):not(.chbd) label.tbr:has(input:checked) .tbr-v{color:#fff}
+html body.fpr .sheet:not(.ch):not(.chbd) label.tbr:focus-within{outline:3px solid color-mix(in srgb,var(--r) 60%,#000);outline-offset:2px}
+html body.fpr .sheet:not(.ch):not(.chbd) label.tbr input{-webkit-appearance:none;appearance:none;display:grid;place-items:center;width:21px;height:21px;border-radius:50%;border:2px solid #52535d;background:#101114;transition:border-color .15s,background-color .15s}
+html body.fpr .sheet:not(.ch):not(.chbd) label.tbr input::after{content:"";width:9px;height:9px;border-radius:50%;background:#fff;transform:scale(0);transition:transform .15s}
+html body.fpr .sheet:not(.ch):not(.chbd) label.tbr input:checked{border-color:var(--r);background:var(--r)}
+html body.fpr .sheet:not(.ch):not(.chbd) label.tbr input:checked::after{transform:scale(1)}
+html body.fpr .sheet:not(.ch):not(.chbd) .tbbar{border-top:1px solid #26272c}
+html body.fpr .sheet:not(.ch):not(.chbd) .tbs small{color:#a29e94}
+html body.fpr .sheet:not(.ch):not(.chbd) .tbs b{color:#fff;font-size:18px;font-variant-numeric:tabular-nums}
+html body.fpr .sheet:not(.ch):not(.chbd) .avc{color:#8f8b82}
+html body.fpr .sheet:not(.ch):not(.chbd) .avs{color:#d8c192;font-style:italic;opacity:1}
+@media(prefers-reduced-motion:reduce){html body.fpr .sheet:not(.ch):not(.chbd) label.tbr input,html body.fpr .sheet:not(.ch):not(.chbd) label.tbr input::after{transition:none}}
 /* topo no celular: subtítulo/selo sem área própria esticavam a 1ª coluna e empurravam o nome para fora da tela */
 .hero .hin.hin>.hsub,.hero .hin.hin>.hbd{grid-column:1/-1;min-width:0}
 </style>
