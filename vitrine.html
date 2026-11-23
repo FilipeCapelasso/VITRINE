@@ -695,9 +695,11 @@ html.tp-cor .hlz i{background:linear-gradient(180deg,transparent 0,#ffffff 40%,#
 <script id="privjs">
 /* >>> COLE AQUI o link do site dos Termos (Política de Privacidade). Vazio = mostra o resumo em janela. <<< */
 const POLITICA_URL='https://termosgrupostar.vercel.app/';
+/* a página dos termos mostra a loja/concessionária do vendedor quando recebe ?loja=Nome */
+function polUrl(){try{const n=(FORA()?(V.concessionaria||''):(((CFG&&CFG.lojas)||[]).find(l=>l.id===V.loja_id)||{}).nome||'').toString().trim().slice(0,80);return n?POLITICA_URL+'?loja='+encodeURIComponent(n):POLITICA_URL}catch(e){return POLITICA_URL}}
 function polAbrir(e){
   if(e&&e.preventDefault)e.preventDefault();
-  if(POLITICA_URL){window.open(POLITICA_URL,'_blank','noopener');return false}
+  if(POLITICA_URL){window.open(polUrl(),'_blank','noopener');return false}
   const d=document.createElement('div');d.style.cssText='position:fixed;inset:0;z-index:100000;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;padding:16px';
   d.innerHTML='<div style="background:#fff;color:#222;border-radius:16px;padding:22px;max-width:420px;line-height:1.5;font:14px Inter,system-ui,sans-serif"><b>Política de Privacidade</b><p>Os dados informados neste site, no formulário ou no chat (nome, telefone, CPF, data de nascimento, entrada e preferências de compra), são usados somente para a cotação e para o contato do vendedor. Você pode pedir a exclusão dos seus dados ao vendedor a qualquer momento.</p><button type="button" style="background:var(--r);color:#fff;border:0;border-radius:999px;padding:10px 24px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer">Entendi</button></div>';
   d.onclick=function(ev){if(ev.target===d||ev.target.tagName==='BUTTON')d.remove()};document.body.appendChild(d);return false}
@@ -710,7 +712,7 @@ function polAbrir(e){
     d.innerHTML='<b>Uso de Cookies</b><p>Este site utiliza cookies para melhorar sua experiência de navegação, personalizar conteúdos e analisar o tráfego. Ao continuar navegando, você concorda com o uso desses cookies.</p><p>Seus dados são tratados conforme a Lei Geral de Proteção de Dados (LGPD), com respeito à sua privacidade. Você pode gerenciar suas preferências a qualquer momento nas configurações do navegador.</p><div class="r"><button type="button" id="ckok">Aceitar</button><a href="https://termosgrupostar.vercel.app/" target="_blank" rel="noopener" id="ckpp">Política de Privacidade</a></div>';
     document.body.appendChild(d);d.style.display='block';
     document.getElementById('ckok').onclick=function(){try{localStorage.setItem(K,'1')}catch(e){}d.remove()};
-    document.getElementById('ckpp').onclick=function(e){if(!POLITICA_URL)return polAbrir(e)}}
+    document.getElementById('ckpp').onclick=function(e){this.href=polUrl();if(!POLITICA_URL)return polAbrir(e)}}
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',banner);else banner();
 })();
 </script>
