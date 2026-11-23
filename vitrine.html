@@ -694,7 +694,7 @@ html.tp-cor .hlz i{background:linear-gradient(180deg,transparent 0,#ffffff 40%,#
 </style>
 <script id="privjs">
 /* >>> COLE AQUI o link do site dos Termos (Política de Privacidade). Vazio = mostra o resumo em janela. <<< */
-const POLITICA_URL='https://termosgrupostar.vercel.app/';
+const POLITICA_URL='https://termossistemahonda.vercel.app/';
 /* a página dos termos mostra a loja/concessionária do vendedor quando recebe ?loja=Nome */
 function polUrl(){try{const n=(FORA()?(V.concessionaria||''):(((CFG&&CFG.lojas)||[]).find(l=>l.id===V.loja_id)||{}).nome||'').toString().trim().slice(0,80);return n?POLITICA_URL+'?loja='+encodeURIComponent(n):POLITICA_URL}catch(e){return POLITICA_URL}}
 function polAbrir(e){
@@ -709,7 +709,7 @@ function polAbrir(e){
   function banner(){
     if(lido()||document.getElementById('ckb')||(typeof isAdm==='function'&&isAdm()))return;
     const d=document.createElement('div');d.id='ckb';d.className='ck';d.setAttribute('role','dialog');d.setAttribute('aria-label','Aviso de cookies e privacidade');
-    d.innerHTML='<b>Uso de Cookies</b><p>Este site utiliza cookies para melhorar sua experiência de navegação, personalizar conteúdos e analisar o tráfego. Ao continuar navegando, você concorda com o uso desses cookies.</p><p>Seus dados são tratados conforme a Lei Geral de Proteção de Dados (LGPD), com respeito à sua privacidade. Você pode gerenciar suas preferências a qualquer momento nas configurações do navegador.</p><div class="r"><button type="button" id="ckok">Aceitar</button><a href="https://termosgrupostar.vercel.app/" target="_blank" rel="noopener" id="ckpp">Política de Privacidade</a></div>';
+    d.innerHTML='<b>Uso de Cookies</b><p>Este site utiliza cookies para melhorar sua experiência de navegação, personalizar conteúdos e analisar o tráfego. Ao continuar navegando, você concorda com o uso desses cookies.</p><p>Seus dados são tratados conforme a Lei Geral de Proteção de Dados (LGPD), com respeito à sua privacidade. Você pode gerenciar suas preferências a qualquer momento nas configurações do navegador.</p><div class="r"><button type="button" id="ckok">Aceitar</button><a href="https://termossistemahonda.vercel.app/" target="_blank" rel="noopener" id="ckpp">Política de Privacidade</a></div>';
     document.body.appendChild(d);d.style.display='block';
     document.getElementById('ckok').onclick=function(){try{localStorage.setItem(K,'1')}catch(e){}d.remove()};
     document.getElementById('ckpp').onclick=function(e){this.href=polUrl();if(!POLITICA_URL)return polAbrir(e)}}
