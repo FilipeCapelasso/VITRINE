@@ -3790,6 +3790,9 @@ async function exLoad(){const el=document.getElementById('exp_box');if(!el||!sb)
   <div class="ex-pd">${pr.map((x,i)=>{const t=top[i];return `<div class="ex-r${t&&t.eu?' eu':''}"><i>${x[0]}</i><div><b>${t?esc(t.nome)+(t.eu?' (você)':''):'Vaga aberta'}</b><small>${x[1]} · ${x[2]}</small></div><em>${t?+t.total:0}</em></div>`}).join('')}</div>
   <p class="ex-fn">Conta só quem concluiu o pagamento pelo seu link. Empate: vence quem chegou primeiro.</p>`}
 function exCopia(){const i=document.getElementById('ex_lk');if(!i)return;i.setSelectionRange(0,0);const t=i.dataset.c;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Link copiado'),()=>{i.select();try{document.execCommand('copy');toast('Link copiado')}catch(e){}})}
+
+/* v54b: aviso Expansão também no Início, logo acima das Atualizações */
+(function(){const o=iniAtuH;iniAtuH=function(){setTimeout(exLoad,60);return '<section class="ex-b" id="exp_box"><div class="sk" style="height:220px;border-radius:16px"></div></section>'+o.apply(this,arguments)}})();
 async function pAvisos(){
   const on=await (async()=>{try{const s=await appSubAtual();return !!s&&Notification.permission==='granted'}catch(e){return false}})();
   $('#pn').innerHTML=`<section class="ex-b" id="exp_box"><div class="sk" style="height:220px;border-radius:16px"></div></section><section class="card2 av-top">${on?`<div class="av-on"><span class="av-dot"></span><div><b>Avisos ativos neste aparelho</b><small>Você é avisado quando o cliente começa, termina ou para de preencher.</small></div></div>`:`<div class="av-off"><div><b>🔕 Este aparelho ainda não recebe avisos com o app fechado</b><small>Com o painel aberto você já vê os avisos aqui. Para receber no celular a qualquer hora, ative:</small></div><button class="btn red" onclick="CTAB='app';adm('conta')">Ativar avisos</button></div>`}
