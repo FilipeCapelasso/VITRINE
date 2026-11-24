@@ -3394,27 +3394,32 @@ async function pvTog(i,on){const L2=[...(CF().videos||[])];if(!L2[i])return;L2[i
 async function pvMove(i,d){const L2=[...(CF().videos||[])],j=i+d;if(j<0||j>=L2.length)return;[L2[i],L2[j]]=[L2[j],L2[i]];try{await pvSave(L2);pvRe()}catch(e){toast('Erro: '+(e&&e.message||e))}} async function pvDel(i){if(!confirm('Remover este vídeo do site?'))return;const L2=[...(CF().videos||[])];L2.splice(i,1);try{await pvSave(L2);pvRe();toast('Vídeo removido')}catch(e){toast('Erro: '+(e&&e.message||e))}}
 
 function pEntregas(){
-  if(!('config' in V)){$(PNS).innerHTML='<p class="mu">Para publicar fotos e vídeos de clientes, rode o SQL único (coluna config) no Supabase e recarregue a página.</p>';return}
+  if(!('config' in V)){$(PNS).innerHTML='<p class="mu">Para publicar vídeos de clientes, rode o SQL único (coluna config) no Supabase e recarregue a página.</p>';return}
   const L2=(CF().entregas||[]),ct=enCont(L2);
-  $(PNS).innerHTML=`<h3 style="margin-top:0">Mais um sonho realizado</h3><p class="mu">Fotos e vídeos de clientes (entrega da moto ou contemplação). Eles aparecem no seu site como prova social. Só publique com a autorização do cliente.</p>
+  $(PNS).innerHTML=`<h3 style="margin-top:0">Mais um sonho realizado</h3><p class="mu">Vídeos de clientes (entrega da moto ou contemplação). Eles aparecem no seu site como prova social. Só publique com a autorização do cliente. Você pode escolher <b>vários vídeos de uma vez</b>: todos entram com os mesmos dados preenchidos abaixo, mesmo repetindo a moto.</p>
   <div class="fm-grid"><div class="fld span2"><label class="l" for="en_t">Tipo do registro</label><select id="en_t"><option value="e">Entrega da moto</option><option value="c">Contemplação</option></select></div><div class="fld"><label class="l" for="en_n">Nome do cliente</label><input id="en_n" maxlength="40" placeholder="Ex.: Rodson"></div><div class="fld"><label class="l" for="en_m">Moto entregue</label><input id="en_m" maxlength="50" placeholder="Ex.: CG 160 Titan"></div></div>
-  <label class="chk" style="margin:6px 0 14px"><input type="checkbox" id="en_ok"><span>Tenho a autorização do cliente para publicar a foto ou o vídeo no meu site</span></label>
-  <div class="pv-act"><label class="upl">📷 Escolher uma foto e publicar<input type="file" accept="image/*" onchange="enAdd(this)" hidden></label><label class="upl">🎬 Enviar vídeo (MP4, até 50 MB)<input type="file" accept="video/mp4,video/webm" onchange="enAddVideo(this)" hidden></label></div>
-  <div class="pv-dica"><b>Como os vídeos aparecem no site</b><br>Baixe o vídeo (do Instagram ou do celular) e envie o arquivo aqui, em <b>MP4</b> (até 50 MB). No site ele aparece com uma <b>capa</b>, numa fila que rola devagar. Quando o cliente <b>passa o mouse</b> (ou segura o dedo), o vídeo <b>começa a rodar</b>. Ao <b>clicar</b>, abre em <b>tela maior</b>.</div>
-  <p class="en-cont"><b>Fotos:</b> ${ct.f}/${LIMF()} · <b>Vídeos no site:</b> ${vTot()}/${LIMV()}</p>
+  <label class="chk" style="margin:6px 0 14px"><input type="checkbox" id="en_ok"><span>Tenho a autorização do cliente para publicar o vídeo no meu site</span></label>
+  <div class="pv-act"><label class="upl">🎬 Enviar vídeo(s) (MP4, até 50 MB cada)<input type="file" accept="video/mp4,video/webm" onchange="enAddVideo(this)" multiple hidden></label></div>
+  <div class="pv-dica"><b>Como os vídeos aparecem no site</b><br>Baixe o vídeo (do Instagram ou do celular) e envie o arquivo aqui, em <b>MP4</b> (até 50 MB). Pode selecionar vários arquivos de uma vez, em sequência. No site ele aparece com uma <b>capa</b>, numa fila que rola devagar. Quando o cliente <b>passa o mouse</b> (ou segura o dedo), o vídeo <b>começa a rodar</b>. Ao <b>clicar</b>, abre em <b>tela maior</b>.</div>
+  <p class="en-cont">${ct.f?`<b>Fotos publicadas antes:</b> ${ct.f} <small class="mu">(não é mais possível enviar fotos novas, só vídeos)</small> · `:''}<b>Vídeos no site:</b> ${vTot()}/${LIMV()}</p>
   <div class="en-adm">${L2.map((e,i)=>{const leg=e.u&&!e.f&&!mp4Ok(e.u);return `<div class="en-it${leg?' off':''}">${e.f?`<img ${IMGA(e.f,'th')} alt="">`:`<span class="en-vi" aria-hidden="true">🎬</span>`}<div><b>${esc(e.n)}</b><small>${e.t==='c'?'Contemplação':'Entrega'} · ${leg?'link antigo: não aparece mais no site (remova e envie o arquivo do vídeo)':(e.u&&!e.f?'Vídeo · ':'')+esc(e.m||'')}</small></div><button type="button" class="btn sm" onclick="enDel(${i})">Remover</button></div>`}).join('')||((CF().videos||[]).length?'':'<p class="mu" style="margin-top:14px">Nenhum registro publicado ainda.</p>')}</div>${(CF().videos||[]).length?`<h4 class="en-h4">Vídeos na seção “Assista e conheça” <small>(${(CF().videos||[]).length})</small></h4><p class="mu" style="margin:0 0 8px">Estes vídeos aparecem no seu site. Você pode ocultar, mudar a ordem ou remover.</p><div class="pv-adm">${pvRowsH(CF().videos||[])}</div>`:''}`}
 async function enSave(L2){const config={...CF(),entregas:L2};const{error}=await sb.from('vendedores').update({config}).eq('id',V.id);if(error)throw error;V.config=config}
-async function enAdd(el){const f=el.files&&el.files[0];if(!f)return;const n=($('#en_n').value||'').trim(),m=($('#en_m').value||'').trim();
+async function enAddVideo(el){const fs=el.files?Array.from(el.files):[];if(!fs.length)return;const n=($('#en_n').value||'').trim(),m=($('#en_m').value||'').trim(),t=($('#en_t')&&$('#en_t').value==='c')?'c':'e';
   if(!n){el.value='';return toast('Informe o nome do cliente')}if(!$('#en_ok').checked){el.value='';return toast('Confirme que você tem a autorização do cliente')}
-  const L2=[...(CF().entregas||[])];if(enCont(L2).f>=LIMF()){el.value='';return toast(limMsg('fotos',LIMF()))}
-  try{toast('Enviando foto...');const u=await up(f);L2.unshift({f:u,n,m,t:($('#en_t')&&$('#en_t').value==='c')?'c':'e'});await enSave(L2);pEntregas();toast('Foto publicada no seu site!')}catch(e){el.value='';toast('Erro: '+(e&&e.message||e))}}
-async function enAddVideo(el){const f=el.files&&el.files[0];if(!f)return;const n=($('#en_n').value||'').trim(),m=($('#en_m').value||'').trim();
-  if(!n){el.value='';return toast('Informe o nome do cliente')}if(!$('#en_ok').checked){el.value='';return toast('Confirme que você tem a autorização do cliente')}
-  if(!/^video\/(mp4|webm)$/i.test(f.type||'')&&!/\.(mp4|webm)$/i.test(f.name)){el.value='';return toast('Envie o vídeo em MP4 ou WebM')}
-  if(f.size>50*1024*1024){el.value='';return toast('O vídeo passa de 50 MB: reduza o tamanho do arquivo e envie de novo')}
-  const L2=[...(CF().entregas||[])];if(vTot()>=LIMV()){el.value='';return toast(limMsg('vídeos',LIMV()))}
-  try{toast('Enviando vídeo...');const r=await upVideo(f),u=r.u;L2.unshift({u,...(r.p?{p:r.p}:{}),n,m,t:($('#en_t')&&$('#en_t').value==='c')?'c':'e'});await enSave(L2);pEntregas();toast('Vídeo publicado no seu site!')}catch(e){el.value='';toast('Erro: '+(e&&e.message||e))}}
-async function enDel(i){if(!confirm('Remover esta foto do site?'))return;const L2=[...(CF().entregas||[])];L2.splice(i,1);try{await enSave(L2);pEntregas();toast('Foto removida')}catch(e){toast('Erro: '+(e&&e.message||e))}}
+  for(const f of fs){if(!/^video\/(mp4|webm)$/i.test(f.type||'')&&!/\.(mp4|webm)$/i.test(f.name)){el.value='';return toast('Envie o vídeo em MP4 ou WebM')}if(f.size>50*1024*1024){el.value='';return toast('O vídeo "'+f.name+'" passa de 50 MB: reduza o tamanho do arquivo e envie de novo')}}
+  let L2=[...(CF().entregas||[])],okN=0;
+  try{
+    for(const f of fs){
+      if(vTot()>=LIMV()){toast(limMsg('vídeos',LIMV()));break}
+      toast(`Enviando vídeo${fs.length>1?' '+(okN+1)+'/'+fs.length:''}...`);
+      const r=await upVideo(f),u=r.u;
+      L2=[{u,...(r.p?{p:r.p}:{}),n,m,t},...L2];
+      await enSave(L2);okN++
+    }
+    pEntregas();
+    if(okN)toast(okN>1?okN+' vídeos publicados no seu site!':'Vídeo publicado no seu site!')
+  }catch(e){el.value='';pEntregas();toast('Erro: '+(e&&e.message||e))}}
+async function enDel(i){if(!confirm('Remover esta publicação do site?'))return;const L2=[...(CF().entregas||[])];L2.splice(i,1);try{await enSave(L2);pEntregas();toast('Removido')}catch(e){toast('Erro: '+(e&&e.message||e))}}
 
 
 /* ---- PRÉVIA DO LINK (cartão que aparece no WhatsApp / Instagram): título, frase, foto e imagem gerada ---- */
