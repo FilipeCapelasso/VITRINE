@@ -4157,9 +4157,9 @@ function avLive(){if(AVCH||!sb||!V||!V.id)return;try{AVCH=sb.channel('avisos-'+V
 async function exLoad(){const el=document.getElementById('exp_box');if(!el||!sb)return;
   let d=null;try{const r=await sb.rpc('exp_ranking');d=r&&r.data}catch(e){}
   if(!d||!d.slug){el.remove();return}
-  const lk='https://www.sitevendedor.com/ind/'+encodeURIComponent(d.slug),pr=[['🥇','1º lugar','R$ 200'],['🥈','2º lugar','R$ 100'],['🥉','3º lugar','2 meses grátis do plano']];
+  const lk='https://www.sitevendedor.com/ind/'+encodeURIComponent(d.slug),pr=[['🥇','1º lugar','R$ 300'],['🥈','2º lugar','R$ 100'],['🥉','3º lugar','2 meses grátis do plano']];
   const top=d.top||[];
-  el.innerHTML=`<span class="ex-tag">⚠️ ATENÇÃO · GANHE ATÉ 200 REAIS NO PIX</span><h3>O sistema está em expansão!</h3><p>Indique o Site Vendedor para outros vendedores. Cada pessoa que <b>pagar pelo seu link</b> conta para você, e os 3 que mais indicarem ganham prêmio.</p>
+  el.innerHTML=`<span class="ex-tag">⚠️ ATENÇÃO · GANHE ATÉ 300 REAIS NO PIX</span><h3>O sistema está em expansão!</h3><p>Indique o Site Vendedor para outros vendedores. Cada pessoa que <b>pagar pelo seu link</b> conta para você, e os 3 que mais indicarem ganham prêmio.</p>
   <div class="ex-lb">Seu link de indicação</div>
   <div class="ex-lk"><span id="ex_lk" data-c="${esc(lk)}">${esc(lk.replace('https://',''))}</span></div>
   <div class="ex-bts"><button type="button" class="ex-cp" onclick="exCopia()">📋 Copiar link</button><a class="ex-wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('Conheça o Site Vendedor Honda: seu site de vendas com painel e clientes no celular. '+lk)}">💬 Enviar no WhatsApp</a></div>
