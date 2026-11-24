@@ -120,7 +120,7 @@ async function boot(){
   try{PEND=await rpc('sup_pacote_pendente')}catch(e){PEND=null}await smLoad();view();if(PEND)pixView(PEND,true);
   document.addEventListener('visibilitychange',async()=>{if(document.hidden||!PEND)return;try{const r=await rpc('sup_verificar',{p_token:PEND.token});if(r.status!=='aguardando_pagamento'){PEND=null;D=await rpc('sup_painel');if(!$('ov').classList.contains('on'))view()}}catch(e){}})
 }
-let QF='',PEND=null,QN=1;
+let QF='',PEND=null,QN=5;
 function seats(v){const tot=Number(v.compradas)+Number(v.manuais),us=Number(v.usadas),max=60,n=Math.min(tot,max);
   if(!tot)return '<p class="mut" style="margin:14px 0">Você ainda não tem vagas. Compre abaixo para começar a criar vendedores.</p>';
   let h='';for(let k=0;k<n;k++)h+=`<i class="${k<us?'u':''}"></i>`;if(tot>max)h+=`<em>+${tot-max}</em>`;
@@ -154,8 +154,8 @@ function view(){
   <div><div class="nums"><div class="lv"><b>${v.disponiveis}</b><span>livres</span></div><div><b>${v.usadas}</b><span>em uso</span></div><div><b>${tot}</b><span>no total</span></div></div>
   <div class="cta"><button class="btn" id="nv"${v.disponiveis<1?' disabled title="Sem vagas livres"':''}>＋ Criar vendedor</button>${pr>0?'<a class="btn o" href="#comprar">Comprar vagas</a>':''}</div></div></div></section>
   <section class="card" id="comprar"><h2>Comprar vagas</h2>${pr>0?`<p class="mut">${brl(pr)} por vaga, pago uma vez por Pix. As vagas entram na hora em que o Mercado Pago confirma.</p>
-  <div class="buy"><div><label for="q">Quantas vagas?</label><div class="chips" role="group" aria-label="Quantidades rápidas">${[1,5,10,25].map(n=>`<button type="button" data-q="${n}">${n}</button>`).join('')}</div>
-  <div class="qty"><button type="button" id="qm" aria-label="Menos uma">−</button><input id="q" type="number" min="1" max="500" value="${QN}" inputmode="numeric" aria-label="Quantidade de vagas"><button type="button" id="qp" aria-label="Mais uma">+</button></div></div>
+  <div class="buy"><div><label for="q">Quantas vagas? <small style="font-weight:600;opacity:.8">(pacote: mínimo de 5, depois de 1 em 1)</small></label><div class="chips" role="group" aria-label="Quantidades rápidas">${[5,10,25,50].map(n=>`<button type="button" data-q="${n}">${n}</button>`).join('')}</div>
+  <div class="qty"><button type="button" id="qm" aria-label="Menos uma (mínimo 5)">−</button><input id="q" type="number" min="5" max="500" value="${QN}" inputmode="numeric" aria-label="Quantidade de vagas"><button type="button" id="qp" aria-label="Mais uma">+</button></div></div>
   <div class="tot"><small>Total</small><b id="tot"></b><button class="btn" id="cb">Gerar Pix</button></div></div>
   <div class="mb"><span id="mt"></span><button class="btn o" id="mbt">💳 Assinar mensal no cartão</button></div>`:`<p class="mut">O valor por vaga ainda não foi definido. Fale com o administrador.</p>`}</section>
   ${smH()}
@@ -165,11 +165,11 @@ function view(){
   $('so').onclick=async()=>{await sb.auth.signOut();loginView()};
   $('nv').onclick=novoForm;if($('pdo'))$('pdo').onclick=()=>pixView(PEND,true);
   if($('vq'))$('vq').oninput=e=>{QF=e.target.value;$('vl').innerHTML=vCards();liga()};
-  if(pr>0){const q=$('q'),up=()=>{let n=parseInt(q.value,10);if(!(n>=1))n=1;if(n>500)n=500;QN=n;$('tot').textContent=brl(n*pr);$('mt').innerHTML='Ou assine: <b>'+n+' vaga'+(n>1?'s':'')+' por '+brl(n*pr)+' ao mês</b>, cobrado sozinho no cartão. Cancele quando quiser.';document.querySelectorAll('[data-q]').forEach(b=>b.classList.toggle('on',+b.dataset.q===n))};
-    q.oninput=up;$('qm').onclick=()=>{q.value=Math.max(1,(parseInt(q.value,10)||1)-1);up()};$('qp').onclick=()=>{q.value=Math.min(500,(parseInt(q.value,10)||0)+1);up()};
+  if(pr>0){const q=$('q'),up=()=>{let n=parseInt(q.value,10);if(!(n>=5))n=5;if(n>500)n=500;QN=n;$('tot').textContent=brl(n*pr);$('mt').innerHTML='Ou assine: <b>'+n+' vaga'+(n>1?'s':'')+' por '+brl(n*pr)+' ao mês</b>, cobrado sozinho no cartão. Cancele quando quiser.';document.querySelectorAll('[data-q]').forEach(b=>b.classList.toggle('on',+b.dataset.q===n))};
+    q.oninput=up;$('qm').onclick=()=>{q.value=Math.max(5,(parseInt(q.value,10)||5)-1);up()};$('qp').onclick=()=>{q.value=Math.min(500,Math.max(5,parseInt(q.value,10)||4)+1);up()};
     document.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{q.value=b.dataset.q;up()});up();
-    $('cb').onclick=async()=>{const n=parseInt(q.value,10);if(!(n>=1&&n<=500))return toastErr('Escolha de 1 a 500 vagas.');if(PEND&&!confirm('Você já tem um Pix aguardando pagamento. Gerar outro mesmo assim?'))return;const b=$('cb');b.disabled=true;b.innerHTML='<span class="spin"></span> Gerando…';try{const p=await rpc('sup_comprar',{p_qtd:n});PEND=p;pixView(p);D=await rpc('sup_painel');view()}catch(e){toastErr(e.message)}const b2=$('cb');if(b2){b2.disabled=false;b2.textContent='Gerar Pix'}}
-    $('mbt').onclick=async()=>{const n=parseInt(q.value,10);if(!(n>=1&&n<=500))return toastErr('Escolha de 1 a 500 vagas.');const b=$('mbt');b.disabled=true;b.innerHTML='<span class="spin"></span> Preparando…';
+    $('cb').onclick=async()=>{const n=parseInt(q.value,10);if(!(n>=5&&n<=500))return toastErr('O pedido mínimo é de 5 vagas (pacote). Escolha de 5 a 500.');if(PEND&&!confirm('Você já tem um Pix aguardando pagamento. Gerar outro mesmo assim?'))return;const b=$('cb');b.disabled=true;b.innerHTML='<span class="spin"></span> Gerando…';try{const p=await rpc('sup_comprar',{p_qtd:n});PEND=p;pixView(p);D=await rpc('sup_painel');view()}catch(e){toastErr(e.message)}const b2=$('cb');if(b2){b2.disabled=false;b2.textContent='Gerar Pix'}}
+    $('mbt').onclick=async()=>{const n=parseInt(q.value,10);if(!(n>=5&&n<=500))return toastErr('O pedido mínimo é de 5 vagas (pacote). Escolha de 5 a 500.');const b=$('mbt');b.disabled=true;b.innerHTML='<span class="spin"></span> Preparando…';
       try{const r=await rpc('sup_mensal_criar',{p_qtd:n});if(!smOk(r.init_point))throw new Error('Link de pagamento indisponível. Tente de novo.');await smLoad();smModal(r,n)}catch(e){toastErr(e.message)}const b3=$('mbt');if(b3){b3.disabled=false;b3.textContent='💳 Assinar mensal no cartão'}}}
   document.querySelectorAll('[data-sm]').forEach(b=>b.onclick=async()=>{if(!confirm('Cancelar esta assinatura mensal?\n\nAs vagas continuam até o fim do período já pago.'))return;b.disabled=true;
     try{SM=await rpc('sup_mensal_cancelar',{p_id:b.dataset.sm});D=await rpc('sup_painel');view();okMsg('Assinatura cancelada. As vagas seguem até o fim do período pago.')}catch(e){b.disabled=false;toastErr(e.message)}});
