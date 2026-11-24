@@ -3777,14 +3777,28 @@ function avMostra(n){if(!n||n.id==null||AVV.has(+n.id))return;AVV.add(+n.id);
 async function avConta(){const b=document.getElementById('avbg');if(!b||!sb)return;try{const{count}=await sb.from('app_notificacoes').select('id',{count:'exact',head:true}).eq('lida',false);b.textContent=count>99?'99+':count;b.hidden=!count}catch(e){}}
 function avLive(){if(AVCH||!sb||!V||!V.id)return;try{AVCH=sb.channel('avisos-'+V.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'app_notificacoes',filter:'vendedor_id=eq.'+V.id},e=>{const n=e.new;if(n&&Date.now()-Date.parse(n.criado||Date.now())<120000)avMostra(n)}).subscribe()}catch(e){}}
 /* ----- aba Notificações ----- */
+
+/* v54: aviso Expansão */
+async function exLoad(){const el=document.getElementById('exp_box');if(!el||!sb)return;
+  let d=null;try{const r=await sb.rpc('exp_ranking');d=r&&r.data}catch(e){}
+  if(!d||!d.slug){el.remove();return}
+  const lk='https://www.sitevendedor.com/?ref='+encodeURIComponent(d.slug),pr=[['🥇','1º lugar','R$ 200'],['🥈','2º lugar','R$ 100'],['🥉','3º lugar','2 meses grátis do plano']];
+  const top=d.top||[];
+  el.innerHTML=`<span class="ex-tag">⚠️ ATENÇÃO</span><h3>O sistema está em expansão!</h3><p>Indique o Site Vendedor para outros vendedores. Cada pessoa que <b>pagar pelo seu link</b> conta para você, e os 3 que mais indicarem ganham prêmio.</p>
+  <div class="ex-lk"><input id="ex_lk" readonly value="${esc(lk)}" data-c="${esc(lk)}" aria-label="Seu link de indicação" style="font-size:13px"><button type="button" onclick="exCopia()">Copiar</button></div>
+  <div class="ex-n"><b>${+d.meu_total||0}</b><span>${(+d.meu_total||0)===1?'pessoa pagou':'pessoas pagaram'} pelo seu link${d.meu_pos?' · você está em <b style="font-size:inherit">'+d.meu_pos+'º</b>':''}</span></div>
+  <div class="ex-pd">${pr.map((x,i)=>{const t=top[i];return `<div class="ex-r${t&&t.eu?' eu':''}"><i>${x[0]}</i><div><b>${t?esc(t.nome)+(t.eu?' (você)':''):'Vaga aberta'}</b><small>${x[1]} · ${x[2]}</small></div><em>${t?+t.total:0}</em></div>`}).join('')}</div>
+  <p class="ex-fn">Conta só quem concluiu o pagamento pelo seu link. Empate: vence quem chegou primeiro.</p>`}
+function exCopia(){const i=document.getElementById('ex_lk');if(!i)return;i.setSelectionRange(0,0);const t=i.dataset.c;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Link copiado'),()=>{i.select();try{document.execCommand('copy');toast('Link copiado')}catch(e){}})}
 async function pAvisos(){
   const on=await (async()=>{try{const s=await appSubAtual();return !!s&&Notification.permission==='granted'}catch(e){return false}})();
-  $('#pn').innerHTML=`<section class="card2 av-top">${on?`<div class="av-on"><span class="av-dot"></span><div><b>Avisos ativos neste aparelho</b><small>Você é avisado quando o cliente começa, termina ou para de preencher.</small></div></div>`:`<div class="av-off"><div><b>🔕 Este aparelho ainda não recebe avisos com o app fechado</b><small>Com o painel aberto você já vê os avisos aqui. Para receber no celular a qualquer hora, ative:</small></div><button class="btn red" onclick="CTAB='app';adm('conta')">Ativar avisos</button></div>`}
+  $('#pn').innerHTML=`<section class="ex-b" id="exp_box"><div class="sk" style="height:220px;border-radius:16px"></div></section><section class="card2 av-top">${on?`<div class="av-on"><span class="av-dot"></span><div><b>Avisos ativos neste aparelho</b><small>Você é avisado quando o cliente começa, termina ou para de preencher.</small></div></div>`:`<div class="av-off"><div><b>🔕 Este aparelho ainda não recebe avisos com o app fechado</b><small>Com o painel aberto você já vê os avisos aqui. Para receber no celular a qualquer hora, ative:</small></div><button class="btn red" onclick="CTAB='app';adm('conta')">Ativar avisos</button></div>`}
   <div class="av-acts"><button class="btn" onclick="avTeste()">🔔 Testar aviso</button><button class="btn" onclick="avLidas()">✓ Marcar todas como lidas</button><button class="btn av-limpa" onclick="avLimpar()">🗑 Apagar tudo</button></div></section>
   <div class="av-f">${[['todas','Todas'],['nao','Não lidas'],['rascunho','✍️ Começou'],['fim','✅ Finalizou'],['preguicoso','😴 Parou']].map(a=>`<button class="${AVF===a[0]?'on':''}" onclick="AVF='${a[0]}';avLista()">${a[1]}</button>`).join('')}</div>
   <div id="av_l" class="av-l"><div class="sk" style="height:76px;border-radius:16px"></div><div class="sk" style="height:76px;border-radius:16px;margin-top:10px"></div></div>
   <details class="card2 av-pf" id="av_pf"><summary>⚙️ Quais avisos receber</summary><div id="av_pfx"><p class="mu">Carregando…</p></div></details>`;
   const r=await sb.from('app_notificacoes').select('id,tipo,titulo,corpo,dados,lida,criado').order('id',{ascending:false}).limit(150);
+  exLoad();
   if(T!=='avisos')return;AVLST=(r&&r.data)||[];AVLST.forEach(n=>AVV.add(+n.id));avLista();avPrefs();
   try{if(navigator.clearAppBadge)navigator.clearAppBadge()}catch(e){}
   setTimeout(async()=>{if(T!=='avisos')return;try{await sb.rpc('app_marcar_lidas',{p_ids:null})}catch(e){}avConta()},2500)}
@@ -4206,6 +4220,21 @@ html body.fpr .sheet:not(.ch):not(.chbd) .avs{color:#d8c192;font-style:italic;op
 .cv-hb{margin-top:12px;font-size:14px;line-height:1.55;color:#3a3a46}.cv-hb ol{padding-left:20px;margin:8px 0}.cv-hb li{margin:6px 0}
 .cv-av{background:#fff7e6;border:1px solid #ffe0a3;border-radius:12px;padding:10px 12px;color:#6b4a00}
 @media(max-width:620px){.cv-hero{padding:18px}.cv-res{min-width:0;flex:1 1 100%}.cv-res b{font-size:32px}.cv-fm{grid-template-columns:1fr}.cv-ck{padding-bottom:0}.cv-o,.cv-c{padding:10px;gap:10px}.cv-cn{min-width:56px}.cv-cn b{font-size:20px}.cv-ca .btn{flex:1 1 auto}.card2-h{flex-wrap:wrap;gap:8px}}
+
+/* v54: aviso Expansão (indicação + ranking) */
+.ex-b{position:relative;overflow:hidden;border-radius:20px;padding:18px 16px 16px;margin:0 0 14px;color:#fff;background:linear-gradient(135deg,#7a0016 0%,#c4001f 55%,#e4002b 100%);box-shadow:0 10px 30px #c4001f40;border:1px solid #ffffff2e}
+.ex-b:before{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(#ffffff2a,transparent 70%);pointer-events:none}
+.ex-tag{display:inline-block;font-weight:900;font-size:12px;letter-spacing:.08em;background:#fff;color:#c4001f;border-radius:99px;padding:4px 11px}
+.ex-b h3{margin:10px 0 6px;font-size:21px;line-height:1.2;color:#fff}.ex-b p{margin:0 0 10px;font-size:14.5px;line-height:1.5;color:#ffecee}
+.ex-lk{display:flex;gap:8px;align-items:stretch;background:#00000038;border:1px solid #ffffff40;border-radius:14px;padding:6px 6px 6px 12px;margin:10px 0}
+.ex-lk input{flex:1;min-width:0;background:transparent;border:0;color:#fff;font-weight:700;font-size:14px;outline:0}
+.ex-lk button{flex:none;border:0;border-radius:10px;padding:9px 14px;font-weight:800;background:#fff;color:#c4001f;cursor:pointer}
+.ex-n{display:flex;align-items:center;gap:12px;background:#ffffff1f;border-radius:14px;padding:10px 14px;margin:10px 0}
+.ex-n b{font-size:34px;line-height:1}.ex-n span{font-size:13.5px;color:#ffecee}
+.ex-pd{display:grid;gap:8px;margin:10px 0 12px}
+.ex-r{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:10px;background:#fff;color:#1a1a22;border-radius:14px;padding:10px 12px}
+.ex-r.eu{outline:3px solid #ffd45a}.ex-r i{font-style:normal;font-size:26px;text-align:center}.ex-r b{display:block;font-size:15px}.ex-r small{color:#6a6a78;font-size:12.5px}.ex-r em{font-style:normal;font-weight:900;font-size:20px;color:#c4001f}
+.ex-fn{margin:0;font-size:12px;color:#ffd9dd}
 </style>
 </body>
 </html>
