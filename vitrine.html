@@ -3572,7 +3572,7 @@ const appModo=()=>{try{return appStand()||sessionStorage.getItem('app_modo')==='
 /* ===== v57: Calculadora do vendedor — 3 abas (Calculadora / CDC x Consórcio / Comparar planos), no modelo do painel antigo, com cliente salvo, cota Nova e Reposição e a taxa oficial do Banco Honda no financiamento ===== */
 let FT=null,FC={cli:null,novo:false,nome:'',tel:'',tab:'calc'},FCQ='';
 let CS={mid:'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:'',quitar:false,res:null};
-let CQ={mid:'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:'',quitar:false,auto:true,ent:'',n:48,parc:''};
+let CQ={mid:'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:'',quitar:false,auto:true,ent:'',n:48,parc:'',pv:''};
 let CP={cols:[{mid:'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:''},{mid:'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:''}]};
 const FPRAZOS=[12,18,24,36,48,60];
 const fNum=t=>{t=String(t||'').replace(/[^\d,.]/g,'');if(!t)return 0;if(t.includes(','))t=t.replace(/\./g,'').replace(',','.');else if(/\.\d{3}$/.test(t))t=t.replace(/\./g,'');const n=parseFloat(t);return isFinite(n)?n:0};
@@ -3764,20 +3764,20 @@ async function csImgBuild(){
   return cv}
 function csImg(){if(!CS.res||!CS.res.ok)return toast('Calcule a proposta primeiro.');ccBaixa(csImgBuild,'proposta-consorcio')}
 /* ====================== ABA 2: CDC x CONSÓRCIO (financiamento com a taxa do Banco Honda x consórcio) ====================== */
-function cqMotoSet(id){CQ.mid=id;CQ.cota='Nova';CQ.ss=false;CQ.prazo=0;CQ.restantes=0;cqDraw()}
+function cqMotoSet(id){CQ.mid=id;CQ.cota='Nova';CQ.ss=false;CQ.prazo=0;CQ.restantes=0;CQ.pv='';cqDraw()}
 function cqFmt(el){const n=vNum(el.value);if(isFinite(n)&&n>0)el.value=vDec(n)}
 function cqDraw(){const ar=document.getElementById('fc_ar');if(!ar)return;ar.innerHTML=`<section class="card2 fc-cc"><h3>2. Comparar: Financiamento CDC x Consórcio Honda</h3><div id="cq_b"></div></section>`;cqForm()}
 function cqForm(){
   const L=fMotos(),m=fMotoById(CQ.mid),pls=m?fPlanos(m):[],cr=m?vCredito(m):0,ss=m&&vTemSS(m);
   const prazos=[...new Set(pls.map(p=>+p.parcelas))].sort((a,b)=>a-b),rest=CQ.cota==='Reposição'&&CQ.prazo?Array.from({length:CQ.prazo-1},(_,i)=>CQ.prazo-i):[];
   const par=m&&CQ.prazo?vParcela(m,CQ.prazo,CQ.ss):0;
-  const ent=vNum(CQ.ent)||0,pv=m?(fBase(m)||cr):0,i=fTaxa()/100,n=Math.max(1,Math.trunc(+CQ.n)||48),saldo=Math.max(0,pv-ent);
+  const ent=vNum(CQ.ent)||0,pvCat=m?(fBase(m)||cr):0,pv=m?(vNum(CQ.pv)||pvCat):0,i=fTaxa()/100,n=Math.max(1,Math.trunc(+CQ.n)||48),saldo=Math.max(0,pv-ent);
   const parcAuto=saldo>0?fPmt(saldo,i,n):0;
   document.getElementById('cq_b').innerHTML=`<div class="cc-g full"><label class="cmp-l" for="cq_m">Moto (a mesma nas duas modalidades)</label><select id="cq_m" onchange="cqMotoSet(this.value)"><option value="">Selecione uma moto:</option>${L.map(o=>`<option value="${esc(o.id)}" ${String(o.id)===String(CQ.mid)?'selected':''}>${esc(o.nome)}</option>`).join('')}</select></div>
   <div class="cc-cols cq-cols" style="--n:2">
   <div class="cc-col cq-fin"><h4>Financiamento CDC</h4>
    <label class="cmp-l">Modelo da motocicleta</label><input type="text" readonly value="${m?esc(m.nome):''}">
-   <label class="cmp-l">Valor da moto</label><input type="text" readonly value="${pv>0?cBrl(pv):''}" placeholder="Escolha a moto">
+   <label class="cmp-l" for="cq_pv">Valor da moto <small>(ajuste se a loja cobrar diferente do crédito)</small></label><input type="text" id="cq_pv" inputmode="decimal" ${m?'':'disabled'} value="${esc(CQ.pv||(pvCat>0?vDec(pvCat):''))}" placeholder="${pvCat>0?cBrl(pvCat):'Escolha a moto'}" oninput="CQ.pv=this.value;cqRes()" onblur="cqFmt(this)">
    <label class="cmp-l" for="cq_e">Valor da entrada</label><input type="text" id="cq_e" inputmode="decimal" value="${esc(CQ.ent)}" placeholder="0,00 (sem entrada)" oninput="CQ.ent=this.value;cqRes()" onblur="cqFmt(this)">
    <label class="cmp-l" for="cq_n">Quantidade de parcelas</label><select id="cq_n" onchange="CQ.n=+this.value;cqForm()">${fPrazos().map(z=>`<option value="${z}" ${z===+CQ.n?'selected':''}>${z}x</option>`).join('')}</select>
    <label class="cc-ck"><input type="checkbox" ${CQ.auto?'checked':''} onchange="CQ.auto=this.checked;cqForm()"><span>Calcular a parcela pela taxa oficial do Banco Honda (${cPct(fTaxa())} a.m.)</span></label>
@@ -3798,7 +3798,7 @@ function cqForm(){
   <div id="cq_res"></div>`;cqRes()}
 function cqCalc(){
   const m=fMotoById(CQ.mid);if(!m)return{ok:false,erros:['Escolha a moto.']};
-  const pv=fBase(m)||vCredito(m),ent=Math.round((vNum(CQ.ent)||0)*100),n=Math.max(1,Math.trunc(+CQ.n)||48),i=fTaxa()/100,saldo=Math.max(0,pv-ent/100);
+  const pv=vNum(CQ.pv)||fBase(m)||vCredito(m),ent=Math.round((vNum(CQ.ent)||0)*100),n=Math.max(1,Math.trunc(+CQ.n)||48),i=fTaxa()/100,saldo=Math.max(0,pv-ent/100);
   const pcReal=CQ.auto?fPmt(saldo,i,n):(vNum(CQ.parc)||0),pc=Math.round(pcReal*100);
   const E=[];if(!(n>=1))E.push('Financiamento: informe a quantidade de parcelas.');if(!(pc>0))E.push(CQ.auto?'Financiamento: escolha a moto para calcular a parcela.':'Financiamento: informe o valor de cada parcela (da simulação real do banco).');
   const r=calcCore({credito:vCredito(m),parcela:CQ.prazo?vParcela(m,CQ.prazo,CQ.ss):0,prazo:CQ.prazo,restantes:CQ.cota==='Reposição'?(CQ.restantes||CQ.prazo):CQ.prazo,repo:CQ.repo,lance:vNum(CQ.lanceR),quitar:CQ.quitar});
