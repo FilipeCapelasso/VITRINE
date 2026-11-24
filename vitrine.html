@@ -1876,10 +1876,11 @@ async function iniVotar(id){const o=((INI.vot||{}).opcoes||[]).find(x=>x.id===id
 async function pInicio(){ $('#pn').innerHTML='<div class="sk" style="height:150px;border-radius:18px"></div><div class="sk" style="height:90px;border-radius:18px;margin-top:14px"></div>'; await vdLoad();if(T!=='inicio')return;
   const q=async(n)=>{try{const r=await sb.rpc(n);return(r&&!r.error)?r.data:null}catch(e){return null}};
   const [atu,vot,ren,rec]=await Promise.all([q('meu_atualizacoes'),q('meu_votacao'),q('meu_renovar_orcamento'),q('meu_mensal_status')]);if(T!=='inicio')return;
+  setTimeout(exLoad,80);
   INI={atu:Array.isArray(atu)?atu:[],vot:vot||{ativa:false},ren:ren||null,rec:rec||null};
   const hr=new Date().getHours(),sd=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',novos=VD.filter(vdNovo),hoje=VD.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()).length;
   const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length,link=siteUrl()+'/'+SLUG,nn=novos.length;
-  $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button></div></section>${renAvisoH()}${appIniH()}<div id="ini_x">${iniPassosH()}${iniVotH()}${iniAtuH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
+  $('#pn').innerHTML=`<section class="ex-b" id="exp_box"><div class="sk" style="height:220px;border-radius:16px"></div></section><section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button></div></section>${renAvisoH()}<div id="ini_x">${iniPassosH()}${iniVotH()}${iniAtuH()}${iniPlanoH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
 /* --- renovar o plano (Pix) --- */
 let RNM=2;
 async function renovaAbre(n){if(typeof n==='number')RNM=Math.min(24,Math.max(2,n));else{document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">🔄</div><h3>Renovar plano</h3><p>Calculando…</p>')}
@@ -3259,7 +3260,7 @@ function enPre(){try{const c=navigator.connection;if(c&&(c.saveData||/(^|-)2g$/.
   const vs=[...document.querySelectorAll('.en-mp video')];const carga=v=>{if(v.getAttribute('src')||!v.dataset.src)return;v.preload='metadata';v.src=v.dataset.src+(v.dataset.src.includes('#')?'':'#t=0.1')};
   vs.slice(0,4).forEach(carga);const ws=[...document.querySelectorAll('.en-w')];const todos=w=>w.querySelectorAll('.en-mp video').forEach(carga);
   if(window.IntersectionObserver){const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){todos(e.target);io.unobserve(e.target)}}),{rootMargin:'1000px 0px'});ws.forEach(w=>io.observe(w))}else ws.forEach(todos)}
-function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,1500)} if(t)T=t; if(T!=='personalizar')psRevert(); if(T==='personalizar'&&AC&&AC.limites&&!ehPrem()){T='inicio';persLock()}
+function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,1500)} if(t)T=t; document.body.setAttribute("data-ptab",T); if(T!=='personalizar')psRevert(); if(T==='personalizar'&&AC&&AC.limites&&!ehPrem()){T='inicio';persLock()}
   if(T==='sorteio')T='cota';if(T==='visitas')T='acessos';
   if(T==='resumo'||T==='playbook')T='inicio';
   if(T==='pedidos'||T==='leads')T='vendas';
@@ -3794,8 +3795,6 @@ async function exLoad(){const el=document.getElementById('exp_box');if(!el||!sb)
   <p class="ex-fn">Conta só quem concluiu o pagamento pelo seu link. Empate: vence quem chegou primeiro.</p>`}
 function exCopia(){const i=document.getElementById('ex_lk');if(!i)return;const t=i.dataset.c,fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.cssText='position:fixed;opacity:0';document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('Link copiado')}catch(e){toast('Não consegui copiar. Segure o link para copiar.')}x.remove()};(navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('Link copiado'),fb):fb())}
 
-/* v54b: aviso Expansão também no Início, logo acima das Atualizações */
-(function(){const o=iniAtuH;iniAtuH=function(){setTimeout(exLoad,60);return '<section class="ex-b" id="exp_box"><div class="sk" style="height:220px;border-radius:16px"></div></section>'+o.apply(this,arguments)}})();
 async function pAvisos(){
   const on=await (async()=>{try{const s=await appSubAtual();return !!s&&Notification.permission==='granted'}catch(e){return false}})();
   $('#pn').innerHTML=`<section class="ex-b" id="exp_box"><div class="sk" style="height:220px;border-radius:16px"></div></section><section class="card2 av-top">${on?`<div class="av-on"><span class="av-dot"></span><div><b>Avisos ativos neste aparelho</b><small>Você é avisado quando o cliente começa, termina ou para de preencher.</small></div></div>`:`<div class="av-off"><div><b>🔕 Este aparelho ainda não recebe avisos com o app fechado</b><small>Com o painel aberto você já vê os avisos aqui. Para receber no celular a qualquer hora, ative:</small></div><button class="btn red" onclick="CTAB='app';adm('conta')">Ativar avisos</button></div>`}
@@ -4228,6 +4227,7 @@ html body.fpr .sheet:not(.ch):not(.chbd) .avs{color:#d8c192;font-style:italic;op
 @media(max-width:620px){.cv-hero{padding:18px}.cv-res{min-width:0;flex:1 1 100%}.cv-res b{font-size:32px}.cv-fm{grid-template-columns:1fr}.cv-ck{padding-bottom:0}.cv-o,.cv-c{padding:10px;gap:10px}.cv-cn{min-width:56px}.cv-cn b{font-size:20px}.cv-ca .btn{flex:1 1 auto}.card2-h{flex-wrap:wrap;gap:8px}}
 
 /* v54: aviso Expansão (indicação + ranking) */
+body[data-ptab="inicio"] .shell .frase{display:none!important}
 .ex-b{position:relative;overflow:hidden;border-radius:20px;padding:18px 16px 16px;margin:0 0 14px;color:#fff;background:linear-gradient(135deg,#7a0016 0%,#c4001f 55%,#e4002b 100%);box-shadow:0 10px 30px #c4001f40;border:1px solid #ffffff2e}
 .ex-b:before{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(#ffffff2a,transparent 70%);pointer-events:none}
 .ex-tag{display:inline-block;font-weight:900;font-size:12px;letter-spacing:.08em;background:#fff;color:#c4001f;border-radius:99px;padding:4px 11px}
