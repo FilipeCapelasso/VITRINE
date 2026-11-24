@@ -3566,11 +3566,17 @@ function appIniH(){let x=false,ep='';try{x=localStorage.getItem('ap_ini_x')==='1
    chega pelo Supabase Realtime e pelo service worker, sem repetir o mesmo aviso. */
 const appModo=()=>{try{return appStand()||sessionStorage.getItem('app_modo')==='1'}catch(e){return appStand()}};
 
-/* ===== v56: Calculadora do vendedor: cliente salvo ou novo, consórcio (com lance), financiamento Banco Honda e comparação; proposta em imagem ===== */
-let FT=null,FC={cli:null,novo:false,nome:'',tel:'',mid:'',valor:0,ent:0,taxa:null,n:48,modo:'comparar',plano:'com',pz:0,lance:0,quitar:false},FCQ='';
+/* ===== v57: Calculadora do vendedor — 3 abas (Calculadora / CDC x Consórcio / Comparar planos), no modelo do painel antigo, com cliente salvo, cota Nova e Reposição e a taxa oficial do Banco Honda no financiamento ===== */
+let FT=null,FC={cli:null,novo:false,nome:'',tel:'',tab:'calc'},FCQ='';
+let CS={mid:'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:'',quitar:false,res:null};
+let CQ={mid:'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:'',quitar:false,auto:true,ent:'',n:48,parc:''};
+let CP={cols:[{mid:'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:''},{mid:'',cota:'Nova',ss:false,prazo:0,restantes:0,repo:'diluir',lanceR:''}]};
 const FPRAZOS=[12,18,24,36,48,60];
 const fNum=t=>{t=String(t||'').replace(/[^\d,.]/g,'');if(!t)return 0;if(t.includes(','))t=t.replace(/\./g,'').replace(',','.');else if(/\.\d{3}$/.test(t))t=t.replace(/\./g,'');const n=parseFloat(t);return isFinite(n)?n:0};
-const fPct=n=>Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+const vNum=v=>{let s=String(v==null?'':v).replace(/[R$\s%]/g,'');if(!s)return NaN;if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');else if(/^\d{1,3}(\.\d{3})+$/.test(s))s=s.replace(/\./g,'');const n=Number(s);return isFinite(n)?n:NaN};
+const vDec=n=>(isFinite(n)?n:0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+const cBrl=brl,cDec=vDec,cNum=vNum;
+const fPct=n=>Number(n||0).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%',cPct=fPct;
 const fMo=n=>n?Number(n).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2}):'';
 const fPmt=(pv,i,n)=>pv<=0?0:(i<=0?pv/n:pv*i/(1-Math.pow(1+i,-n)));
 const fData=d=>{try{return new Date(d+'T12:00').toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})}catch(e){return d}};
@@ -3578,113 +3584,353 @@ const fNz=t=>String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase()
 function fBase(m){if(!m)return 0;const b=typeof ccBase==='function'?ccBase(m):(+m.preco||0);if(b>0)return b;return fCred(m)}
 const fCred=m=>((m&&m.planos)||[]).map(x=>+(x&&x.credito)).find(n=>n>0)||0;
 function fMotos(){return M.filter(m=>m.ativo!==false&&fBase(m)>0).sort((a,b)=>String(a.nome).localeCompare(String(b.nome)))}
-const fMoto=()=>M.find(x=>String(x.id)===String(FC.mid))||null;
-function fTaxa(){return FC.taxa!=null?FC.taxa:(FT&&+FT.taxa_mes)||2.46}
+const fMotoById=id=>M.find(x=>String(x.id)===String(id))||null;
+function fTaxa(){return(FT&&+FT.taxa_mes)||2.46}
 function fPrazos(){const mx=FT&&FT.ajuste&&FT.ajuste.prazo_max;return FPRAZOS.filter(n=>!mx||n<=mx)}
 function fLoja(){try{return String(FORA()?(V.concessionaria||''):((((CFG&&CFG.lojas)||[]).find(l=>l.id===V.loja_id)||{}).nome||V.concessionaria||'')).trim()}catch(e){return''}}
-function fPlanos(m){const P=((m&&m.planos)||[]).filter(p=>+p.parcelas>0&&+p.valor>0).sort((a,b)=>a.parcelas-b.parcelas);return P}
+function fPlanos(m){return((m&&m.planos)||[]).filter(p=>+p.parcelas>=2&&+p.valor>0).sort((a,b)=>a.parcelas-b.parcelas)}
+const vCredito=m=>{const p=fPlanos(m).find(p=>+p.credito>0);return p?+p.credito:0};
+const vTemSS=m=>fPlanos(m).some(p=>+p.valor_sem_seguro>0);
+const vParcela=(m,prazo,ss)=>{const p=fPlanos(m).find(p=>+p.parcelas===+prazo);if(!p)return 0;const v=ss&&+p.valor_sem_seguro>0?+p.valor_sem_seguro:+p.valor;return v>0?v:0};
+const vPv=(par,prazo,rest,repo)=>{const p=Math.round(+par*100),z=Math.trunc(+prazo),r=Math.trunc(+rest);if(!(p>0&&z>=2&&r>=2&&r<=z))return +par>0?+par:0;return(r<z&&repo!=='entrada'?Math.round(p*z/r):p)/100};
 const fCliNome=c=>String(c.nome_completo||c.nome||'Cliente sem nome').trim();
 function fCliMoto(c){const mt=fNz(c.moto_nome);return M.find(m=>c.moto_id&&String(m.id)===String(c.moto_id))||(mt&&M.find(m=>fNz(m.nome)===mt||fNz(m.nome+' '+(m.modelo||''))===mt))||(mt&&M.find(m=>mt.includes(fNz(m.nome))))||null}
+function cWrap(x,t,w){const out=[];let l='';String(t).split(/\s+/).forEach(p=>{const n=l?l+' '+p:p;if(x.measureText(n).width>w&&l){out.push(l);l=p}else l=n});if(l)out.push(l);return out}
+const cPlanoTxt=ss=>ss?'Sem seguro prestamista':'Com seguro prestamista';
+const cHoje=()=>new Date().toLocaleDateString('pt-BR');
+function ccAssin(){const l=[(V.nome||'').trim(),V.whatsapp?cdZap(V.whatsapp):'',V.instagram?'@'+String(V.instagram).replace(/^@|.*instagram\.com\//g,'').replace(/\/$/,''):'',(V.concessionaria||V.empresa||fLoja()||'').trim()].filter(Boolean);return l.join('\n')}
+function zapHref(tel,txt){const w=wlk(tel);return w?w+'&text='+encodeURIComponent(txt||''):'#'}
+function zapClick(tel,evt){if(!wlk(tel)){if(evt)evt.preventDefault();toast('Informe um WhatsApp válido do cliente. Use Copiar.')}}
+/* regra de cálculo do consórcio (cota Nova e Reposição, lance e quitação), em centavos para não perder precisão — igual ao painel antigo */
+function calcCore(o){
+  const E=[],cr=+o.credito,pa=+o.parcela,pz=Math.trunc(+o.prazo),rs=Math.trunc(+o.restantes);
+  const lance=o.lance==null||o.lance===''||!isFinite(+o.lance)?0:+o.lance;
+  if(!(cr>0))E.push('Escolha a moto: o valor do crédito vem do catálogo.');
+  if(!(pa>0))E.push('Escolha o plano e o prazo para ver o valor da parcela.');
+  if(!(pz>=2))E.push('Escolha o prazo original.');
+  else if(!(rs>=2)||rs>pz)E.push('As parcelas restantes devem ficar entre 2 e o prazo original.');
+  if(lance<0)E.push('O lance não pode ser negativo.');
+  if(cr>0&&lance>cr)E.push('O lance não pode passar do valor do crédito.');
+  if(E.length)return{ok:false,erros:E};
+  const pc=Math.round(pa*100),pagas=pz-rs,acum=pagas*pc;
+  const repo=pagas>0?(o.repo==='entrada'?'entrada':'diluir'):'';
+  const ent=repo==='entrada'?acum:0;
+  const pvc=repo==='diluir'?Math.round(pc*pz/rs):pc;
+  const lc=Math.round(lance*100),demais=rs-2;
+  const teto=demais*pvc;
+  if(lc>teto)return{ok:false,erros:[demais>0
+    ?`O lance não pode passar de ${cBrl(teto/100)}: é o máximo que as ${demais} parcelas seguintes absorvem.`
+    :'Com 2 parcelas restantes não sobra parcela para abater o lance. Tire o lance ou aumente as parcelas restantes.']};
+  let q=0,red=0,sobra=0;
+  if(lc>0){
+    if(o.quitar){
+      q=Math.min(Math.floor(lc/pvc),demais);
+      let resto=lc-q*pvc,dmq=demais-q;
+      if(resto>0&&dmq>0){red=Math.min(Math.floor(resto/dmq),pvc)/100;resto-=Math.round(red*100)*dmq}
+      sobra=resto/100;
+    }
+    else if(demais>0){red=Math.min(Math.floor(lc/demais),pvc)/100}
+  }
+  const dm=demais-q,valc=Math.max(0,pvc-Math.round(red*100));
+  const totc=ent+lc+2*pvc+dm*valc;
+  return{ok:true,credito:cr,parcela:pa,prazo:pz,restantes:rs,pagas,repo,
+    acumulado:acum/100,entrada:ent/100,pv:pvc/100,total:totc/100,
+    lance:lc/100,pct:Math.round(lc*10000/Math.round(cr*100))/100,quitar:!!o.quitar&&lc>0,
+    p1:pvc/100,p2:pvc/100,demais:dm,demaisValor:valc/100,quitadas:q,reducao:red,sobra,aviso:(o.quitar&&lc>0&&q===0&&red===0)?'O lance é menor que uma parcela: não quita parcelas do final.':''}}
+function vEfeito(r){if(r.lance<=0)return'Sem lance informado.';
+  if(r.quitar){if(!r.quitadas)return r.reducao>0?`O lance não completa uma parcela inteira, então reduz ${cBrl(r.reducao)} de cada parcela.`:'O lance é menor que uma parcela: não quita parcelas do final.';
+    return `Seu lance quitará ${r.quitadas} parcela(s) do final do plano`+(r.reducao>0?` e o que sobrou reduz ${cBrl(r.reducao)} de cada parcela que ficou.`:'.')}
+  return r.reducao>0?`Seu lance reduzirá ${cBrl(r.reducao)} de cada parcela.`:'Seu lance não altera o valor das parcelas.'}
 async function pCalc(){
   $('#pn').innerHTML='<div class="sk" style="height:150px;border-radius:22px"></div><div class="sk" style="height:320px;border-radius:18px;margin-top:14px"></div>';
   const job=[];if(!FT)job.push((async()=>{try{const r=await sb.rpc('meu_fin_taxa');FT=(r&&!r.error&&r.data)||null}catch(e){}if(!FT)FT={taxa_mes:2.46,fonte:'padrao',uf:(V.uf||'AC')}})());
   if(!VD.length)job.push(vdLoad().catch(()=>{}));await Promise.all(job);if(T!=='calc')return;
-  const L=fMotos();if(!FC.mid&&!FC.valor&&L.length)fcSetMoto(L[0].id,true);
+  const L=fMotos();if(L.length){if(!CS.mid)CS.mid=L[0].id;if(!CQ.mid)CQ.mid=L[0].id;if(!CP.cols[0].mid)CP.cols[0].mid=L[0].id;if(!CP.cols[1].mid)CP.cols[1].mid=L[0].id}
   fcDraw()}
-function fcSetMoto(id,keepEnt){const m=M.find(x=>String(x.id)===String(id));FC.mid=m?m.id:'';if(m){FC.valor=fBase(m);if(!keepEnt||FC.ent>=FC.valor)FC.ent=FC.ent&&FC.ent<FC.valor?FC.ent:Math.round(FC.valor*.2);const P=fPlanos(m);if(!P.some(p=>p.parcelas===FC.pz))FC.pz=(P.find(p=>p.parcelas===48)||P[P.length-1]||{}).parcelas||0}FC.lance=0}
-function fcDraw(){const L=fMotos(),b=FT.bcb,aj=FT.ajuste,m=fMoto(),P=fPlanos(m);
+function fcTab(t){FC.tab=t;if(FC.cli){const m=fCliMoto(FC.cli);if(m){if(t==='calc'&&!CS.mid)CS.mid=m.id;if(t==='cq'&&!CQ.mid)CQ.mid=m.id;if(t==='pl'&&!CP.cols[0].mid)CP.cols[0].mid=m.id}}fcDraw()}
+function fcDraw(){
+  const b=FT.bcb,aj=FT.ajuste;
   const fonte=FT.fonte==='ajuste'?`Taxa definida para ${esc(FT.uf)}${aj&&aj.obs?' · '+esc(aj.obs):''}`:b?`Média oficial do Banco Honda no Banco Central (${fData(b.inicio)} a ${fData(b.fim)})`:'Taxa de referência';
-  const temSem=P.some(p=>+p.valor_sem_seguro>0);
-  $('#pn').innerHTML=`<section class="fc-hero"><div><span class="fc-k">${esc(FT.uf||'')}${FT.regiao?' · Região '+esc(FT.regiao):''} · tabela oficial Honda</span><h2>Calculadora de proposta</h2><p>Escolha o cliente, a moto e pronto: consórcio, financiamento e a economia, já com a sua foto e o seu contato para enviar.</p></div>
+  $('#pn').innerHTML=`<section class="fc-hero"><div><span class="fc-k">${esc(FT.uf||'')}${FT.regiao?' · Região '+esc(FT.regiao):''} · tabela oficial Honda</span><h2>Calculadora de proposta</h2><p>Escolha o cliente e a modalidade: consórcio (cota nova ou de reposição), comparação com o financiamento Banco Honda, ou vários planos lado a lado.</p></div>
    <div class="fc-tx"><small>Juros do financiamento</small><b>${fPct(fTaxa())}</b><span>ao mês</span><em>${fonte}</em></div></section>
   <section class="card2 fc-cl"><div class="fc-clh"><h3>1. Cliente</h3><div class="fc-sw"><button type="button" class="${FC.novo?'':'on'}" onclick="FC.novo=false;fcDraw()">Cliente salvo</button><button type="button" class="${FC.novo?'on':''}" onclick="FC.novo=true;FC.cli=null;fcDraw()">＋ Cliente novo</button></div></div>
-   ${FC.novo?`<div class="fc-2"><div><label for="fc_nm">Nome do cliente</label><input id="fc_nm" value="${esc(FC.nome)}" placeholder="Nome" oninput="FC.nome=this.value;fcConta()"></div><div><label for="fc_tl">WhatsApp do cliente</label><input id="fc_tl" inputmode="tel" value="${esc(FC.tel)}" placeholder="(68) 99999-9999" oninput="FC.tel=this.value;fcConta()"></div></div>`
-   :FC.cli?`<div class="fc-sel"><span class="fc-av">${esc(FC.nome.charAt(0).toUpperCase())}</span><div><b>${esc(FC.nome)}</b><small>${esc(cdZap(FC.tel)||'sem WhatsApp')}${FC.cli.moto_nome?' · '+esc(FC.cli.moto_nome):''}${FC.cli.entrada?' · entrada: '+esc(FC.cli.entrada):''}</small></div><button type="button" class="btn sm" onclick="FC.cli=null;FC.nome='';FC.tel='';fcDraw()">Trocar</button></div>`
+   ${FC.novo?`<div class="fc-2"><div><label for="fc_nm">Nome do cliente</label><input id="fc_nm" value="${esc(FC.nome)}" placeholder="Nome" oninput="FC.nome=this.value"></div><div><label for="fc_tl">WhatsApp do cliente</label><input id="fc_tl" inputmode="tel" value="${esc(FC.tel)}" placeholder="(68) 99999-9999" oninput="FC.tel=this.value"></div></div>`
+   :FC.cli?`<div class="fc-sel"><span class="fc-av">${esc((FC.nome||'C').charAt(0).toUpperCase())}</span><div><b>${esc(FC.nome)}</b><small>${esc(cdZap(FC.tel)||'sem WhatsApp')}${FC.cli.moto_nome?' · '+esc(FC.cli.moto_nome):''}</small></div><button type="button" class="btn sm" onclick="FC.cli=null;FC.nome='';FC.tel='';fcDraw()">Trocar</button></div>`
    :`<input id="fc_q" type="search" placeholder="🔍 Buscar cliente por nome, telefone ou moto (${VD.length})" value="${esc(FCQ)}" oninput="FCQ=this.value;fcLista()" autocomplete="off"><div id="fc_ls" class="fc-ls"></div>`}
   </section>
-  <section class="card2 fc-f"><h3>2. Moto e condições</h3>
-   <div class="fc-2"><div><label for="fc_m">Moto</label><select id="fc_m" onchange="fcSetMoto(this.value);fcDraw()">${L.map(x=>`<option value="${esc(x.id)}" ${x.id===FC.mid?'selected':''}>${esc(x.nome)}${x.modelo?' '+esc(x.modelo):''}</option>`).join('')}<option value="" ${FC.mid?'':'selected'}>Outra (digitar valor)</option></select></div>
-   <div><label for="fc_v">Valor da moto</label><input id="fc_v" inputmode="decimal" value="${fMo(FC.valor)}" placeholder="0,00" oninput="FC.valor=fNum(this.value);fcConta()"></div></div>
-   <div class="fc-md" role="tablist">${[['comparar','⚖️ Comparar'],['consorcio','🤝 Consórcio'],['financ','🏦 Financiamento']].map(t=>`<button type="button" role="tab" aria-selected="${FC.modo===t[0]}" class="${FC.modo===t[0]?'on':''}" onclick="FC.modo='${t[0]}';fcDraw()">${t[1]}</button>`).join('')}</div>
-   ${FC.modo!=='financ'?(P.length?`<div class="fc-sb"><b>Consórcio Honda</b>
-     ${temSem?`<div class="fc-ch">${[['com','Com seguro prestamista'],['sem','Sem seguro']].map(o=>`<button type="button" class="${FC.plano===o[0]?'on':''}" onclick="FC.plano='${o[0]}';fcDraw()">${o[1]}</button>`).join('')}</div>`:''}
-     <label>Prazo do consórcio</label><div class="fc-ch">${P.map(p=>`<button type="button" class="${p.parcelas===FC.pz?'on':''}" onclick="FC.pz=${p.parcelas};fcDraw()">${p.parcelas}x</button>`).join('')}</div>
-     <div class="fc-2"><div><label for="fc_lr">Lance em R$ <small>(opcional)</small></label><input id="fc_lr" inputmode="decimal" value="${fMo(FC.lance)}" placeholder="0,00" oninput="FC.lance=fNum(this.value);const c=fCred(fMoto());document.getElementById('fc_lp').value=c&&FC.lance?fMo(FC.lance/c*100):'';fcConta()"></div>
-     <div><label for="fc_lp">Lance em % <small>(opcional)</small></label><input id="fc_lp" inputmode="decimal" value="${FC.lance&&fCred(m)?fMo(FC.lance/fCred(m)*100):''}" placeholder="0,00" oninput="const c=fCred(fMoto());FC.lance=Math.round(c*fNum(this.value))/100;document.getElementById('fc_lr').value=fMo(FC.lance);fcConta()"></div></div>
-     <label class="fc-ck"><input type="checkbox" ${FC.quitar?'checked':''} onchange="FC.quitar=this.checked;fcConta()"> Usar o lance para quitar as parcelas do final do plano</label></div>`
-     :`<p class="fc-w">Esta moto não tem plano de consórcio no seu catálogo.${FC.mid?'':' Escolha uma moto da lista para ver o consórcio.'}</p>`):''}
-   ${FC.modo!=='consorcio'?`<div class="fc-sb"><b>Financiamento Banco Honda</b>
-     <div class="fc-2"><div><label for="fc_e">Entrada</label><input id="fc_e" inputmode="decimal" value="${fMo(FC.ent)}" placeholder="0,00 (sem entrada)" oninput="FC.ent=fNum(this.value);fcConta()"></div>
-     <div><label for="fc_t">Juros (% ao mês)</label><div class="fc-tr"><input id="fc_t" inputmode="decimal" value="${fMo(fTaxa())}" oninput="FC.taxa=fNum(this.value);fcConta()"><button type="button" class="btn sm" title="Voltar para a taxa do Banco Honda" onclick="FC.taxa=null;fcDraw()">↺</button></div></div></div>
-     <div class="fc-ch">${[0,10,20,30,40,50].map(p=>`<button type="button" onclick="fcEnt(${p})">${p?p+'%':'Sem entrada'}</button>`).join('')}</div>
-     <label>Prazo do financiamento</label><div class="fc-ch">${fPrazos().map(n=>`<button type="button" class="${n===FC.n?'on':''}" onclick="FC.n=${n};fcDraw()">${n}x</button>`).join('')}</div></div>`:''}
-  </section>
-  <section id="fc_r"></section>
-  <p class="fc-nota">Simulação de referência. Consórcio pela tabela oficial Honda do seu catálogo; financiamento sujeito à análise de crédito do Banco Honda (a média oficial já inclui IOF e tarifas).</p>`;
-  if(!FC.novo&&!FC.cli)fcLista();fcConta()}
+  <div class="cc-tabs">${[['calc','Calculadora'],['cq','CDC x Consórcio'],['pl','Comparar planos']].map(t=>`<button type="button" class="${FC.tab===t[0]?'on':''}" onclick="fcTab('${t[0]}')">${t[1]}</button>`).join('')}</div>
+  <div id="fc_ar"></div>
+  <p class="fc-nota">Simulação de referência. Consórcio pela tabela oficial Honda do seu catálogo; financiamento sujeito à análise de crédito do Banco Honda (a taxa já inclui IOF e tarifas).</p>`;
+  if(!FC.novo&&!FC.cli)fcLista();
+  if(FC.tab==='cq')cqDraw();else if(FC.tab==='pl')cpDraw();else csDraw()}
 function fcLista(){const el=document.getElementById('fc_ls');if(!el)return;const q=fNz(FCQ),qd=String(FCQ).replace(/\D/g,'');
   const L=VD.filter(c=>!q||fNz(fCliNome(c)+' '+(c.moto_nome||'')).includes(q)||(qd.length>=3&&String(c.telefone||'').replace(/\D/g,'').includes(qd))).slice(0,q?30:8);
   el.innerHTML=L.length?L.map(c=>{const i=VD.indexOf(c);return `<button type="button" class="fc-li" onclick="fcCli(${i})"><span class="fc-av">${esc(fCliNome(c).charAt(0).toUpperCase())}</span><span><b>${esc(fCliNome(c))}</b><small>${esc(cdZap(c.telefone)||'sem telefone')}${c.moto_nome?' · '+esc(c.moto_nome):''}</small></span></button>`}).join('')
    :`<p class="fc-mu">${VD.length?'Nenhum cliente encontrado.':'Você ainda não tem clientes salvos.'} Use <b>＋ Cliente novo</b>.</p>`}
-function fcCli(i){const c=VD[i];if(!c)return;FC.cli=c;FC.nome=fCliNome(c);FC.tel=c.telefone||'';const m=fCliMoto(c);if(m)fcSetMoto(m.id);
-  const e=fNum(c.entrada);if(e>0&&e<FC.valor)FC.ent=e;const pg=fNz((c.pagamento||'')+' '+(c.forma_pagamento||'')+' '+(c._s==='contrato'?'consorcio':c._s==='ficha'?'financiamento':''));
-  if(/consorc/.test(pg))FC.modo='consorcio';else if(/financ|cdc/.test(pg))FC.modo='financ';const pc=fNum(c.parcela);
-  if(pc>0&&m){const P=fPlanos(m),x=P.slice().sort((a,b)=>Math.abs(a.valor-pc)-Math.abs(b.valor-pc))[0];if(x)FC.pz=x.parcelas}
-  const lv=fNum(c.lance_valor);if(lv>0)FC.lance=lv;fcDraw();toast('Dados de '+FC.nome.split(' ')[0]+' preenchidos')}
-function fcEnt(p){FC.ent=Math.round(FC.valor*p/100);const e=document.getElementById('fc_e');if(e)e.value=fMo(FC.ent);fcConta()}
-function fcFin(){if(!(FC.valor>0)||FC.ent>=FC.valor)return null;const i=fTaxa()/100,pv=FC.valor-FC.ent,n=FC.n,pc=fPmt(pv,i,n);return{n,pv,pc,ent:FC.ent,tot:pc*n+FC.ent,jur:pc*n-pv}}
-function fcCon(){const m=fMoto(),p=fPlanos(m).find(x=>x.parcelas===FC.pz);if(!p)return null;
-  const pa=FC.plano==='sem'&&+p.valor_sem_seguro>0?+p.valor_sem_seguro:+p.valor,pz=+p.parcelas,cr=+p.credito||fCred(m),pc=Math.round(pa*100),demais=pz-2;
-  let lc=Math.round(Math.max(0,FC.lance)*100),erro='';const teto=demais*pc;if(lc>teto){erro=`O lance pode ser de no máximo ${brl(teto/100)}.`;lc=teto}
-  let q=0,red=0;if(lc>0){if(FC.quitar){q=Math.min(Math.floor(lc/pc),demais);let resto=lc-q*pc,dmq=demais-q;if(resto>0&&dmq>0)red=Math.min(Math.floor(resto/dmq),pc)}else if(demais>0)red=Math.min(Math.floor(lc/demais),pc)}
-  const dm=demais-q,valc=Math.max(0,pc-red);
-  return{pz,pa,cr,lance:lc/100,pct:cr?lc/100/cr*100:0,q,dm,valc:valc/100,tot:(lc+2*pc+dm*valc)/100,erro,cont:+p.contemplacoes||0,seguro:FC.plano!=='sem'||!(+p.valor_sem_seguro>0)}}
-function fcConta(){const el=document.getElementById('fc_r');if(!el)return;const m=fMoto(),f=FC.modo!=='consorcio'?fcFin():null,c=FC.modo!=='financ'?fcCon():null;
-  if(!f&&!c){el.innerHTML=`<div class="card2 fc-vz">${!(FC.valor>0)?'Escolha a moto ou digite o valor para ver a proposta.':FC.modo==='financ'?'A entrada é igual ou maior que o valor: é compra à vista.':'Escolha um prazo de consórcio.'}</div>`;return}
-  const eco=f&&c?f.tot-c.tot:0,loja=fLoja(),aj=FT.ajuste,mn=aj&&+aj.entrada_min_pct,pct=FC.valor?FC.ent/FC.valor*100:0;
-  el.innerHTML=`<article class="fc-pp"><header class="fc-ph">${V.foto_url?`<img src="${esc(V.foto_url)}" alt="">`:`<span class="fc-av big">${esc((V.nome||'V').charAt(0))}</span>`}<div><b>${esc(V.nome||'')}</b><small>Consultor(a) Honda${loja?' · '+esc(loja):''}</small>${V.whatsapp?`<small>📲 ${esc(cdZap(V.whatsapp))}</small>`:''}</div></header>
-   <div class="fc-pm">${m&&img0(m)?`<img src="${esc(img0(m))}" alt="">`:''}<div><small>${FC.nome?'Proposta para '+esc(FC.nome):'Proposta'}</small><b>${m?esc(m.nome)+(m.modelo?' '+esc(m.modelo):''):'Moto Honda'}</b><span>Valor da moto ${brl(FC.valor)}</span></div></div>
-   <div class="fc-pc ${f&&c?'two':''}">
-    ${c?`<div class="fc-bx fc-con"><h4>🤝 Consórcio Honda</h4><p class="carta">Valor da carta de crédito: <b>${brl(c.cr)}</b></p>${c.lance>0?`<p class="fc-l">Lance de ${brl(c.lance)} (${fPct(c.pct)})</p><p class="fc-vb">${c.q?`2x de ${brl(c.pa)} + ${c.dm}x de`:`2x de ${brl(c.pa)} + ${c.dm}x de`}<b>${brl(c.valc)}</b></p>${c.q?`<p class="fc-l">${c.q} parcela${c.q>1?'s':''} do final quitada${c.q>1?'s':''} com o lance</p>`:''}`:`<p class="fc-vb">${c.pz}x de<b>${brl(c.pa)}</b></p>`}
-      <ul><li>Sem juros e sem entrada</li><li>${c.seguro?'Com seguro prestamista':'Sem seguro prestamista'}</li>${c.cont?`<li>Até ${c.cont} contemplações por assembleia</li>`:''}<li>Total: <b>${brl(c.tot)}</b></li></ul>${c.erro?`<p class="fc-w">${esc(c.erro)}</p>`:''}</div>`:''}
-    ${f?`<div class="fc-bx fc-fin"><h4>🏦 Financiamento Banco Honda</h4><p class="fc-vb">${f.n}x de<b>${brl(f.pc)}</b></p>
-      <ul><li>${f.ent>0?'Entrada de '+brl(f.ent)+' ('+Math.round(pct)+'%)':'Sem entrada'}</li><li>Juros de ${fPct(fTaxa())} ao mês</li><li>Moto na hora, após aprovação</li><li>Total: <b>${brl(f.tot)}</b></li></ul>${mn&&pct<mn?`<p class="fc-w">Entrada mínima em ${esc(FT.uf)}: ${mn}% (${brl(FC.valor*mn/100)}).</p>`:''}</div>`:''}
-   </div>
-   ${f&&c?`<div class="fc-eco ${eco>0?'':'neg'}">${eco>0?`💰 No consórcio o cliente economiza <b>${brl(eco)}</b>`:`🏍️ No financiamento a moto sai na hora; diferença de ${brl(-eco)}`}</div>`:''}
-   <footer class="fc-pf">Simulação de referência. Sujeito à análise de crédito e às regras do Consórcio Nacional Honda.</footer></article>
-  <div class="fc-ac"><a class="btn red" target="_blank" rel="noopener" href="${fcZapUrl(f,c,m)}">💬 Enviar ${FC.nome?'para '+esc(FC.nome.split(' ')[0]):'no WhatsApp'}</a><button type="button" class="btn" onclick="fcImg()">🖼️ Imagem da proposta</button><button type="button" class="btn" onclick="fcCopia()">📋 Copiar texto</button></div>`;
-  window.__fcTxt=fcTexto(f,c,m)}
-function fcTexto(f,c,m){const L=[`*Proposta Honda${FC.nome?' para '+FC.nome:''}*`,m?`🏍️ ${m.nome}${m.modelo?' '+m.modelo:''} · Valor da moto ${brl(FC.valor)}`:`Valor da moto: ${brl(FC.valor)}`];
-  if(c)L.push('',`*🤝 Consórcio Honda* (carta de crédito ${brl(c.cr)}):`,`${c.lance>0?`lance de ${brl(c.lance)} + 2x de ${brl(c.pa)} + ${c.dm}x de ${brl(c.valc)}`:`${c.pz}x de ${brl(c.pa)}`}`,`Sem juros e sem entrada · total ${brl(c.tot)}`);
-  if(f)L.push('',`*🏦 Financiamento Banco Honda:* ${f.ent>0?'entrada de '+brl(f.ent)+' + ':''}${f.n}x de ${brl(f.pc)}`,`Juros de ${fPct(fTaxa())} ao mês · total ${brl(f.tot)}`);
-  if(f&&c&&f.tot>c.tot)L.push('',`💰 No consórcio você economiza ${brl(f.tot-c.tot)}`);
-  const lj=fLoja();L.push('','_Simulação sujeita à análise de crédito._',`${V.nome||''}${lj?' · '+lj:''}${V.whatsapp?' · '+cdZap(V.whatsapp):''}`);return L.join('\n')}
-function fcZapUrl(f,c,m){let d=String(FC.tel||'').replace(/\D/g,'');if(d.length>=10&&d.length<=11)d='55'+d;return 'https://wa.me/'+(d.length>=12?d:'')+'?text='+encodeURIComponent(fcTexto(f,c,m))}
-function fcCopia(){const t=window.__fcTxt||'';const fb=()=>{const a=document.createElement('textarea');a.value=t;a.style.cssText='position:fixed;opacity:0';document.body.appendChild(a);a.select();try{document.execCommand('copy');toast('Proposta copiada')}catch(e){}a.remove()};navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('Proposta copiada'),fb):fb()}
-async function fcDesenha(cv){const m=fMoto(),f=FC.modo!=='consorcio'?fcFin():null,c=FC.modo!=='financ'?fcCon():null,W=1080,H=1350,x=cv.getContext('2d');cv.width=W;cv.height=H;
-  const [im,ft]=await Promise.all([m?cdImg(img0(m),1200):null,cdImg(V.foto_url,300)]);try{if(document.fonts&&document.fonts.ready)await document.fonts.ready}catch(e){}
-  x.fillStyle='#f4f5f9';x.fillRect(0,0,W,H);const g=x.createLinearGradient(0,0,W,230);g.addColorStop(0,'#15151d');g.addColorStop(1,'#5a0d14');x.fillStyle=g;x.fillRect(0,0,W,230);x.fillStyle='#d90f24';x.fillRect(0,230,W,8);
-  if(ft){x.save();x.beginPath();x.arc(140,115,78,0,Math.PI*2);x.closePath();x.clip();const s=Math.max(156/ft.width,156/ft.height);x.drawImage(ft,140-ft.width*s/2,115-ft.height*s/2,ft.width*s,ft.height*s);x.restore();x.strokeStyle='#fff';x.lineWidth=5;x.beginPath();x.arc(140,115,78,0,Math.PI*2);x.stroke()}
-  const tx=ft?250:60,lj=fLoja();x.fillStyle='#fff';cdFit(x,V.nome||'',W-tx-50,56,'800',30);x.fillText(V.nome||'',tx,100);x.font=`500 30px ${cdFam}`;x.fillStyle='#ffc9cf';x.fillText(('Consultor(a) Honda'+(lj?' · '+lj:'')).slice(0,48),tx,145);
-  if(V.whatsapp){x.font=`700 32px ${cdFam}`;x.fillStyle='#fff';x.fillText('WhatsApp '+cdZap(V.whatsapp),tx,192)}
-  let y=270;x.fillStyle='#fff';cdRr(x,40,y,W-80,360,32);x.fill();
-  if(im){const bw=420,bh=300,s=Math.min(bw/im.width,bh/im.height);x.drawImage(im,60+(bw-im.width*s)/2,y+30+(bh-im.height*s)/2,im.width*s,im.height*s)}
-  const mx=im?500:80;x.fillStyle='#6a6a78';x.font=`600 28px ${cdFam}`;x.fillText(FC.nome?('Proposta para '+FC.nome).slice(0,34):'Proposta especial',mx,y+90);
-  x.fillStyle='#14141c';const mn=m?(m.nome+(m.modelo?' '+m.modelo:'')):'Moto Honda';cdFit(x,mn,W-mx-70,54,'900',30);x.fillText(mn,mx,y+160);
-  x.font=`600 32px ${cdFam}`;x.fillStyle='#c4001f';x.fillText('Valor da moto '+brl(FC.valor),mx,y+220);
-  y=660;const two=f&&c,bw2=two?(W-100)/2:W-80;
-  const box=(bx,t,cor,linha,big,itens)=>{x.fillStyle='#fff';cdRr(x,bx,y,bw2,440,28);x.fill();x.fillStyle=cor;cdRr(x,bx,y,bw2,74,28);x.fill();x.fillRect(bx,y+40,bw2,34);x.fillStyle='#fff';cdFit(x,t,bw2-56,32,'800',22);x.fillText(t,bx+28,y+50);
-    x.fillStyle='#55556a';cdFit(x,linha,bw2-56,28,'600',18);x.fillText(linha,bx+28,y+130);x.fillStyle=cor;cdFit(x,big,bw2-56,76,'900',40);x.fillText(big,bx+28,y+210);
-    x.font=`500 27px ${cdFam}`;x.fillStyle='#2b2b33';itens.forEach((it,k)=>x.fillText('• '+it,bx+28,y+275+k*44))};
-  let bx=40;if(c){box(bx,'Consórcio Honda','#0e7c58',c.lance>0?`Lance ${brl(c.lance)} + 2x ${brl(c.pa)} +`:`${c.pz} parcelas de`,c.lance>0?`${c.dm}x ${brl(c.valc)}`:brl(c.pa),[`Carta de crédito ${brl(c.cr)}`,'Sem juros e sem entrada',c.seguro?'Com seguro prestamista':'Sem seguro prestamista','Total '+brl(c.tot)]);bx+=bw2+20}
-  if(f)box(bx,'Financiamento Banco Honda','#c4001f',`${f.ent>0?'Entrada '+brl(f.ent)+' + ':''}${f.n} parcelas de`,brl(f.pc),[`Juros ${fPct(fTaxa())} ao mês`,'Moto após aprovação','Total '+brl(f.tot)]);
-  y=1130;if(two){const eco=f.tot-c.tot;x.fillStyle=eco>0?'#16803c':'#14141c';cdRr(x,40,y,W-80,100,26);x.fill();x.fillStyle='#fff';x.font=`800 38px ${cdFam}`;const t=eco>0?'No consórcio você economiza '+brl(eco):'Financiamento: moto na hora';x.textAlign='center';x.fillText(t,W/2,y+64);x.textAlign='left'}
-  x.fillStyle='#6a6a78';x.font=`500 22px ${cdFam}`;x.textAlign='center';x.fillText('Simulação de referência, sujeita à análise de crédito e às regras do Consórcio Nacional Honda.',W/2,1290);x.textAlign='left'}
-async function fcImg(){toast('Gerando a imagem…');const cv=document.createElement('canvas');try{await fcDesenha(cv)}catch(e){return toast('Não consegui gerar a imagem.')}
-  let blob=null;try{blob=await new Promise(r=>cv.toBlob(r,'image/png'))}catch(e){}if(!blob)return toast('A foto da moto bloqueou a imagem. Tente sem a foto.');
-  const nm='proposta-'+fNz(FC.nome||'honda').replace(/[^a-z0-9]+/g,'-').slice(0,30)+'.png',fl=new File([blob],nm,{type:'image/png'});
-  try{if(navigator.canShare&&navigator.canShare({files:[fl]})){await navigator.share({files:[fl],text:window.__fcTxt||''});return}}catch(e){if(e&&e.name==='AbortError')return}
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=nm;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000);toast('Imagem baixada')}
+function fcCli(i){const c=VD[i];if(!c)return;FC.cli=c;FC.nome=fCliNome(c);FC.tel=c.telefone||'';
+  const m=fCliMoto(c),lv=fNum(c.lance_valor);
+  if(FC.tab==='cq'){if(m)CQ.mid=m.id;if(lv>0)CQ.lanceR=vDec(lv)}
+  else if(FC.tab==='pl'){const col=CP.cols[0];if(m)col.mid=m.id;if(lv>0)col.lanceR=vDec(lv)}
+  else{if(m){CS.mid=m.id;const P=fPlanos(m),pv=fNum(c.parcela);if(pv>0){const p=P.find(p=>Math.abs(+p.valor-pv)<.011||Math.abs(+p.valor_sem_seguro-pv)<.011);if(p){CS.prazo=+p.parcelas;CS.restantes=+p.parcelas;CS.ss=!(Math.abs(+p.valor-pv)<.011)}}}if(lv>0)CS.lanceR=vDec(lv);CS.res=null}
+  fcDraw();toast('Dados de '+FC.nome.split(' ')[0]+' preenchidos')}
+/* imagem da proposta: cabeçalho comum (foto/nome/whatsapp do vendedor), usado pelas 3 abas */
+async function vCabeca(x,W){
+  const ft=await cdImg(V.foto_url,300);
+  const g=x.createLinearGradient(0,0,W,200);g.addColorStop(0,'#15151d');g.addColorStop(1,'#5a0d14');x.fillStyle=g;x.fillRect(0,0,W,200);x.fillStyle='#c4001f';x.fillRect(0,200,W,8);
+  x.beginPath();x.arc(130,100,72,0,Math.PI*2);x.fillStyle='#fff';x.fill();
+  x.save();x.beginPath();x.arc(130,100,66,0,Math.PI*2);x.clip();
+  if(ft){const s=Math.max(132/ft.width,132/ft.height);x.drawImage(ft,130-ft.width*s/2,100-ft.height*s/2,ft.width*s,ft.height*s)}else{x.fillStyle='#c4001f';x.fillRect(60,30,140,140);x.fillStyle='#fff';x.font=`800 64px ${cdFam}`;x.textAlign='center';x.fillText((V.nome||'V').trim().charAt(0).toUpperCase(),130,124);x.textAlign='left'}
+  x.restore();
+  x.fillStyle='#fff';cdFit(x,(V.nome||'').trim(),760,52,'800',30);x.fillText((V.nome||'').trim(),230,88);
+  x.fillStyle='#ffd9dc';x.font=`600 30px ${cdFam}`;const sub=[V.whatsapp?cdZap(V.whatsapp):'',(V.concessionaria||V.empresa||fLoja()||'').trim()].filter(Boolean).join('  ·  ');cdFit(x,sub,800,30,'600',22);x.fillText(sub,230,134)}
+async function ccBaixa(build,nomeBase){toast('Gerando a imagem…');try{const cv=await build();const blob=await new Promise((ok,no)=>cv.toBlob(b=>b?ok(b):no(new Error('imagem vazia')),'image/png'));
+  const nm=`${nomeBase}-${fNz(FC.nome||'cliente').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')||'cliente'}.png`,blobUrl=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=blobUrl;a.download=nm;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(blobUrl);a.remove()},2000);toast('Imagem baixada: '+nm)}
+  catch(e){toast('Não consegui gerar a imagem.')}}
+/* ====================== ABA 1: CALCULADORA (consórcio de uma moto, cota Nova ou Reposição) ====================== */
+function csMotoSet(id){CS.mid=id;CS.cota='Nova';CS.ss=false;CS.prazo=0;CS.restantes=0;CS.res=null;csDraw()}
+function csFmt(el){const n=vNum(el.value);if(isFinite(n)&&n>0)el.value=vDec(n)}
+function csDraw(){const ar=document.getElementById('fc_ar');if(!ar)return;ar.innerHTML=`<section class="card2 fc-cc"><h3>2. Moto e condições do consórcio</h3><div id="cs_b"></div></section>`;csForm()}
+function csForm(){
+  const L=fMotos(),m=fMotoById(CS.mid),pls=m?fPlanos(m):[],cr=m?vCredito(m):0,ss=m&&vTemSS(m);
+  const prazos=[...new Set(pls.map(p=>+p.parcelas))],rest=CS.cota==='Reposição'&&CS.prazo?Array.from({length:CS.prazo-1},(_,i)=>CS.prazo-i):[];
+  const par=m&&CS.prazo?vParcela(m,CS.prazo,CS.ss):0;
+  const rst=CS.cota==='Reposição'?(CS.restantes||CS.prazo):CS.prazo,pagas=rst&&rst<CS.prazo?CS.prazo-rst:0;
+  const pv=par>0?vPv(par,CS.prazo,rst,CS.repo):0;
+  document.getElementById('cs_b').innerHTML=`<div class="cc-g">
+  <div class="full"><label class="cmp-l" for="cs_m">Moto</label><select id="cs_m" onchange="csMotoSet(this.value)"><option value="">Selecione uma moto:</option>${L.map(o=>`<option value="${esc(o.id)}" ${String(o.id)===String(CS.mid)?'selected':''}>${esc(o.nome)}</option>`).join('')}</select></div>
+  <div><label class="cmp-l">Valor do crédito</label><input type="text" readonly value="${cr>0?cBrl(cr):''}" placeholder="Escolha a moto"></div>
+  <div><label class="cmp-l" for="cs_c">Tipo de cota</label><select id="cs_c" onchange="CS.cota=this.value;CS.restantes=CS.prazo;CS.res=null;csForm()"><option ${CS.cota==='Nova'?'selected':''}>Nova</option><option ${CS.cota==='Reposição'?'selected':''}>Reposição</option></select></div>
+  <div><label class="cmp-l" for="cs_p">Plano</label><select id="cs_p" ${m?'':'disabled'} onchange="CS.ss=this.value==='1';CS.res=null;csForm()"><option value="0" ${CS.ss?'':'selected'}>Com seguro prestamista</option>${ss?`<option value="1" ${CS.ss?'selected':''}>Sem seguro prestamista</option>`:''}</select></div>
+  <div><label class="cmp-l" for="cs_z">Prazo original</label><select id="cs_z" ${m?'':'disabled'} onchange="CS.prazo=+this.value;CS.restantes=+this.value;CS.res=null;csForm()"><option value="">Selecione um prazo</option>${prazos.map(z=>`<option value="${z}" ${z===CS.prazo?'selected':''}>${z}</option>`).join('')}</select></div>
+  <div><label class="cmp-l" for="cs_r">Parcelas restantes</label><select id="cs_r" ${CS.cota==='Reposição'&&CS.prazo?'':'disabled'} onchange="CS.restantes=+this.value;CS.res=null;csForm()">${CS.prazo?(CS.cota==='Reposição'?rest:[CS.prazo]).map(z=>`<option value="${z}" ${z===CS.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione um prazo</option>'}</select></div>
+  ${pagas>0?`<div><label class="cmp-l" for="cs_rp">O que o grupo já pagou</label><select id="cs_rp" onchange="CS.repo=this.value;CS.res=null;csForm()"><option value="diluir" ${CS.repo==='entrada'?'':'selected'}>Diluir nas parcelas que faltam</option><option value="entrada" ${CS.repo==='entrada'?'selected':''}>Cobrar como entrada</option></select></div>
+  <div><label class="cmp-l">${pagas} parcela${pagas>1?'s':''} já paga${pagas>1?'s':''} pelo grupo</label><input type="text" readonly value="${cBrl(Math.round(pagas*par*100)/100)}"></div>`:''}
+  <div class="full"><label class="cmp-l">Valor da parcela${pagas>0&&CS.repo!=='entrada'?' <small>(recalculada: cota inteira em '+rst+'x)</small>':''}</label><input type="text" readonly value="${pv>0?cDec(pv):''}" placeholder="Escolha o plano e o prazo"></div>
+  <div><label class="cmp-l" for="cs_lr">Valor do lance em R$ <small>(opcional)</small></label><input type="text" id="cs_lr" inputmode="decimal" value="${esc(CS.lanceR)}" placeholder="0,00" oninput="CS.lanceR=this.value;CS.res=null;csRes()" onblur="csFmt(this)"></div>
+  </div>
+  <label class="cc-ck"><input type="checkbox" id="cs_q" ${CS.quitar?'checked':''} onchange="CS.quitar=this.checked;CS.res=null;csRes()"><span>Usar o lance para quitar as parcelas do final do plano.</span></label>
+  <div id="cs_res"></div>
+  <div class="fc-ac"><button type="button" class="btn red" onclick="csRoda()">Calcular</button></div>`;
+  csRes()}
+function csEntrada(){const m=fMotoById(CS.mid);if(!m)return null;
+  const rs=CS.cota==='Reposição'?(CS.restantes||CS.prazo):CS.prazo;
+  return{credito:vCredito(m),parcela:CS.prazo?vParcela(m,CS.prazo,CS.ss):0,prazo:CS.prazo,restantes:rs,repo:CS.repo,lance:vNum(CS.lanceR),quitar:CS.quitar}}
+function csRoda(){const e=csEntrada();if(!e){CS.res={ok:false,erros:['Escolha a moto.']};return csRes()}CS.res=calcCore(e);csRes()}
+function csRes(){
+  const el=document.getElementById('cs_res');if(!el)return;
+  if(!CS.res){el.innerHTML='';return}
+  if(!CS.res.ok){el.innerHTML=`<div class="cc-er"><b>Falta completar:</b><ul>${CS.res.erros.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></div>`;return}
+  const r=CS.res;
+  el.innerHTML=`<div class="cc-rs"><div class="hl"><span>Valor do crédito</span><b>${cBrl(r.credito)}</b></div>${r.pagas>0?`<div><span>${r.pagas} parcela${r.pagas>1?'s':''} que o grupo já pagou</span><b>${cBrl(r.acumulado)}</b></div>`:''}${r.entrada>0?`<div><span>Entrada para assumir a cota</span><b>${cBrl(r.entrada)}</b></div>`:''}<div><span>Lance</span><b>${r.lance>0?cBrl(r.lance)+' ('+cPct(r.pct)+')':'sem lance'}</b></div><div><span>1ª parcela / hoje</span><b>${cBrl(r.p1)}</b></div><div><span>2ª parcela / próximo vencimento</span><b>${cBrl(r.p2)}</b></div>${r.demais>0?`<div><span>${r.demais} parcelas de</span><b>${cBrl(r.demaisValor)}</b></div>`:''}<div class="hl"><span>Total que o cliente vai pagar</span><b>${cBrl(r.total)}</b></div><div class="ef"><span>${esc(vEfeito(r))}</span></div></div>
+  ${r.aviso?`<div class="cc-av">${esc(r.aviso)}</div>`:''}
+  <div class="fc-ac"><a class="btn red" target="_blank" rel="noopener" href="${zapHref(FC.tel,csTexto(r))}" onclick="zapClick('${esc(FC.tel)}',event)">💬 Enviar ${FC.nome?'para '+esc(FC.nome.split(' ')[0]):'no WhatsApp'}</a><button type="button" class="btn" onclick="csImg()">🖼️ Imagem da proposta</button><button type="button" class="btn" onclick="csCopia()">📋 Copiar texto</button></div>`;
+  window.__csTxt=csTexto(r)}
+function csTexto(r){const m=fMotoById(CS.mid),nome=(FC.nome||'').trim().split(' ')[0];
+  return [`Olá${nome?', '+nome:''}! Confira as condições de consórcio para a ${m?m.nome:'sua moto'}:`,'',
+   `*Moto:* ${m?m.nome:''}`,`*Valor do crédito:* ${cBrl(r.credito)}`,`*Plano:* ${CS.cota} · ${cPlanoTxt(CS.ss)} · ${r.prazo}x${r.restantes!==r.prazo?` (${r.restantes} restantes)`:''}`,
+   ...(r.entrada>0?[`*Entrada para assumir a cota:* ${cBrl(r.entrada)} (${r.pagas} parcela${r.pagas>1?'s':''} já paga${r.pagas>1?'s':''} pelo grupo)`]:[]),
+   `*Lance:* ${r.lance>0?cBrl(r.lance)+' ('+cPct(r.pct)+')':'sem lance'}`,
+   `*1ª parcela/HOJE:* ${cBrl(r.p1)}`,`*2ª parcela/Próximo vencimento:* ${cBrl(r.p2)}`,
+   ...(r.demais>0?[`*${r.demais} parcelas de* ${cBrl(r.demaisValor)}`]:[]),
+   `*Total:* ${cBrl(r.total)}`,'',vEfeito(r),'',
+   '*Observações:*','*Valor da parcela pode variar de acordo com o aumento do bem.','**Este orçamento pode sofrer alterações sem aviso prévio, conforme alteração na tabela de consórcio e/ou disponibilidade de cotas.','***Oferta de lance não garante a contemplação.',
+   '','Agora me diz, esse é o plano ideal pra você?','',ccAssin(),`Data: ${cHoje()}`].join('\n')}
+function csCopia(){const t=window.__csTxt||'';navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('Proposta copiada'),()=>toast('Não foi possível copiar')):toast('Não foi possível copiar')}
+async function csImgBuild(){
+  const r=CS.res,m=fMotoById(CS.mid);
+  const cv=document.createElement('canvas'),W=1080,H=1350;cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  const im=await cdImg(m?img0(m):'',1000);try{if(document.fonts&&document.fonts.ready)await document.fonts.ready}catch(e){}
+  x.fillStyle='#f4f5f9';x.fillRect(0,0,W,H);await vCabeca(x,W);
+  x.textAlign='center';x.fillStyle='#14141c';x.font=`800 44px ${cdFam}`;x.fillText('Proposta de consórcio',W/2,282);
+  x.fillStyle='#5a5a68';x.font=`600 30px ${cdFam}`;const nm=(FC.nome||'').trim();x.fillText(nm?`Preparada para ${nm}`:'Condições para a sua moto',W/2,326);
+  if(im){const bw=560,bh=330,s=Math.min(bw/im.width,bh/im.height);x.drawImage(im,W/2-im.width*s/2,350+(bh-im.height*s)/2,im.width*s,im.height*s)}
+  const motoNome=m?(m.nome+(m.modelo?' '+m.modelo:'')):'Moto Honda';
+  x.fillStyle='#14141c';cdFit(x,motoNome,940,52,'800',30);x.fillText(motoNome,W/2,730);
+  x.fillStyle='#5a5a68';x.font=`600 27px ${cdFam}`;x.fillText(`Crédito: ${cBrl(r.credito)} · Total a pagar: ${cBrl(r.total)}`,W/2,776);x.textAlign='left';
+  const rows=[['Plano',`${CS.cota} · ${r.prazo}x${r.restantes!==r.prazo?` (${r.restantes} restantes)`:''} · ${CS.ss?'sem':'com'} seguro`]];
+  if(r.entrada>0)rows.push(['Entrada para assumir a cota',cBrl(r.entrada)]);
+  rows.push(['Lance',r.lance>0?`${cBrl(r.lance)} (${cPct(r.pct)})`:'Sem lance'],['1ª parcela / hoje',cBrl(r.p1)],['2ª parcela / próximo vencimento',cBrl(r.p2)]);
+  if(r.demais>0)rows.push([`${r.demais} parcelas de`,cBrl(r.demaisValor)]);
+  const rh=rows.length>5?56:62,y0=806;
+  x.fillStyle='#fff';cdRr(x,60,y0,960,rows.length*rh+16,22);x.fill();
+  rows.forEach((a,i)=>{const y=y0+8+i*rh;if(i){x.fillStyle='#eeeef3';x.fillRect(90,y,900,2)}x.fillStyle='#5a5a68';x.font=`600 28px ${cdFam}`;x.fillText(a[0],90,y+40);x.fillStyle='#14141c';x.font=`800 30px ${cdFam}`;x.textAlign='right';x.fillText(a[1],990,y+40);x.textAlign='left'});
+  let y=y0+rows.length*rh+52;x.fillStyle='#14141c';x.font=`700 28px ${cdFam}`;x.textAlign='center';cWrap(x,vEfeito(r),900).forEach(l=>{x.fillText(l,W/2,y);y+=36});
+  x.fillStyle='#6a6a78';x.font=`500 21px ${cdFam}`;y+=6;cWrap(x,`Valor da parcela pode variar de acordo com o aumento do bem. Este orçamento pode sofrer alterações sem aviso prévio, conforme alteração na tabela de consórcio e/ou disponibilidade de cotas. Oferta de lance não garante a contemplação. Este é o plano ${CS.ss?'sem':'com'} seguro prestamista.`,940).forEach(l=>{if(y<H-40){x.fillText(l,W/2,y);y+=28}});
+  x.fillStyle='#14141c';x.font=`700 24px ${cdFam}`;x.fillText(`${(V.nome||'').trim()} · ${V.whatsapp?cdZap(V.whatsapp):''} · ${cHoje()}`,W/2,H-30);x.textAlign='left';
+  return cv}
+function csImg(){if(!CS.res||!CS.res.ok)return toast('Calcule a proposta primeiro.');ccBaixa(csImgBuild,'proposta-consorcio')}
+/* ====================== ABA 2: CDC x CONSÓRCIO (financiamento com a taxa do Banco Honda x consórcio) ====================== */
+function cqMotoSet(id){CQ.mid=id;CQ.cota='Nova';CQ.ss=false;CQ.prazo=0;CQ.restantes=0;cqDraw()}
+function cqFmt(el){const n=vNum(el.value);if(isFinite(n)&&n>0)el.value=vDec(n)}
+function cqDraw(){const ar=document.getElementById('fc_ar');if(!ar)return;ar.innerHTML=`<section class="card2 fc-cc"><h3>2. Comparar: Financiamento CDC x Consórcio Honda</h3><div id="cq_b"></div></section>`;cqForm()}
+function cqForm(){
+  const L=fMotos(),m=fMotoById(CQ.mid),pls=m?fPlanos(m):[],cr=m?vCredito(m):0,ss=m&&vTemSS(m);
+  const prazos=[...new Set(pls.map(p=>+p.parcelas))].sort((a,b)=>a-b),rest=CQ.cota==='Reposição'&&CQ.prazo?Array.from({length:CQ.prazo-1},(_,i)=>CQ.prazo-i):[];
+  const par=m&&CQ.prazo?vParcela(m,CQ.prazo,CQ.ss):0;
+  const ent=vNum(CQ.ent)||0,pv=m?(fBase(m)||cr):0,i=fTaxa()/100,n=Math.max(1,Math.trunc(+CQ.n)||48),saldo=Math.max(0,pv-ent);
+  const parcAuto=saldo>0?fPmt(saldo,i,n):0;
+  document.getElementById('cq_b').innerHTML=`<div class="cc-g full"><label class="cmp-l" for="cq_m">Moto (a mesma nas duas modalidades)</label><select id="cq_m" onchange="cqMotoSet(this.value)"><option value="">Selecione uma moto:</option>${L.map(o=>`<option value="${esc(o.id)}" ${String(o.id)===String(CQ.mid)?'selected':''}>${esc(o.nome)}</option>`).join('')}</select></div>
+  <div class="cc-cols cq-cols" style="--n:2">
+  <div class="cc-col cq-fin"><h4>Financiamento CDC</h4>
+   <label class="cmp-l">Modelo da motocicleta</label><input type="text" readonly value="${m?esc(m.nome):''}">
+   <label class="cmp-l">Valor da moto</label><input type="text" readonly value="${pv>0?cBrl(pv):''}" placeholder="Escolha a moto">
+   <label class="cmp-l" for="cq_e">Valor da entrada</label><input type="text" id="cq_e" inputmode="decimal" value="${esc(CQ.ent)}" placeholder="0,00 (sem entrada)" oninput="CQ.ent=this.value;cqRes()" onblur="cqFmt(this)">
+   <label class="cmp-l" for="cq_n">Quantidade de parcelas</label><select id="cq_n" onchange="CQ.n=+this.value;cqForm()">${fPrazos().map(z=>`<option value="${z}" ${z===+CQ.n?'selected':''}>${z}x</option>`).join('')}</select>
+   <label class="cc-ck"><input type="checkbox" ${CQ.auto?'checked':''} onchange="CQ.auto=this.checked;cqForm()"><span>Calcular a parcela pela taxa oficial do Banco Honda (${cPct(fTaxa())} a.m.)</span></label>
+   ${CQ.auto?`<label class="cmp-l">Valor de cada parcela <small>(taxa do Banco Honda)</small></label><input type="text" readonly value="${parcAuto>0?cBrl(parcAuto):''}">`
+     :`<label class="cmp-l" for="cq_p">Valor de cada parcela <small>(simulação real do banco)</small></label><input type="text" id="cq_p" inputmode="decimal" value="${esc(CQ.parc)}" placeholder="0,00" oninput="CQ.parc=this.value;cqRes()" onblur="cqFmt(this)">`}
+  </div>
+  <div class="cc-col cq-con"><h4>Consórcio Honda</h4>
+   <label class="cmp-l">Modelo da motocicleta</label><input type="text" readonly value="${m?esc(m.nome):''}">
+   <label class="cmp-l">Valor do crédito</label><input type="text" readonly value="${cr>0?cBrl(cr):''}" placeholder="Vem do catálogo">
+   <label class="cmp-l" for="cq_c">Tipo de cota</label><select id="cq_c" onchange="CQ.cota=this.value;CQ.restantes=CQ.prazo;cqForm()"><option ${CQ.cota==='Nova'?'selected':''}>Nova</option><option ${CQ.cota==='Reposição'?'selected':''}>Reposição</option></select>
+   <label class="cmp-l" for="cq_pl">Plano</label><select id="cq_pl" ${m?'':'disabled'} onchange="CQ.ss=this.value==='1';cqForm()"><option value="0" ${CQ.ss?'':'selected'}>Com seguro prestamista</option>${ss?`<option value="1" ${CQ.ss?'selected':''}>Sem seguro prestamista</option>`:''}</select>
+   <label class="cmp-l" for="cq_z">Prazo original</label><select id="cq_z" ${m?'':'disabled'} onchange="CQ.prazo=+this.value;CQ.restantes=+this.value;cqForm()"><option value="">Selecione um prazo</option>${prazos.map(z=>`<option value="${z}" ${z===CQ.prazo?'selected':''}>${z}x</option>`).join('')}</select>
+   <label class="cmp-l" for="cq_r">Parcelas restantes</label><select id="cq_r" ${CQ.cota==='Reposição'&&CQ.prazo?'':'disabled'} onchange="CQ.restantes=+this.value;cqForm()">${CQ.prazo?(CQ.cota==='Reposição'?rest:[CQ.prazo]).map(z=>`<option value="${z}" ${z===CQ.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione um prazo</option>'}</select>
+   <label class="cmp-l">Valor da parcela</label><input type="text" readonly value="${par>0?cBrl(par):''}" placeholder="Escolha o plano e o prazo">
+   <label class="cmp-l" for="cq_lr">Valor do lance <small>(opcional)</small></label><input type="text" id="cq_lr" inputmode="decimal" value="${esc(CQ.lanceR)}" placeholder="0,00" oninput="CQ.lanceR=this.value;cqRes()" onblur="cqFmt(this)">
+   <label class="cc-ck"><input type="checkbox" ${CQ.quitar?'checked':''} onchange="CQ.quitar=this.checked;cqRes()"><span>Usar o lance para quitar as parcelas do final do plano.</span></label>
+  </div></div>
+  <div id="cq_res"></div>`;cqRes()}
+function cqCalc(){
+  const m=fMotoById(CQ.mid);if(!m)return{ok:false,erros:['Escolha a moto.']};
+  const pv=fBase(m)||vCredito(m),ent=Math.round((vNum(CQ.ent)||0)*100),n=Math.max(1,Math.trunc(+CQ.n)||48),i=fTaxa()/100,saldo=Math.max(0,pv-ent/100);
+  const pcReal=CQ.auto?fPmt(saldo,i,n):(vNum(CQ.parc)||0),pc=Math.round(pcReal*100);
+  const E=[];if(!(n>=1))E.push('Financiamento: informe a quantidade de parcelas.');if(!(pc>0))E.push(CQ.auto?'Financiamento: escolha a moto para calcular a parcela.':'Financiamento: informe o valor de cada parcela (da simulação real do banco).');
+  const r=calcCore({credito:vCredito(m),parcela:CQ.prazo?vParcela(m,CQ.prazo,CQ.ss):0,prazo:CQ.prazo,restantes:CQ.cota==='Reposição'?(CQ.restantes||CQ.prazo):CQ.prazo,repo:CQ.repo,lance:vNum(CQ.lanceR),quitar:CQ.quitar});
+  if(!r.ok)r.erros.forEach(e=>E.push('Consórcio: '+e));
+  if(E.length)return{ok:false,erros:E};
+  const pcc=Math.round(r.pv*100),lc=Math.round(r.lance*100),rs=r.restantes,red=Math.round(r.reducao*100);
+  let qtd=rs,pagas;if(r.quitar&&r.quitadas>0){qtd=rs-r.quitadas;pagas=qtd*pcc}else pagas=rs*pcc-(red>0?(rs-2)*red:0);
+  const totF=ent+n*pc,totC=pagas+lc+Math.round(r.entrada*100),mx=Math.max(totF,totC);
+  return{ok:true,m,r,fin:{pv:Math.round(pv*100),ent,n,pc,total:totF},con:{credito:Math.round(r.credito*100),pcc,qtd,rs,lc,pct:r.pct,pagas,total:totC,quitadas:r.quitar?r.quitadas:0,red,demaisValor:Math.round(r.demaisValor*100)},
+    dif:Math.abs(totF-totC),pctEco:mx>0?Math.round(Math.abs(totF-totC)*10000/mx)/100:0,menor:totF===totC?'':totF<totC?'cdc':'con'}}
+function cqLinhas(k){const F=k.fin,C=k.con,nm=k.m.nome;
+  return [['Modelo da moto',nm,nm],['Valor da moto / crédito',F.pv>0?cBrl(F.pv/100):'—',cBrl(C.credito/100)],
+   ['Entrada / lance',F.ent>0?cBrl(F.ent/100):'Sem entrada',C.lc>0?`${cBrl(C.lc/100)} (${cPct(C.pct)})`:'Sem lance'],
+   ['Parcelas',`${F.n}x`,`${C.qtd}x${C.quitadas>0?` (lance quita ${C.quitadas})`:''}`],
+   ['Valor da parcela',cBrl(F.pc/100),cBrl(C.pcc/100)+(C.red>0?` (reduz ${cBrl(C.red/100)} das demais)`:'')],
+   ['Custo total',cBrl(F.total/100),cBrl(C.total/100)]]}
+const cqNome=k=>k.menor==='cdc'?'Financiamento CDC':'Consórcio Honda';
+const cqFrase=k=>k.menor?`O menor custo total estimado é o do ${cqNome(k)}: ${cBrl(k.dif/100)} a menos (cerca de ${cPct(k.pctEco)}).`:'Os dois têm o mesmo custo total estimado.';
+let CQK=null;
+function cqRes(){
+  const el=document.getElementById('cq_res');if(!el)return;const k=cqCalc();CQK=k;
+  if(!k.ok){el.innerHTML=CQ.mid?`<div class="cc-er"><b>Falta completar:</b><ul>${k.erros.map(e=>`<li>${esc(e)}</li>`).join('')}</ul></div>`:'';window.__cqTxt='';return}
+  const L=cqLinhas(k),tot=L.length-1;
+  el.innerHTML=`<div class="cq-sum ${k.menor?'w-'+k.menor:''}"><b>${k.menor?`Menor custo total: ${cqNome(k)}`:'Custos totais iguais'}</b><span>${k.menor?`Diferença de ${cBrl(k.dif/100)} · economia estimada de ${cPct(k.pctEco)}`:'Sem diferença entre as modalidades'}</span><small>Estimativa sem garantia de economia. O consórcio depende de contemplação (sorteio ou lance) e não garante a entrega imediata da moto.</small></div>
+  <div class="cc-tb"><table class="cc-t"><thead><tr><th>Informação</th><th>Financiamento CDC</th><th>Consórcio Honda</th></tr></thead><tbody>${L.map((l,i)=>{const t=i===tot,a=t&&k.menor==='cdc'?'bt':t&&k.menor==='con'?'df':'',b=t&&k.menor==='con'?'bt':t&&k.menor==='cdc'?'df':'';return `<tr><td>${esc(l[0])}</td><td class="${a}">${esc(l[1])}${a==='bt'?'<small>menor custo total</small>':''}</td><td class="${b}">${esc(l[2])}${b==='bt'?'<small>menor custo total</small>':''}</td></tr>`}).join('')}</tbody></table></div>
+  <div class="fc-ac"><a class="btn red" target="_blank" rel="noopener" href="${zapHref(FC.tel,cqTexto(k))}" onclick="zapClick('${esc(FC.tel)}',event)">💬 Enviar ${FC.nome?'para '+esc(FC.nome.split(' ')[0]):'no WhatsApp'}</a><button type="button" class="btn" onclick="cqImg()">🖼️ Imagem da proposta</button><button type="button" class="btn" onclick="cqCopia()">📋 Copiar texto</button></div>`;
+  window.__cqTxt=cqTexto(k)}
+function cqTexto(k){const F=k.fin,C=k.con,nome=(FC.nome||'').trim().split(' ')[0];
+  return [`Olá${nome?', '+nome:''}! Montei o comparativo para a sua ${k.m.nome}:`,'',
+   '*FINANCIAMENTO CDC*',`Entrada: ${F.ent>0?cBrl(F.ent/100):'sem entrada'}`,`Parcelas: ${F.n}x de ${cBrl(F.pc/100)}`,`*Valor total: ${cBrl(F.total/100)}*`,'',
+   '*CONSÓRCIO HONDA*',`Crédito: ${cBrl(C.credito/100)}`,`Plano: ${CQ.cota} · ${cPlanoTxt(CQ.ss)} · ${C.rs===+CQ.prazo?C.rs+'x':CQ.prazo+'x ('+C.rs+' restantes)'}`,`Parcelas: ${C.qtd}x de ${cBrl(C.pcc/100)}${C.red>0?` (o lance reduz ${cBrl(C.red/100)} das demais)`:''}`,...(C.lc>0?[`Lance: ${cBrl(C.lc/100)} (${cPct(C.pct)})${C.quitadas>0?` — quita ${C.quitadas} parcela(s) do final`:''}`]:[]),`*Valor total: ${cBrl(C.total/100)}*`,'',
+   `*Diferença entre os custos totais:* ${k.menor?cBrl(k.dif/100):'R$ 0,00'}`,cqFrase(k),'',
+   '*Importante:*','*O consórcio depende de contemplação por sorteio ou lance e não garante a entrega imediata da motocicleta.','**O financiamento libera a moto na contratação, sujeito à aprovação de crédito.','***Valores estimados pela taxa oficial do Banco Honda, sem garantia de economia; podem sofrer alterações sem aviso prévio.','',ccAssin(),`Data: ${cHoje()}`].join('\n')}
+function cqCopia(){const t=window.__cqTxt||'';if(!t)return toast('Preencha os dados das duas modalidades para gerar a proposta');navigator.clipboard.writeText(t).then(()=>toast('Proposta copiada!'),()=>toast('Não foi possível copiar'))}
+async function cqImgBuild(){
+  const k=CQK&&CQK.ok?CQK:cqCalc();if(!k.ok)throw new Error('sem dados');const F=k.fin,C=k.con;
+  const cv=document.createElement('canvas'),W=1080,H=1350;cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  try{if(document.fonts&&document.fonts.ready)await document.fonts.ready}catch(e){}
+  x.fillStyle='#f4f5f9';x.fillRect(0,0,W,H);await vCabeca(x,W);
+  x.textAlign='center';x.fillStyle='#14141c';x.font=`800 40px ${cdFam}`;x.fillText('Financiamento CDC x Consórcio Honda',W/2,270);
+  x.fillStyle='#5a5a68';x.font=`600 28px ${cdFam}`;const nm=(FC.nome||'').trim();x.fillText(nm?`Preparado para ${nm}`:'Comparativo de aquisição',W/2,312);
+  x.fillStyle='#14141c';cdFit(x,k.m.nome,940,46,'800',28);x.fillText(k.m.nome,W/2,368);
+  const cw=490,y0=396,cards=[
+   {t:'FINANCIAMENTO CDC',cor:'#2f3550',key:'cdc',rows:[['Valor da moto',F.pv>0?cBrl(F.pv/100):'—'],['Entrada',F.ent>0?cBrl(F.ent/100):'Sem entrada'],['Parcelas',`${F.n}x de ${cBrl(F.pc/100)}`]],tot:F.total,x:40},
+   {t:'CONSÓRCIO HONDA',cor:'#c4001f',key:'con',rows:[['Crédito',cBrl(C.credito/100)],['Plano',`${CQ.cota} · ${CQ.ss?'sem':'com'} seguro · ${CQ.prazo}x`],['Parcelas',`${C.qtd}x de ${cBrl(C.pcc/100)}`],['Lance',C.lc>0?`${cBrl(C.lc/100)} (${cPct(C.pct)})`:'Sem lance']],tot:C.total,x:550}];
+  const rh=64,hh=70,ch=hh+rh*Math.max(cards[0].rows.length,cards[1].rows.length)+120;
+  cards.forEach(cd=>{const win=k.menor===cd.key;
+    x.fillStyle='#fff';cdRr(x,cd.x,y0,cw,ch,24);x.fill();if(win){x.lineWidth=5;x.strokeStyle='#1c9a45';cdRr(x,cd.x,y0,cw,ch,24);x.stroke()}
+    x.save();cdRr(x,cd.x,y0,cw,ch,24);x.clip();x.fillStyle=cd.cor;x.fillRect(cd.x,y0,cw,hh);x.restore();
+    x.fillStyle='#fff';x.font=`800 28px ${cdFam}`;x.textAlign='center';x.fillText(cd.t,cd.x+cw/2,y0+hh/2+10);
+    cd.rows.forEach((r,i)=>{const y=y0+hh+i*rh;if(i){x.fillStyle='#eeeef3';x.fillRect(cd.x+24,y,cw-48,2)}
+      x.textAlign='left';x.fillStyle='#5a5a68';x.font=`600 21px ${cdFam}`;x.fillText(r[0],cd.x+24,y+rh/2+8);
+      x.textAlign='right';x.fillStyle='#14141c';cdFit(x,r[1],cw-48-170,24,'800',15);x.fillText(r[1],cd.x+cw-24,y+rh/2+8)});
+    const ty=y0+hh+rh*cd.rows.length;x.fillStyle=win?'#eefaf0':'#f6f6fa';x.fillRect(cd.x,ty+10,cw,ch-hh-rh*cd.rows.length-10);
+    x.textAlign='center';x.fillStyle='#5a5a68';x.font=`700 20px ${cdFam}`;x.fillText(win?'VALOR TOTAL · MENOR CUSTO':'VALOR TOTAL',cd.x+cw/2,ty+48);
+    x.fillStyle=win?'#1c7a34':'#14141c';cdFit(x,cBrl(cd.tot/100),cw-40,44,'800',26);x.fillText(cBrl(cd.tot/100),cd.x+cw/2,ty+96)});
+  let y=y0+ch+34;x.fillStyle=k.menor?'#fff8e6':'#fff';cdRr(x,40,y,1000,96,20);x.fill();
+  x.fillStyle='#14141c';x.textAlign='center';x.font=`800 30px ${cdFam}`;
+  x.fillText(k.menor?`Diferença: ${cBrl(k.dif/100)} — menor custo no ${cqNome(k)}`:'Os dois têm o mesmo custo total estimado',W/2,y+42);
+  x.fillStyle='#5a5a68';x.font=`600 22px ${cdFam}`;x.fillText(k.menor?`Economia estimada de ${cPct(k.pctEco)} (sem garantia)`:'Sem diferença entre as modalidades',W/2,y+76);
+  y+=96+36;x.fillStyle='#6a6a78';x.font=`500 21px ${cdFam}`;
+  cWrap(x,'O consórcio depende de contemplação por sorteio ou lance e não garante a entrega imediata da motocicleta. O financiamento libera a moto na contratação, sujeito à aprovação de crédito. Valores estimados pela taxa oficial do Banco Honda, sem garantia de economia; podem sofrer alterações sem aviso prévio.',940).forEach(l=>{if(y<H-70){x.fillText(l,W/2,y);y+=28}});
+  x.fillStyle='#14141c';x.font=`700 24px ${cdFam}`;x.fillText(`${(V.nome||'').trim()} · ${V.whatsapp?cdZap(V.whatsapp):''} · ${cHoje()}`,W/2,H-30);x.textAlign='left';return cv}
+function cqImg(){if(!CQK||!CQK.ok)return toast('Preencha os dados das duas modalidades primeiro.');ccBaixa(cqImgBuild,'cdc-x-consorcio')}
+/* ====================== ABA 3: COMPARAR PLANOS (2 a 3 opções de consórcio lado a lado) ====================== */
+function cpColNova(m,prazo,ss){return{mid:m?m.id:'',cota:'Nova',ss:!!ss,prazo:prazo||0,restantes:prazo||0,repo:'diluir',lanceR:''}}
+function cpDraw(){const ar=document.getElementById('fc_ar');if(!ar)return;ar.innerHTML=`<section class="card2 fc-cc"><h3>2. Comparar planos de consórcio</h3><div id="cp_b"></div></section>`;cpForm()}
+function cpCol(i){const c=CP.cols[i],m=fMotoById(c.mid),pls=m?fPlanos(m):[],prazos=[...new Set(pls.map(p=>+p.parcelas))].sort((a,b)=>a-b),L=fMotos(),
+  rest=c.cota==='Reposição'&&c.prazo?Array.from({length:c.prazo-1},(_,k)=>c.prazo-k):[c.prazo].filter(Boolean);
+  return `<div class="cc-col"><h4>Opção ${i+1}${CP.cols.length>2?`<button type="button" class="btn sm" onclick="cpRm(${i})">Remover</button>`:''}</h4>
+  <label class="cmp-l">Moto</label><select onchange="cpSet(${i},'mid',this.value,1)"><option value="">Selecione</option>${L.map(o=>`<option value="${esc(o.id)}" ${String(o.id)===String(c.mid)?'selected':''}>${esc(o.nome)}</option>`).join('')}</select>
+  <label class="cmp-l">Tipo de cota</label><select onchange="cpSet(${i},'cota',this.value,1)"><option ${c.cota==='Nova'?'selected':''}>Nova</option><option ${c.cota==='Reposição'?'selected':''}>Reposição</option></select>
+  <label class="cmp-l">Plano</label><select ${m?'':'disabled'} onchange="cpSet(${i},'ss',this.value==='1',1)"><option value="0" ${c.ss?'':'selected'}>Com seguro prestamista</option>${m&&vTemSS(m)?`<option value="1" ${c.ss?'selected':''}>Sem seguro prestamista</option>`:''}</select>
+  <label class="cmp-l">Prazo original</label><select ${m?'':'disabled'} onchange="cpSet(${i},'prazo',+this.value,1)"><option value="">Selecione</option>${prazos.map(z=>`<option value="${z}" ${z===c.prazo?'selected':''}>${z}x</option>`).join('')}</select>
+  <label class="cmp-l">Parcelas restantes</label><select ${c.cota==='Reposição'&&c.prazo?'':'disabled'} onchange="cpSet(${i},'restantes',+this.value,1)">${rest.length?rest.map(z=>`<option value="${z}" ${z===c.restantes?'selected':''}>${z}</option>`).join(''):'<option value="">Selecione o prazo</option>'}</select>
+  ${c.cota==='Reposição'&&c.prazo&&c.restantes<c.prazo?`<label class="cmp-l">O que o grupo já pagou</label><select onchange="cpSet(${i},'repo',this.value)"><option value="diluir" ${c.repo==='entrada'?'':'selected'}>Diluir nas parcelas</option><option value="entrada" ${c.repo==='entrada'?'selected':''}>Cobrar como entrada</option></select>`:''}
+  <label class="cmp-l">Lance em R$ <small>(opcional)</small></label><input type="text" inputmode="decimal" value="${esc(c.lanceR)}" placeholder="0,00" onchange="cpSet(${i},'lanceR',this.value);csFmt(this)"></div>`}
+function cpForm(){
+  document.getElementById('cp_b').innerHTML=`<div class="cc-cols" style="--n:${CP.cols.length}">${CP.cols.map((_,i)=>cpCol(i)).join('')}</div>
+  <div class="fc-ac" style="gap:8px;align-items:center;justify-content:flex-start">${CP.cols.length<3?'<button type="button" class="btn sm" onclick="cpAdd()">+ Adicionar opção</button>':''}<label class="cmp-n" style="flex:none;display:flex;gap:8px;align-items:center">Mesmo lance (R$) para todas: <input type="text" inputmode="decimal" style="width:130px" placeholder="0,00" onchange="cpLanceTodos(this.value)"></label></div>
+  <div id="cp_res"></div>`;cpRes()}
+function cpSet(i,k,v,re){const c=CP.cols[i];c[k]=v;
+  if(k==='mid'||k==='ss'||k==='cota'){if(k==='mid'){c.prazo=0;c.restantes=0;c.ss=false}else if(k==='cota')c.restantes=c.prazo;else{const m=fMotoById(c.mid);if(m&&c.ss&&!vTemSS(m))c.ss=false}}
+  if(k==='prazo')c.restantes=v;
+  if(re)cpForm();else cpRes()}
+function cpAdd(){const b=CP.cols[0]||{};if(CP.cols.length<3){CP.cols.push({...cpColNova(fMotoById(b.mid),0,false),lanceR:b.lanceR||''});cpForm()}}
+function cpRm(i){if(CP.cols.length>2){CP.cols.splice(i,1);cpForm()}}
+function cpLanceTodos(v){const n=vNum(v),t=isFinite(n)&&n>0?vDec(n):'';CP.cols.forEach(c=>c.lanceR=t);cpForm()}
+function cpCalc(c){const m=fMotoById(c.mid);if(!m)return{ok:false,erros:['Escolha a moto.']};
+  const rs=c.cota==='Reposição'?(c.restantes||c.prazo):c.prazo;
+  return calcCore({credito:vCredito(m),parcela:c.prazo?vParcela(m,c.prazo,c.ss):0,prazo:c.prazo,restantes:rs,repo:c.repo,lance:vNum(c.lanceR),quitar:false})}
+function cpLinhas(){
+  const R=CP.cols.map(c=>{const r=cpCalc(c),m=fMotoById(c.mid);return{c,m,r}}),okR=R.filter(o=>o.r.ok);
+  const ln=(rot,f)=>({rot,cel:R.map(o=>o.r.ok?{t:f(o)}:{t:'—'})});
+  const L=[
+   ln('Moto',o=>o.m.nome),ln('Valor do crédito',o=>cBrl(o.r.credito)),ln('Tipo de cota',o=>o.c.cota),ln('Plano',o=>cPlanoTxt(o.c.ss)),
+   ln('Prazo original',o=>o.r.prazo+'x'),ln('Parcelas restantes',o=>String(o.r.restantes)),ln('Valor da parcela',o=>cBrl(o.r.pv)),
+   ...(R.some(o=>o.r.ok&&o.r.entrada>0)?[ln('Entrada para assumir a cota',o=>o.r.entrada>0?cBrl(o.r.entrada):'—')]:[]),
+   ln('Lance (R$)',o=>o.r.lance>0?cBrl(o.r.lance):'sem lance'),ln('Lance (%)',o=>o.r.lance>0?cPct(o.r.pct):'—'),
+   ln('Redução da parcela (lance diluído)',o=>o.r.reducao>0?cBrl(o.r.reducao):'—'),
+   ln('Total que o cliente vai pagar',o=>cBrl(o.r.total))];
+  L.forEach(l=>{l.cel.forEach((c,i)=>{if(i>0&&R[i].r.ok&&R[0].r.ok&&c.t!==l.cel[0].t)c.df=1})});
+  const par=L.find(l=>l.rot==='Valor da parcela');
+  if(par&&okR.length>1)par.cel.forEach((c,i)=>{const o=R[i];if(o.r.ok&&Math.abs(o.r.pv-Math.min(...okR.map(z=>z.r.pv)))<.005)c.bt=1});
+  return{R,L}}
+function cpRes(){
+  const el=document.getElementById('cp_res');if(!el)return;const{R,L}=cpLinhas(),n=R.filter(o=>o.r.ok).length;
+  if(!n){el.innerHTML=`<div class="cc-er">Escolha a moto e o prazo de cada opção para comparar.</div>`;window.__cpTxt='';return}
+  el.innerHTML=`<div class="cc-tb"><table class="cc-t"><thead><tr><th></th>${R.map((o,i)=>`<th>Opção ${i+1}</th>`).join('')}</tr></thead><tbody>${L.map(l=>`<tr><td>${esc(l.rot)}</td>${l.cel.map(c=>`<td class="${c.bt?'bt':c.df?'df':''}">${esc(c.t)}${c.bt?'<small>menor parcela</small>':''}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
+  <p class="cmp-n" style="margin:8px 2px 0">Destaque amarelo = diferente da opção 1 · verde = menor parcela.</p>
+  <div class="fc-ac"><a class="btn red" target="_blank" rel="noopener" href="${zapHref(FC.tel,cpTexto())}" onclick="zapClick('${esc(FC.tel)}',event)">💬 Enviar ${FC.nome?'para '+esc(FC.nome.split(' ')[0]):'no WhatsApp'}</a><button type="button" class="btn" onclick="cpImg()">🖼️ Imagem da proposta</button><button type="button" class="btn" onclick="cpCopia()">📋 Copiar texto</button></div>`;
+  window.__cpTxt=cpTexto()}
+function cpTexto(){
+  const{R}=cpLinhas(),nome=(FC.nome||'').trim().split(' ')[0],ok=R.filter(o=>o.r.ok);
+  const blocos=ok.map((o,i)=>`*Opção ${i+1}: ${o.m.nome}*\n${o.c.cota} · ${cPlanoTxt(o.c.ss)} · ${o.r.prazo}x\nCrédito: ${cBrl(o.r.credito)}${o.r.entrada>0?`\nEntrada para assumir a cota: ${cBrl(o.r.entrada)}`:''}\nParcela: ${cBrl(o.r.pv)}${o.r.restantes!==o.r.prazo?` (${o.r.restantes} restantes)`:''}\nTotal: ${cBrl(o.r.total)}${o.r.lance>0?`\nLance: ${cBrl(o.r.lance)} (${cPct(o.r.pct)})`:''}`);
+  return [`Olá${nome?', '+nome:''}! Montei uma comparação de consórcio para você:`,'',blocos.join('\n\n'),'','Qual delas combina mais com você?','',ccAssin(),`Data: ${cHoje()}`].join('\n')}
+function cpCopia(){const t=window.__cpTxt||'';if(!t)return toast('Escolha as opções para gerar a proposta');navigator.clipboard.writeText(t).then(()=>toast('Proposta copiada!'),()=>toast('Não foi possível copiar'))}
+async function cpImgBuild(){
+  const{R,L}=cpLinhas(),ok=R.map((o,i)=>({o,i})).filter(a=>a.o.r.ok),N=ok.length||1;
+  const cv=document.createElement('canvas'),W=1080,H=1350;cv.width=W;cv.height=H;const x=cv.getContext('2d');
+  try{if(document.fonts&&document.fonts.ready)await document.fonts.ready}catch(e){}
+  x.fillStyle='#f4f5f9';x.fillRect(0,0,W,H);await vCabeca(x,W);
+  x.textAlign='center';x.fillStyle='#14141c';x.font=`800 44px ${cdFam}`;x.fillText('Comparação de planos',W/2,280);
+  x.fillStyle='#5a5a68';x.font=`600 28px ${cdFam}`;const nm=(FC.nome||'').trim();x.fillText(nm?`Preparada para ${nm}`:'Consórcio Honda',W/2,322);x.textAlign='left';
+  const x0=50,lw=300,cw=Math.floor((W-2*x0-lw)/N),y0=350,rh=64,rows=L;
+  x.fillStyle='#fff';cdRr(x,x0-10,y0,W-2*x0+20,rh*(rows.length+1)+20,22);x.fill();
+  x.fillStyle='#14141c';x.font=`800 26px ${cdFam}`;x.textAlign='center';ok.forEach((a,k)=>x.fillText(`Opção ${a.i+1}`,x0+lw+k*cw+cw/2,y0+rh/2+10));
+  rows.forEach((l,ri)=>{const y=y0+rh*(ri+1)+10;x.fillStyle='#eeeef3';x.fillRect(x0,y,W-2*x0,2);x.fillStyle='#5a5a68';x.font=`600 22px ${cdFam}`;x.textAlign='left';
+    cWrap(x,l.rot,lw-10).slice(0,2).forEach((t,k,A)=>x.fillText(t,x0,y+(A.length>1?26+k*24:rh/2+9)));
+    ok.forEach((a,k)=>{const c=l.cel[a.i];if(c.bt){x.fillStyle='#eefaf0';x.fillRect(x0+lw+k*cw+4,y+4,cw-8,rh-6)}else if(c.df){x.fillStyle='#fff8e6';x.fillRect(x0+lw+k*cw+4,y+4,cw-8,rh-6)}
+      x.fillStyle='#14141c';x.textAlign='center';cdFit(x,c.t,cw-16,24,'800',15);x.fillText(c.t,x0+lw+k*cw+cw/2,y+rh/2+9)})});
+  x.textAlign='center';x.fillStyle='#6a6a78';x.font=`500 21px ${cdFam}`;let y=y0+rh*(rows.length+1)+64;
+  cWrap(x,'Valores conforme a tabela de consórcio atual; podem sofrer alterações sem aviso prévio e dependem da disponibilidade de cotas. Oferta de lance não garante a contemplação.',940).forEach(l=>{if(y<H-70){x.fillText(l,W/2,y);y+=28}});
+  x.fillStyle='#14141c';x.font=`700 24px ${cdFam}`;x.fillText(`${(V.nome||'').trim()} · ${V.whatsapp?cdZap(V.whatsapp):''} · ${cHoje()}`,W/2,H-30);x.textAlign='left';return cv}
+function cpImg(){if(!window.__cpTxt)return toast('Escolha as opções para gerar a proposta');ccBaixa(cpImgBuild,'comparacao-planos')}
 /* ===== Cota da Vez: cota sorteada pela Loteria Federal + Lance Fixo (Regulamento CNH, cláusulas 9.2 a 9.4) ===== */
 let CVG=[],CVC=[],CVR=[],CVP=null,CVJ=15,CVF='ativa',CVED=null,CVGED=null,CVQ='';
 const cvDig=s=>String(s==null?'':s).replace(/\D/g,'');
@@ -4367,32 +4613,45 @@ body[data-ptab="inicio"] .shell .frase{display:none!important}
 .ex-fn{margin:0;font-size:12px;color:#ffd9dd}
 
 
-/* v56: calculadora de proposta */
-.fc-cl h3,.fc-f h3{margin:0 0 10px;font-size:17px}.fc-clh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
-.fc-sw{display:inline-flex;background:#f1f2f7;border-radius:99px;padding:4px}.fc-sw button,.fc-md button{border:0;background:transparent;border-radius:99px;padding:8px 14px;font-weight:800;font-size:13.5px;cursor:pointer;color:#3a3a46}.fc-sw button.on{background:#fff;color:#c4001f;box-shadow:0 1px 4px #0002}
-.fc-cl input,.fc-f input,.fc-f select{width:100%;padding:12px 14px;border:1px solid #d9dbe5;border-radius:12px;font:16px Inter,system-ui,sans-serif;background:#fff;color:#111}
-.fc-cl label,.fc-f label{display:block;font-weight:700;font-size:13px;margin:10px 0 6px;color:#3a3a46}
+/* v57: calculadora de proposta — 3 abas (Calculadora / CDC x Consórcio / Comparar planos) */
+.fc-cl h3,.fc-cc h3{margin:0 0 10px;font-size:17px}.fc-clh{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.fc-sw{display:inline-flex;background:#f1f2f7;border-radius:99px;padding:4px}.fc-sw button{border:0;background:transparent;border-radius:99px;padding:8px 14px;font-weight:800;font-size:13.5px;cursor:pointer;color:#3a3a46}.fc-sw button.on{background:#fff;color:#c4001f;box-shadow:0 1px 4px #0002}
+.fc-cl input{width:100%;padding:12px 14px;border:1px solid #d9dbe5;border-radius:12px;font:16px Inter,system-ui,sans-serif;background:#fff;color:#111}
+.fc-cl label{display:block;font-weight:700;font-size:13px;margin:10px 0 6px;color:#3a3a46}
 .fc-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .fc-ls{display:grid;gap:6px;margin-top:8px;max-height:300px;overflow:auto}
 .fc-li{display:flex;align-items:center;gap:10px;text-align:left;border:1px solid #ececf2;background:#fafafd;border-radius:14px;padding:9px 12px;cursor:pointer;width:100%}.fc-li:hover{border-color:#c4001f}.fc-li b{display:block;font-size:14.5px}.fc-li small{color:#6a6a78}
 .fc-av{flex:none;width:38px;height:38px;border-radius:50%;background:#c4001f;color:#fff;display:grid;place-items:center;font-weight:900}.fc-av.big{width:64px;height:64px;font-size:26px}
 .fc-sel{display:flex;align-items:center;gap:12px;background:#fff5f6;border:1px solid #ffd0d6;border-radius:14px;padding:10px 12px}.fc-sel>div{flex:1;min-width:0}.fc-sel b{display:block}.fc-sel small{color:#6a6a78}
-.fc-md{display:flex;gap:6px;background:#f1f2f7;border-radius:14px;padding:5px;margin:14px 0 4px}.fc-md button{flex:1;border-radius:10px}.fc-md button.on{background:#c4001f;color:#fff}
-.fc-sb{border:1px solid #ececf2;border-radius:16px;padding:12px 14px;margin-top:12px}.fc-sb>b{font-size:15px}
-.fc-ch{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}.fc-ch button{border:1px solid #d9dbe5;background:#f6f7fb;border-radius:99px;padding:7px 12px;font-weight:700;font-size:13px;cursor:pointer;color:#2b2b33}.fc-ch button.on{background:#14141c;border-color:#14141c;color:#fff}
-.fc-ck{display:flex!important;gap:8px;align-items:center;font-weight:600!important}.fc-ck input{width:auto!important}
-.fc-tr{display:flex;gap:6px}.fc-tr input{flex:1}
-.fc-pp{background:#fff;border-radius:24px;overflow:hidden;box-shadow:0 18px 48px -24px #2a0d1266;border:1px solid #ececf2;margin-top:4px}
-.fc-ph{display:flex;align-items:center;gap:14px;padding:18px 20px;background:linear-gradient(120deg,#15151d,#5a0d14);color:#fff;border-bottom:5px solid #d90f24}.fc-ph img{width:64px;height:64px;border-radius:50%;object-fit:cover;border:3px solid #fff}.fc-ph b{display:block;font-size:18px}.fc-ph small{display:block;color:#ffc9cf;font-size:13px}
-.fc-pm{display:flex;align-items:center;gap:16px;padding:16px 20px}.fc-pm img{width:150px;height:110px;object-fit:contain;flex:none}.fc-pm small{color:#6a6a78;font-weight:700}.fc-pm b{display:block;font-size:22px;line-height:1.2}.fc-pm span{color:#c4001f;font-weight:800}
-.fc-pc{display:grid;gap:12px;padding:0 20px 16px}.fc-pc.two{grid-template-columns:1fr 1fr}
-.fc-bx{display:block;border-radius:18px;padding:14px 16px;border:1px solid;min-width:0}.fc-bx.fc-con{background:#eef8f3;border-color:#cfe7d8}.fc-bx.fc-fin{background:#fff4f5;border-color:#ffd6db}
-.fc-bx h4{margin:0 0 6px;font-size:15px}.fc-vb{margin:4px 0;color:#55556a;font-weight:700}.fc-vb b{display:block;font-size:32px;line-height:1.1}.fc-bx.fc-con .fc-vb b{color:#0e7c58}.fc-bx.fc-fin .fc-vb b{color:#c4001f}
-.fc-bx ul{margin:8px 0 0;padding-left:18px;font-size:14px;line-height:1.6}.fc-l{margin:2px 0;font-size:13px;color:#0e7c58;font-weight:700}
-.fc-eco{margin:0 20px 16px;border-radius:16px;padding:14px;text-align:center;font-size:17px;background:#16803c;color:#fff}.fc-eco.neg{background:#14141c}
-.fc-pf{padding:10px 20px 16px;font-size:12px;color:#6a6a78}
+.fc-mu{font-size:12.5px;color:#6a6a78;margin:6px 0 0}
 .fc-ac{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.fc-ac .btn{text-align:center;text-decoration:none}
-@media(max-width:760px){.fc-2,.fc-pc.two{grid-template-columns:1fr}.fc-ac{grid-template-columns:1fr}.fc-pm img{width:110px;height:82px}.fc-vb b{font-size:28px}}
+.cc-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 14px}.cc-tabs button{border:1px solid #d9dbe5;background:#fff;color:#2a2a38;border-radius:999px;padding:10px 16px;font:700 14px Inter,system-ui,sans-serif;cursor:pointer}.cc-tabs button.on{background:#14141c;color:#fff;border-color:#14141c}
+.fc-cc .cmp-l{display:block;font-weight:700;font-size:13px;margin:10px 0 6px;color:#3a3a46}.fc-cc .cmp-l small{font-weight:500;color:#6a6a78;text-transform:none}
+.fc-cc .cmp-n{margin:0;font-size:12.5px;color:#6a6a78}
+.fc-cc input[type=text],.fc-cc select{width:100%;box-sizing:border-box;border:1px solid #d9dbe5;border-radius:12px;padding:12px 13px;font:15px/1.4 Inter,system-ui,sans-serif;background:#fff;color:#111}
+.fc-cc input[readonly]{background:#f4f5f9;color:#3a3a48}
+.fc-cc select:disabled{background:#f4f5f9;color:#7a7a88}
+.fc-cc .cc-g{display:grid;grid-template-columns:1fr 1fr;gap:4px 14px}.fc-cc .cc-g.full,.fc-cc .cc-g>.full{grid-column:1/-1}
+.fc-cc .cc-ck{display:flex!important;gap:10px;align-items:flex-start;margin:10px 0 2px;font-size:14px;line-height:1.4;font-weight:600!important}.fc-cc .cc-ck input{width:auto!important;height:20px;margin-top:1px;flex:none}
+.fc-cc .cc-er{background:#fff4f4;border:1px solid #f5c2c2;color:#8a1c1c;border-radius:12px;padding:10px 12px;font-size:13.5px;margin-top:10px}.fc-cc .cc-er ul{margin:4px 0 0 18px;padding:0}
+.fc-cc .cc-av{background:#fff9e8;border:1px solid #f1dd9b;color:#6b5200;border-radius:12px;padding:9px 12px;font-size:13px;margin-top:8px}
+.fc-cc .cc-rs{margin-top:14px;border:1px solid #e6e6ee;border-radius:16px;overflow:hidden}
+.fc-cc .cc-rs>div{display:flex;justify-content:space-between;gap:14px;padding:10px 14px;border-bottom:1px solid #f0f0f5;font-size:14.5px}.fc-cc .cc-rs>div:last-child{border-bottom:0}
+.fc-cc .cc-rs b{text-align:right}.fc-cc .cc-rs .hl{background:#fafafc}.fc-cc .cc-rs .ef{display:block;color:#3a3a48;background:#f4f8f4}
+.fc-cc .cc-cols{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:12px}
+.fc-cc .cc-col{border:1px solid #e3e3ec;border-radius:16px;padding:12px;background:#fcfcfe;display:flex;flex-direction:column;gap:4px}
+.fc-cc .cc-col h4{margin:0 0 4px;font-size:13px;display:flex;justify-content:space-between;align-items:center}
+.fc-cc .cc-col .cmp-l{margin:6px 0 1px}.fc-cc .cc-col select,.fc-cc .cc-col input{padding:9px 10px;font-size:14px;border-radius:11px}
+.fc-cc .cc-tb{margin-top:14px;overflow:auto;border:1px solid #e6e6ee;border-radius:16px}
+.fc-cc table.cc-t{border-collapse:collapse;width:100%;min-width:560px;font-size:14px}
+.fc-cc .cc-t th,.fc-cc .cc-t td{padding:9px 12px;border-bottom:1px solid #f0f0f5;text-align:right;vertical-align:top}
+.fc-cc .cc-t th:first-child,.fc-cc .cc-t td:first-child{text-align:left;position:sticky;left:0;background:#fff;font-weight:600;color:#4a4a58;min-width:150px}
+.fc-cc .cc-t thead th{background:#fafafc;font-size:13px}.fc-cc .cc-t tr:last-child td{border-bottom:0}
+.fc-cc .cc-t td.df{background:#fff8e6}.fc-cc .cc-t td.bt{background:#eefaf0;font-weight:700}.fc-cc .cc-t td small{display:block;color:#7a6200;font-weight:500;font-size:11.5px}.fc-cc .cc-t td.bt small{color:#1c7a34}
+.fc-cc .cq-cols{align-items:start;margin-top:12px}.fc-cc .cq-fin h4,.fc-cc .cq-con h4{font-size:15px;padding-bottom:8px;border-bottom:3px solid #2f3550;margin-bottom:6px}.fc-cc .cq-con h4{border-color:#c4001f}
+.fc-cc .cq-sum{margin-top:16px;border-radius:16px;padding:14px 16px;background:#f4f5f9;border:1px solid #e3e3ec;display:flex;flex-direction:column;gap:3px}.fc-cc .cq-sum b{font-size:17px}.fc-cc .cq-sum span{font-size:14.5px;font-weight:600}.fc-cc .cq-sum small{color:#6a6a78;font-size:12.5px}
+.fc-cc .cq-sum.w-con{background:#eefaf0;border-color:#b9e3c4}.fc-cc .cq-sum.w-cdc{background:#eef3fb;border-color:#bccdea}
+@media(max-width:760px){.fc-2{grid-template-columns:1fr}.fc-ac{grid-template-columns:1fr}.fc-cc .cc-g{grid-template-columns:1fr}.fc-cc .cc-cols,.fc-cc .cq-cols{grid-template-columns:1fr}}
 /* v55: calculadora de financiamento */
 .fc-hero{display:flex;justify-content:space-between;align-items:center;gap:18px;flex-wrap:wrap;background:linear-gradient(135deg,#14141c 0%,#2a0d12 62%,#5a0f1a 130%);color:#fff;border-radius:22px;padding:22px 24px;margin-bottom:14px}
 .fc-hero h2{margin:6px 0 4px;font-size:24px;color:#fff}.fc-hero p{margin:0;color:#e9dfe1;max-width:520px;font-size:14.5px;line-height:1.5}
