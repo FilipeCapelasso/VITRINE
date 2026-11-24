@@ -3643,9 +3643,9 @@ function fcConta(){const el=document.getElementById('fc_r');if(!el)return;const 
   if(!f&&!c){el.innerHTML=`<div class="card2 fc-vz">${!(FC.valor>0)?'Escolha a moto ou digite o valor para ver a proposta.':FC.modo==='financ'?'A entrada é igual ou maior que o valor: é compra à vista.':'Escolha um prazo de consórcio.'}</div>`;return}
   const eco=f&&c?f.tot-c.tot:0,loja=fLoja(),aj=FT.ajuste,mn=aj&&+aj.entrada_min_pct,pct=FC.valor?FC.ent/FC.valor*100:0;
   el.innerHTML=`<article class="fc-pp"><header class="fc-ph">${V.foto_url?`<img src="${esc(V.foto_url)}" alt="">`:`<span class="fc-av big">${esc((V.nome||'V').charAt(0))}</span>`}<div><b>${esc(V.nome||'')}</b><small>Consultor(a) Honda${loja?' · '+esc(loja):''}</small>${V.whatsapp?`<small>📲 ${esc(cdZap(V.whatsapp))}</small>`:''}</div></header>
-   <div class="fc-pm">${m&&img0(m)?`<img src="${esc(img0(m))}" alt="">`:''}<div><small>${FC.nome?'Proposta para '+esc(FC.nome):'Proposta'}</small><b>${m?esc(m.nome)+(m.modelo?' '+esc(m.modelo):''):'Moto Honda'}</b><span>Valor ${brl(FC.valor)}</span></div></div>
+   <div class="fc-pm">${m&&img0(m)?`<img src="${esc(img0(m))}" alt="">`:''}<div><small>${FC.nome?'Proposta para '+esc(FC.nome):'Proposta'}</small><b>${m?esc(m.nome)+(m.modelo?' '+esc(m.modelo):''):'Moto Honda'}</b><span>Valor da moto ${brl(FC.valor)}</span></div></div>
    <div class="fc-pc ${f&&c?'two':''}">
-    ${c?`<div class="fc-bx fc-con"><h4>🤝 Consórcio Honda</h4>${c.lance>0?`<p class="fc-l">Lance de ${brl(c.lance)} (${fPct(c.pct)})</p><p class="fc-vb">${c.q?`2x de ${brl(c.pa)} + ${c.dm}x de`:`2x de ${brl(c.pa)} + ${c.dm}x de`}<b>${brl(c.valc)}</b></p>${c.q?`<p class="fc-l">${c.q} parcela${c.q>1?'s':''} do final quitada${c.q>1?'s':''} com o lance</p>`:''}`:`<p class="fc-vb">${c.pz}x de<b>${brl(c.pa)}</b></p>`}
+    ${c?`<div class="fc-bx fc-con"><h4>🤝 Consórcio Honda</h4><p class="carta">Valor da carta de crédito: <b>${brl(c.cr)}</b></p>${c.lance>0?`<p class="fc-l">Lance de ${brl(c.lance)} (${fPct(c.pct)})</p><p class="fc-vb">${c.q?`2x de ${brl(c.pa)} + ${c.dm}x de`:`2x de ${brl(c.pa)} + ${c.dm}x de`}<b>${brl(c.valc)}</b></p>${c.q?`<p class="fc-l">${c.q} parcela${c.q>1?'s':''} do final quitada${c.q>1?'s':''} com o lance</p>`:''}`:`<p class="fc-vb">${c.pz}x de<b>${brl(c.pa)}</b></p>`}
       <ul><li>Sem juros e sem entrada</li><li>${c.seguro?'Com seguro prestamista':'Sem seguro prestamista'}</li>${c.cont?`<li>Até ${c.cont} contemplações por assembleia</li>`:''}<li>Total: <b>${brl(c.tot)}</b></li></ul>${c.erro?`<p class="fc-w">${esc(c.erro)}</p>`:''}</div>`:''}
     ${f?`<div class="fc-bx fc-fin"><h4>🏦 Financiamento Banco Honda</h4><p class="fc-vb">${f.n}x de<b>${brl(f.pc)}</b></p>
       <ul><li>${f.ent>0?'Entrada de '+brl(f.ent)+' ('+Math.round(pct)+'%)':'Sem entrada'}</li><li>Juros de ${fPct(fTaxa())} ao mês</li><li>Moto na hora, após aprovação</li><li>Total: <b>${brl(f.tot)}</b></li></ul>${mn&&pct<mn?`<p class="fc-w">Entrada mínima em ${esc(FT.uf)}: ${mn}% (${brl(FC.valor*mn/100)}).</p>`:''}</div>`:''}
@@ -3654,8 +3654,8 @@ function fcConta(){const el=document.getElementById('fc_r');if(!el)return;const 
    <footer class="fc-pf">Simulação de referência. Sujeito à análise de crédito e às regras do Consórcio Nacional Honda.</footer></article>
   <div class="fc-ac"><a class="btn red" target="_blank" rel="noopener" href="${fcZapUrl(f,c,m)}">💬 Enviar ${FC.nome?'para '+esc(FC.nome.split(' ')[0]):'no WhatsApp'}</a><button type="button" class="btn" onclick="fcImg()">🖼️ Imagem da proposta</button><button type="button" class="btn" onclick="fcCopia()">📋 Copiar texto</button></div>`;
   window.__fcTxt=fcTexto(f,c,m)}
-function fcTexto(f,c,m){const L=[`*Proposta Honda${FC.nome?' para '+FC.nome:''}*`,m?`🏍️ ${m.nome}${m.modelo?' '+m.modelo:''} · ${brl(FC.valor)}`:`Valor: ${brl(FC.valor)}`];
-  if(c)L.push('',`*🤝 Consórcio Honda:* ${c.lance>0?`lance de ${brl(c.lance)} + 2x de ${brl(c.pa)} + ${c.dm}x de ${brl(c.valc)}`:`${c.pz}x de ${brl(c.pa)}`}`,`Sem juros e sem entrada · total ${brl(c.tot)}`);
+function fcTexto(f,c,m){const L=[`*Proposta Honda${FC.nome?' para '+FC.nome:''}*`,m?`🏍️ ${m.nome}${m.modelo?' '+m.modelo:''} · Valor da moto ${brl(FC.valor)}`:`Valor da moto: ${brl(FC.valor)}`];
+  if(c)L.push('',`*🤝 Consórcio Honda* (carta de crédito ${brl(c.cr)}):`,`${c.lance>0?`lance de ${brl(c.lance)} + 2x de ${brl(c.pa)} + ${c.dm}x de ${brl(c.valc)}`:`${c.pz}x de ${brl(c.pa)}`}`,`Sem juros e sem entrada · total ${brl(c.tot)}`);
   if(f)L.push('',`*🏦 Financiamento Banco Honda:* ${f.ent>0?'entrada de '+brl(f.ent)+' + ':''}${f.n}x de ${brl(f.pc)}`,`Juros de ${fPct(fTaxa())} ao mês · total ${brl(f.tot)}`);
   if(f&&c&&f.tot>c.tot)L.push('',`💰 No consórcio você economiza ${brl(f.tot-c.tot)}`);
   const lj=fLoja();L.push('','_Simulação sujeita à análise de crédito._',`${V.nome||''}${lj?' · '+lj:''}${V.whatsapp?' · '+cdZap(V.whatsapp):''}`);return L.join('\n')}
@@ -3671,12 +3671,12 @@ async function fcDesenha(cv){const m=fMoto(),f=FC.modo!=='consorcio'?fcFin():nul
   if(im){const bw=420,bh=300,s=Math.min(bw/im.width,bh/im.height);x.drawImage(im,60+(bw-im.width*s)/2,y+30+(bh-im.height*s)/2,im.width*s,im.height*s)}
   const mx=im?500:80;x.fillStyle='#6a6a78';x.font=`600 28px ${cdFam}`;x.fillText(FC.nome?('Proposta para '+FC.nome).slice(0,34):'Proposta especial',mx,y+90);
   x.fillStyle='#14141c';const mn=m?(m.nome+(m.modelo?' '+m.modelo:'')):'Moto Honda';cdFit(x,mn,W-mx-70,54,'900',30);x.fillText(mn,mx,y+160);
-  x.font=`600 32px ${cdFam}`;x.fillStyle='#c4001f';x.fillText('Valor '+brl(FC.valor),mx,y+220);
+  x.font=`600 32px ${cdFam}`;x.fillStyle='#c4001f';x.fillText('Valor da moto '+brl(FC.valor),mx,y+220);
   y=660;const two=f&&c,bw2=two?(W-100)/2:W-80;
   const box=(bx,t,cor,linha,big,itens)=>{x.fillStyle='#fff';cdRr(x,bx,y,bw2,440,28);x.fill();x.fillStyle=cor;cdRr(x,bx,y,bw2,74,28);x.fill();x.fillRect(bx,y+40,bw2,34);x.fillStyle='#fff';cdFit(x,t,bw2-56,32,'800',22);x.fillText(t,bx+28,y+50);
     x.fillStyle='#55556a';cdFit(x,linha,bw2-56,28,'600',18);x.fillText(linha,bx+28,y+130);x.fillStyle=cor;cdFit(x,big,bw2-56,76,'900',40);x.fillText(big,bx+28,y+210);
     x.font=`500 27px ${cdFam}`;x.fillStyle='#2b2b33';itens.forEach((it,k)=>x.fillText('• '+it,bx+28,y+275+k*44))};
-  let bx=40;if(c){box(bx,'Consórcio Honda','#0e7c58',c.lance>0?`Lance ${brl(c.lance)} + 2x ${brl(c.pa)} +`:`${c.pz} parcelas de`,c.lance>0?`${c.dm}x ${brl(c.valc)}`:brl(c.pa),['Sem juros e sem entrada',c.seguro?'Com seguro prestamista':'Sem seguro prestamista','Total '+brl(c.tot)]);bx+=bw2+20}
+  let bx=40;if(c){box(bx,'Consórcio Honda','#0e7c58',c.lance>0?`Lance ${brl(c.lance)} + 2x ${brl(c.pa)} +`:`${c.pz} parcelas de`,c.lance>0?`${c.dm}x ${brl(c.valc)}`:brl(c.pa),[`Carta de crédito ${brl(c.cr)}`,'Sem juros e sem entrada',c.seguro?'Com seguro prestamista':'Sem seguro prestamista','Total '+brl(c.tot)]);bx+=bw2+20}
   if(f)box(bx,'Financiamento Banco Honda','#c4001f',`${f.ent>0?'Entrada '+brl(f.ent)+' + ':''}${f.n} parcelas de`,brl(f.pc),[`Juros ${fPct(fTaxa())} ao mês`,'Moto após aprovação','Total '+brl(f.tot)]);
   y=1130;if(two){const eco=f.tot-c.tot;x.fillStyle=eco>0?'#16803c':'#14141c';cdRr(x,40,y,W-80,100,26);x.fill();x.fillStyle='#fff';x.font=`800 38px ${cdFam}`;const t=eco>0?'No consórcio você economiza '+brl(eco):'Financiamento: moto na hora';x.textAlign='center';x.fillText(t,W/2,y+64);x.textAlign='left'}
   x.fillStyle='#6a6a78';x.font=`500 22px ${cdFam}`;x.textAlign='center';x.fillText('Simulação de referência, sujeita à análise de crédito e às regras do Consórcio Nacional Honda.',W/2,1290);x.textAlign='left'}
