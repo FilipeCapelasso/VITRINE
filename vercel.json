@@ -19,6 +19,10 @@
       "destination": "https://sitevendedor.vercel.app/"
     },
     {
+      "source": "/ind/:slug([a-z0-9-]+)",
+      "destination": "https://sitevendedor.vercel.app/?ref=:slug"
+    },
+    {
       "source": "/comercial",
       "destination": "https://sitevendedor.vercel.app/"
     },
