@@ -3651,7 +3651,7 @@ function fcTab(t){FC.tab=t;if(FC.cli){const m=fCliMoto(FC.cli);if(m){if(t==='cal
 function fcDraw(){
   const b=FT.bcb,aj=FT.ajuste;
   const fonte=FT.fonte==='ajuste'?`Taxa definida para ${esc(FT.uf)}${aj&&aj.obs?' · '+esc(aj.obs):''}`:b?`Média oficial do Banco Honda no Banco Central (${fData(b.inicio)} a ${fData(b.fim)})`:'Taxa de referência';
-  $('#pn').innerHTML=`<section class="fc-hero"><div><span class="fc-k">${esc(FT.uf||'')}${FT.regiao?' · Região '+esc(FT.regiao):''} · tabela oficial Honda</span><h2>Calculadora de proposta</h2><p>Escolha o cliente e a modalidade: consórcio (cota nova ou de reposição), comparação com o financiamento Banco Honda, ou vários planos lado a lado.</p></div>
+  $('#pn').innerHTML=`<section class="fc-hero"><div><span class="fc-k">${esc(FT.uf||'')}${FT.regiao?' · Região '+esc(FT.regiao):''} · tabela oficial Honda</span><h2>Calculadora de proposta</h2></div>
    <div class="fc-tx"><small>Juros do financiamento</small><b>${fPct(fTaxa())}</b><span>ao mês</span><em>${fonte}</em></div></section>
   <section class="card2 fc-cl"><div class="fc-clh"><h3>1. Cliente</h3><div class="fc-sw"><button type="button" class="${FC.novo?'':'on'}" onclick="FC.novo=false;fcDraw()">Cliente salvo</button><button type="button" class="${FC.novo?'on':''}" onclick="FC.novo=true;FC.cli=null;fcDraw()">＋ Cliente novo</button></div></div>
    ${FC.novo?`<div class="fc-2"><div><label for="fc_nm">Nome do cliente</label><input id="fc_nm" value="${esc(FC.nome)}" placeholder="Nome" oninput="FC.nome=this.value"></div><div><label for="fc_tl">WhatsApp do cliente</label><input id="fc_tl" inputmode="tel" value="${esc(FC.tel)}" placeholder="(68) 99999-9999" oninput="FC.tel=this.value"></div></div>`
