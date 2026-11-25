@@ -3037,8 +3037,11 @@ async function vdLoad(){
   if(!M.length){try{const mr=await sb.from('motos').select().order('ordem');if(mr.data)M=mr.data}catch(e){}}
   if(r.slice(0,4).every(x=>x.error))return false;
   const tag=(x,k)=>(x.data||[]).map(o=>({...o,_s:k}));
+  /* só é "cliente de verdade" quem deixou algum dado (nome, telefone, e-mail ou CPF). Um "tenho interesse" clicado
+     sem preencher nada (ex.: botão de interesse no consórcio ou na promoção) não vira cliente na lista do vendedor. */
+  const temDado=o=>!!(String(o.nome_completo||o.nome||'').trim()||String(o.telefone||'').trim()||String(o.email||'').trim()||String(o.cpf||'').trim());
   const rs=((r[4]&&r[4].data)||[]).map(o=>({...(o.dados||{}),...o,_s:'rascunho',created_at:o.updated_at}));
-  VRAW=[...tag(r[0],'chat'),...tag(r[1],'ficha'),...tag(r[2],'contrato'),...tag(r[3],'contato'),...rs].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));VD=vdMerge(VRAW);
+  VRAW=[...tag(r[0],'chat'),...tag(r[1],'ficha'),...tag(r[2],'contrato'),...tag(r[3],'contato').filter(temDado),...rs].sort((a,b)=>new Date(b.created_at)-new Date(a.created_at));VD=vdMerge(VRAW);
   return true}
 
 /* ===== o painel LEMBRA o que você abriu (Ver todos os dados / Detalhes) e só redesenha quando algo realmente mudou ===== */
