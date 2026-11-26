@@ -39,6 +39,10 @@
       "destination": "https://sitevendedor.vercel.app/:path*"
     },
     {
+      "source": "/:code([A-Za-z][A-Za-z0-9_@-]{43,63})",
+      "destination": "https://sitevendedor.vercel.app/"
+    },
+    {
       "source": "/:slug/cdc",
       "destination": "https://sitecdc.vercel.app/:slug"
     },
@@ -187,6 +191,19 @@
         {
           "key": "Cache-Control",
           "value": "public, max-age=3600"
+        }
+      ]
+    },
+    {
+      "source": "/:code([A-Za-z][A-Za-z0-9_@-]{43,63})",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
         }
       ]
     }
