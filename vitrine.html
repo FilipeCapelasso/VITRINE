@@ -4209,7 +4209,8 @@ function avLive(){if(AVCH||!sb||!V||!V.id)return;try{AVCH=sb.channel('avisos-'+V
 /* ----- aba Notificações ----- */
 
 /* v54: aviso Expansão */
-async function exLoad(){const el=document.getElementById('exp_box');if(!el||!sb)return;
+const EXP_ATIVO=false; /* desligado por enquanto (concurso entre vendedores); troque para true para voltar */
+async function exLoad(){const el=document.getElementById('exp_box');if(!EXP_ATIVO){if(el)el.remove();return}if(!el||!sb)return;
   let d=null;try{const r=await sb.rpc('exp_ranking');d=r&&r.data}catch(e){}
   if(!d||!d.slug){el.remove();return}
   const lk='https://www.sitevendedor.com/ind/'+encodeURIComponent(d.slug),pr=[['🥇','1º lugar','R$ 300'],['🥈','2º lugar','R$ 100'],['🥉','3º lugar','2 meses grátis do plano']];
