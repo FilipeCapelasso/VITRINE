@@ -3578,7 +3578,7 @@ async function appTeste(){
     appRe();if(Date.now()-ini<15000&&APP_TESTE&&APP_TESTE.fase!=='chegou'&&APP_TESTE.fase!=='erro')setTimeout(chk,2500)};
   setTimeout(chk,2500)}
 if('serviceWorker' in navigator)navigator.serviceWorker.addEventListener('message',e=>{const d=e.data||{};
-  if(d.tipo==='push'&&d.d){const x=d.d;try{avMostra({id:x.id,tipo:x.tp,titulo:x.t,corpo:x.b,dados:{wa:x.wa,img:x.img,cid:x.cid},criado:x.em||new Date().toISOString()})}catch(z){}
+  if(d.tipo==='push'&&d.d&&!d.d.admin){const x=d.d;try{avMostra({id:x.id,tipo:x.tp,titulo:x.t,corpo:x.b,dados:{wa:x.wa,img:x.img,cid:x.cid},criado:x.em||new Date().toISOString()})}catch(z){}
     try{if(typeof T!=='undefined'&&T==='vendas'&&typeof pVendas==='function'&&$('#vdl'))pVendas(true)}catch(x){}}
   if(d.tipo==='abrir'&&d.url){try{const u=new URL(d.url,location.origin);appUrl(u.searchParams);if(T==='vendas')adm('vendas')}catch(x){}}});
 /* aviso tocado: abre na aba Clientes e mostra o botão do WhatsApp do cliente */

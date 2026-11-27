@@ -44,22 +44,26 @@ const ehIOS = /iphone|ipad|ipod/i.test(UA) || (/macintosh/i.test(UA) && /safari/
 self.addEventListener('push', e => {
   let d = {};
   try { d = e.data ? e.data.json() : {}; } catch (x) { d = { t: 'Novo aviso', b: e.data ? e.data.text() : '' }; }
+  const adm = !!d.admin;   // aviso do Admin Geral (dono)
   const base = d.slug ? `/${d.slug}/admin` : '/';
-  const url = d.slug ? `${base}?app=1&t=vendas${d.cid ? '&c=' + encodeURIComponent(d.cid) : ''}${d.wa ? '&wa=' + encodeURIComponent(d.wa) : ''}` : '/';
+  const url = adm ? `/?app=admin&av=${encodeURIComponent(d.id || '')}#admin`
+    : d.slug ? `${base}?app=1&t=vendas${d.cid ? '&c=' + encodeURIComponent(d.cid) : ''}${d.wa ? '&wa=' + encodeURIComponent(d.wa) : ''}` : '/';
   const acoes = [];
   if (d.wa) acoes.push({ action: 'wa', title: '💬 Chamar no WhatsApp' });
-  acoes.push({ action: 'abrir', title: 'Abrir painel' });
+  acoes.push({ action: 'abrir', title: adm ? 'Abrir Admin Geral' : 'Abrir painel' });
   e.waitUntil((async () => {
     const abertos = await self.clients.matchAll({ type: 'window', includeUncontrolled: true }).catch(() => []);
     abertos.forEach(c => { try { c.postMessage({ tipo: 'push', d }); } catch (x) {} });
     // Painel aberto e visível na tela: o aviso aparece animado dentro dele (Android/computador).
     // No iPhone a notificação é sempre mostrada (a Apple exige).
-    const naTela = !ehIOS && abertos.some(c => c.visibilityState === 'visible' && /\/admin\/?$/.test(new URL(c.url).pathname));
+    const naTela = !ehIOS && abertos.some(c => { if (c.visibilityState !== 'visible') return false; const u = new URL(c.url);
+      return adm ? (u.pathname === '/' && u.hash === '#admin') : /\/admin\/?$/.test(u.pathname); });
     if (naTela && d.tp !== 'teste') return;
-    await self.registration.showNotification(d.t || 'Novo cliente no seu site', {
-      body: d.b || '', icon: '/app-honda2-192.png', badge: '/app-honda2-badge.png',
+    await self.registration.showNotification(d.t || (adm ? 'Admin Geral' : 'Novo cliente no seu site'), {
+      body: d.b || '', icon: adm ? '/admin-geral-192.png' : '/app-honda2-192.png', badge: '/app-honda2-badge.png',
       ...(d.img ? { image: d.img } : {}),
-      tag: d.cid ? 'c-' + d.cid : 'n-' + (d.id || Date.now()), renotify: true,
+      // mesma pessoa (pk = celular): o aviso novo substitui o anterior dela em vez de empilhar
+      tag: (adm ? 'a-' : '') + (d.pk ? 'p-' + d.pk : d.cid ? 'c-' + d.cid : 'n-' + (d.id || Date.now())), renotify: true,
       requireInteraction: d.tp !== 'teste', silent: false, vibrate: [200, 100, 200, 100, 300],
       timestamp: d.em ? Date.parse(d.em) : Date.now(),
       data: { url, wa: d.wa || null, id: d.id || null, tp: d.tp || '' }, actions: acoes,
@@ -78,7 +82,7 @@ self.addEventListener('notificationclick', e => {
       const cs = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
       const p = new URL(alvo, self.location.origin).pathname;
       for (const c of cs) {
-        if (new URL(c.url).pathname === p && 'focus' in c) {
+        if (new URL(c.url).pathname === p && (p !== '/' || new URL(c.url).hash === '#admin') && 'focus' in c) {
           try { c.postMessage({ tipo: 'abrir', url: alvo }); } catch (x) {}
           return c.focus();
         }
