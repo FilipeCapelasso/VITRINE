@@ -2201,7 +2201,7 @@ async function init(){
 addEventListener('hashchange',route);
 async function route(){
   $('#modal').style.display='none';
-  if(isAdm()){if(DEMO){$('#app').innerHTML='<div class="ad"><h1>Área do vendedor</h1><p class="mu">Configure o Supabase no início do arquivo para usar o painel.</p><p class=\"mu\" style=\"font-size:12px\">O arquivo está lendo: URL = '+esc(SUPABASE_URL.slice(0,45))+' | chave com '+SUPABASE_KEY.length+' caracteres</p><a class="btn red" href="#">Voltar ao site</a></div>';return}const{data}=await sb.auth.getSession();appUrl();await guard(data.session)?adm():login()}else{C='Todas';Q='';home();const d=/^#moto=(.+)/.exec(location.hash);if(d){const i=L.findIndex(x=>x.id===d[1]);if(i>=0)openM(i,soCon(L[i])?'con':'det')}}
+  if(isAdm()){if(DEMO){$('#app').innerHTML='<div class="ad"><h1>Área do vendedor</h1><p class="mu">Configure o Supabase no início do arquivo para usar o painel.</p><p class=\"mu\" style=\"font-size:12px\">O arquivo está lendo: URL = '+esc(SUPABASE_URL.slice(0,45))+' | chave com '+SUPABASE_KEY.length+' caracteres</p><a class="btn red" href="#">Voltar ao site</a></div>';return}const{data}=await sb.auth.getSession();appUrl();let ses=data.session;if(!ses&&SLUG==='demo')ses=await demoEntra();demoFita();await guard(ses)?adm():login()}else{C='Todas';Q='';home();demoFita();const d=/^#moto=(.+)/.exec(location.hash);if(d){const i=L.findIndex(x=>x.id===d[1]);if(i>=0)openM(i,soCon(L[i])?'con':'det')}}
 }
 
 /* ================= CLIENTE ================= */
@@ -2589,6 +2589,14 @@ function finSend(){
 }
 
 /* ================= ADMIN ================= */
+/* ===== site de demonstração (/demo): entra sozinho no painel, dados voltam ao normal todo dia ===== */
+async function demoEntra(){
+  try{const r=await fetch(SU+'/functions/v1/demo-login',{method:'POST',headers:{'Content-Type':'application/json',apikey:SUPABASE_KEY.trim()},body:'{}'});
+    const j=await r.json();if(!r.ok||!j.access_token)throw new Error(j.error||'falhou');
+    const{data,error}=await sb.auth.setSession({access_token:j.access_token,refresh_token:j.refresh_token});if(error)throw error;return data.session}
+  catch(e){return null}}
+function demoFita(){if(SLUG!=='demo'||document.getElementById('demofita'))return;
+  const adm=isAdm();document.body.insertAdjacentHTML('beforeend','<div id="demofita" style="position:fixed;'+(adm?'left:10px;bottom:10px':'left:50%;bottom:10px;transform:translateX(-50%);width:max-content;max-width:min(520px,calc(100vw - 20px))')+';z-index:2400;max-width:calc(100vw - 20px);background:#111827ee;color:#fff;border:1px solid #ffffff33;border-radius:14px;padding:9px 12px;font:600 12.5px/1.35 system-ui,sans-serif;box-shadow:0 6px 24px #0007;display:flex;gap:10px;align-items:center;flex-wrap:wrap"><span>Demonstração: pode mexer à vontade. Tudo volta ao normal todo dia.</span><a href="'+(adm?'/demo':'/demo/admin')+'" style="color:#ffd24d;text-decoration:none;white-space:nowrap">'+(adm?'Ver o site':'Ver o painel do vendedor')+'</a><a href="/comercial" style="color:#7dd3fc;text-decoration:none;white-space:nowrap">Quero o meu</a></div>')}
 function login(){
   $('#app').innerHTML=`<div class="ad" style="max-width:380px"><h1>Área do vendedor</h1><input id="em" type="email" placeholder="E-mail" aria-label="E-mail" autocomplete="username"><input id="se" type="password" placeholder="Senha" aria-label="Senha" autocomplete="current-password" onkeydown="event.key==='Enter'&&doLogin()">
   <button class="btn red" onclick="doLogin()">Entrar</button><p class="foot"><a href="#">← Voltar ao site</a></p></div>`;
