@@ -1588,6 +1588,144 @@ html body .ch .chf button{padding:0 30px;border-radius:16px;font-size:16px}
   document.addEventListener('dragstart', function(e){ if(e.target && e.target.tagName === 'IMG') e.preventDefault(); }, true);
 })();
 </script>
+<style id="app-vendedor-novo">/*app-vendedor-novo: menu embaixo com rolagem, topo Olá e cartões ampliados (só painel do vendedor: celular e app instalado)*/
+.ah{display:none}.cl-i{display:none}
+.ah-pop{position:fixed;min-width:210px;background:#fff;color:#14141c;border-radius:18px;padding:8px;box-shadow:0 22px 50px -14px #000b;z-index:3000}
+.ah-pop button{display:flex;gap:10px;align-items:center;width:100%;border:0;background:none;padding:13px 14px;border-radius:12px;font:700 15px Inter,system-ui,sans-serif;color:#14141c;text-align:left;cursor:pointer}
+.ah-pop button:active{background:#f3f4f8}
+@media(max-width:400px){html body #app .shell .ah-l small,html body #app .shell.apm .ah-l small{display:none!important}html body #app .shell .ah-d,html body #app .shell.apm .ah-d{padding:7px 10px;font-size:11.5px}}
+@media(max-width:900px){
+html body #app .shell{zoom:1;display:block;background:#f1f2f7}
+html body #app .shell .sd{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));top:auto;width:auto;height:auto;padding:6px;border:0;border-radius:28px;background:linear-gradient(180deg,#1c1c24,#0d0d12);box-shadow:0 16px 36px -10px #000d,inset 0 0 0 1px #ffffff17;z-index:60;flex-direction:row;gap:0;overflow:hidden}
+html body #app .shell .sd::after{content:"";position:absolute;right:0;top:0;bottom:0;width:34px;background:linear-gradient(90deg,transparent,#0d0d12 85%);border-radius:0 28px 28px 0;pointer-events:none;transition:opacity .2s}
+html body #app .shell .sd.fim::after{opacity:0}
+html body #app .shell .sd-top,html body #app .shell .sd-bot{display:none}
+html body #app .shell .sd-nav{display:flex;flex-direction:row;gap:4px;width:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 2px;justify-content:flex-start}
+html body #app .shell .sd-nav::-webkit-scrollbar{display:none}
+html body #app .shell .sd .nv{flex:0 0 auto;width:auto;min-width:80px;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 10px 9px;border-radius:22px;font-size:12.5px;font-weight:700;letter-spacing:0;color:#c6c9d6;scroll-snap-align:center;white-space:nowrap;word-break:normal;overflow-wrap:normal;box-shadow:none;transform:none}
+html body #app .shell .sd .nv .ic{font-size:24px;width:auto;line-height:1}
+html body #app .shell .sd .nv .nlb{font-size:12.5px;line-height:1.1}
+html body #app .shell .sd .nv:hover{background:#ffffff12;color:#fff;transform:none}
+html body #app .shell .sd .nv.on{background:linear-gradient(180deg,#ff3d42,#c8102e);color:#fff;box-shadow:0 10px 20px -10px #ff2a35,inset 0 1px 0 #ffffff40}
+html body #app .shell .sd .nv .nb{position:absolute;top:3px;right:12px;margin:0;background:#ff3d42;color:#fff;border:2px solid #14141a;font-size:11px;padding:1px 6px}
+html body #app .shell .sd .nv.on .nb{background:#fff;color:#c8102e;border-color:transparent}
+html body #app .shell .sd .nv .nlk{position:absolute;top:4px;right:12px;margin:0}
+html body #app .shell .mn{padding:0 12px calc(128px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto}
+html body #app .shell .ah{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"l d b" "t t t";gap:12px 10px;align-items:center;margin:0 -12px 16px;padding:calc(16px + env(safe-area-inset-top,0px)) 16px 20px;color:#fff;background:radial-gradient(90% 120% at 100% 0%,#e11d2a66 0%,transparent 60%),radial-gradient(70% 100% at 0% 100%,#7a0d1855 0%,transparent 70%),linear-gradient(135deg,#0b0b10 0%,#17090d 60%,#4a0a12 100%);border-radius:0 0 30px 30px;box-shadow:0 16px 32px -20px #000c;position:relative;z-index:5}
+html body #app .shell .ah-l{grid-area:l;display:flex;align-items:center;gap:11px;min-width:0;background:none;border:0;padding:0;color:#fff;text-align:left;cursor:pointer;font:inherit}
+html body #app .shell .ah-l .ava{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #ffffff55;flex:none;font-size:19px;background:#ffffff1f;display:grid;place-items:center}
+html body #app .shell .ah-l>span{min-width:0}html body #app .shell .ah-l b{display:block;font-size:15.5px;font-weight:800;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body #app .shell .ah-l small{display:block;font-size:11.5px;color:#ffc9cd;margin-top:2px}
+html body #app .shell .ah-d{grid-area:d;display:inline-flex;align-items:center;gap:6px;background:#ffffff17;border:1px solid #ffffff22;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;white-space:nowrap;color:#f3f3f7}
+html body #app .shell .ah-b{grid-area:b;position:relative;width:46px;height:46px;border-radius:50%;border:1px solid #ffffff2a;background:#ffffff17;color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
+html body #app .shell .ah-b svg{width:23px;height:23px}
+html body #app .shell .ah-nb{position:absolute;top:-4px;right:-4px;min-width:21px;height:21px;padding:0 5px;border-radius:999px;background:#ff3d42;color:#fff;border:2px solid #17090d;font:800 11px/17px Inter,system-ui,sans-serif;text-align:center}
+html body #app .shell .ah-nb[hidden]{display:none}
+html body #app .shell .ah-t{grid-area:t}
+html body #app .shell .ah-t h2{margin:0;font-size:29px;line-height:1.1;font-weight:800;letter-spacing:-.8px;color:#fff}
+html body #app .shell .ah-t p{margin:5px 0 0;font-size:14.5px;color:#ffd5d8}
+html body #app .shell .ah-t i{display:block;width:44px;height:4px;border-radius:4px;background:#ff3d42;margin-top:10px}
+html body #app .shell .mt2{margin:2px 0 14px}html body #app .shell .mt2 h1{font-size:24px}
+html body #app .shell .mt2a,html body #app .shell .pn-k{display:none!important}
+body[data-ptab="vendas"] #app .shell .mt2{display:none}
+html body #app .shell .frase{display:none}
+html body #app .shell #vdk{display:none!important}
+html body #app .shell #plc:not(.fim):not(.alerta){display:none}
+html body #app .shell #vs_c{background:none;border:0;border-radius:0;padding:0;box-shadow:none}
+html body #app .shell #vs_c .pdf{background:none;border:0;box-shadow:none;padding:0;gap:9px;margin:0 0 14px}
+html body #app .shell #vs_c .pdf button{border:0;background:#fff;color:#2a2a38;border-radius:999px;padding:11px 16px;font:700 14.5px Inter,system-ui,sans-serif;box-shadow:0 1px 2px #1b2a4d14,0 8px 18px -12px #1b2a4d55}
+html body #app .shell #vs_c .pdf button em{font-style:normal;color:#e11d2a;margin-left:4px;font-weight:800}
+html body #app .shell #vs_c .pdf button.on{background:linear-gradient(180deg,#ff3d42,#c8102e);color:#fff;box-shadow:0 10px 20px -10px #ff2a35}
+html body #app .shell #vs_c .pdf button.on em{color:#fff}
+html body #app .shell #vs_c .pdf .fs2{border-radius:999px;border:0;background:#fff;padding:11px 14px;font:700 14.5px Inter,system-ui,sans-serif;box-shadow:0 1px 2px #1b2a4d14,0 8px 18px -12px #1b2a4d55}
+html body #app .shell #vdq{height:54px;border-radius:999px!important;border:0!important;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%236b7280' stroke-width='2.2' stroke-linecap='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 18px center!important;padding:0 18px 0 50px!important;font-size:16px!important;box-shadow:0 1px 2px #1b2a4d14,0 10px 24px -14px #1b2a4d66!important;margin-bottom:16px!important}
+html body #app .shell #vdl .cl{border:0;border-left:7px solid var(--fc,#94a3c0);border-radius:24px;background:#fff;box-shadow:0 1px 2px #1b2a4d12,0 16px 30px -20px #1b2a4d77;margin:0 0 14px}
+html body #app .shell #vdl .cl-h{background:none;border-bottom:0;padding:16px 44px 4px 16px;gap:14px}
+html body #app .shell #vdl .cl-av{width:56px;height:56px;font-size:23px;background:linear-gradient(145deg,#2f6bff,#1745c8);box-shadow:0 0 0 3px #fff,0 0 0 5px #2f6bff33}
+html body #app .shell #vdl .cl-m b{font-size:18.5px;line-height:1.2;flex-wrap:wrap;gap:6px 8px}
+html body #app .shell #vdl .cl-m small{font-size:14.5px;color:#4d5a75}
+html body #app .shell #vdl .cl-m small.t{font-size:13px;color:#6f7a92}
+html body #app .shell #vdl .cl-m .nw{font-size:11px}
+html body #app .shell #vdl .cl-i{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0;padding:6px 16px 0 86px;font-size:13.5px;font-weight:600;color:#33405e}
+html body #app .shell #vdl .cl-i span{display:inline-flex;align-items:center;gap:5px}
+html body #app .shell #vdl .fi-cs{padding:12px 16px 0 16px}
+html body #app .shell #vdl .fi-c{font-size:13px;padding:5px 12px}
+html body #app .shell #vdl .cl2 .cl-a{display:grid;grid-template-columns:1.25fr 1fr 1.25fr;gap:8px;margin:14px 16px 0;padding-bottom:16px}
+html body #app .shell #vdl .cl2 .cl-a .btn{width:100%;min-width:0;justify-content:center;padding:13px 6px;font-size:14px;border-radius:15px;white-space:nowrap}
+html body #app .shell #vdl .cl2-go{right:14px;top:34px;transform:none}
+html body #app .shell #vs_c .pdf{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-12px;padding-right:12px}
+html body #app .shell #vs_c .pdf::-webkit-scrollbar{display:none}
+html body #app .shell #vs_c .pdf>*{flex:none}
+html body #app .shell #vdq{font-size:15px!important}
+}
+html body #app .shell.apm{zoom:1;display:block;background:#f1f2f7}
+html body #app .shell.apm .sd{position:fixed;left:10px;right:10px;bottom:calc(10px + env(safe-area-inset-bottom,0px));top:auto;width:auto;height:auto;padding:6px;border:0;border-radius:28px;background:linear-gradient(180deg,#1c1c24,#0d0d12);box-shadow:0 16px 36px -10px #000d,inset 0 0 0 1px #ffffff17;z-index:60;flex-direction:row;gap:0;overflow:hidden}
+html body #app .shell.apm .sd::after{content:"";position:absolute;right:0;top:0;bottom:0;width:34px;background:linear-gradient(90deg,transparent,#0d0d12 85%);border-radius:0 28px 28px 0;pointer-events:none;transition:opacity .2s}
+html body #app .shell.apm .sd.fim::after{opacity:0}
+html body #app .shell.apm .sd-top,html body #app .shell.apm .sd-bot{display:none}
+html body #app .shell.apm .sd-nav{display:flex;flex-direction:row;gap:4px;width:100%;overflow-x:auto;overflow-y:hidden;scroll-snap-type:x proximity;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding:0 2px;justify-content:flex-start}
+html body #app .shell.apm .sd-nav::-webkit-scrollbar{display:none}
+html body #app .shell.apm .sd .nv{flex:0 0 auto;width:auto;min-width:80px;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:10px 10px 9px;border-radius:22px;font-size:12.5px;font-weight:700;letter-spacing:0;color:#c6c9d6;scroll-snap-align:center;white-space:nowrap;word-break:normal;overflow-wrap:normal;box-shadow:none;transform:none}
+html body #app .shell.apm .sd .nv .ic{font-size:24px;width:auto;line-height:1}
+html body #app .shell.apm .sd .nv .nlb{font-size:12.5px;line-height:1.1}
+html body #app .shell.apm .sd .nv:hover{background:#ffffff12;color:#fff;transform:none}
+html body #app .shell.apm .sd .nv.on{background:linear-gradient(180deg,#ff3d42,#c8102e);color:#fff;box-shadow:0 10px 20px -10px #ff2a35,inset 0 1px 0 #ffffff40}
+html body #app .shell.apm .sd .nv .nb{position:absolute;top:3px;right:12px;margin:0;background:#ff3d42;color:#fff;border:2px solid #14141a;font-size:11px;padding:1px 6px}
+html body #app .shell.apm .sd .nv.on .nb{background:#fff;color:#c8102e;border-color:transparent}
+html body #app .shell.apm .sd .nv .nlk{position:absolute;top:4px;right:12px;margin:0}
+html body #app .shell.apm .mn{padding:0 12px calc(128px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto}
+html body #app .shell.apm .ah{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"l d b" "t t t";gap:12px 10px;align-items:center;margin:0 -12px 16px;padding:calc(16px + env(safe-area-inset-top,0px)) 16px 20px;color:#fff;background:radial-gradient(90% 120% at 100% 0%,#e11d2a66 0%,transparent 60%),radial-gradient(70% 100% at 0% 100%,#7a0d1855 0%,transparent 70%),linear-gradient(135deg,#0b0b10 0%,#17090d 60%,#4a0a12 100%);border-radius:0 0 30px 30px;box-shadow:0 16px 32px -20px #000c;position:relative;z-index:5}
+html body #app .shell.apm .ah-l{grid-area:l;display:flex;align-items:center;gap:11px;min-width:0;background:none;border:0;padding:0;color:#fff;text-align:left;cursor:pointer;font:inherit}
+html body #app .shell.apm .ah-l .ava{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #ffffff55;flex:none;font-size:19px;background:#ffffff1f;display:grid;place-items:center}
+html body #app .shell.apm .ah-l>span{min-width:0}html body #app .shell.apm .ah-l b{display:block;font-size:15.5px;font-weight:800;line-height:1.15;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+html body #app .shell.apm .ah-l small{display:block;font-size:11.5px;color:#ffc9cd;margin-top:2px}
+html body #app .shell.apm .ah-d{grid-area:d;display:inline-flex;align-items:center;gap:6px;background:#ffffff17;border:1px solid #ffffff22;border-radius:999px;padding:8px 12px;font-size:12px;font-weight:700;white-space:nowrap;color:#f3f3f7}
+html body #app .shell.apm .ah-b{grid-area:b;position:relative;width:46px;height:46px;border-radius:50%;border:1px solid #ffffff2a;background:#ffffff17;color:#fff;display:grid;place-items:center;cursor:pointer;padding:0}
+html body #app .shell.apm .ah-b svg{width:23px;height:23px}
+html body #app .shell.apm .ah-nb{position:absolute;top:-4px;right:-4px;min-width:21px;height:21px;padding:0 5px;border-radius:999px;background:#ff3d42;color:#fff;border:2px solid #17090d;font:800 11px/17px Inter,system-ui,sans-serif;text-align:center}
+html body #app .shell.apm .ah-nb[hidden]{display:none}
+html body #app .shell.apm .ah-t{grid-area:t}
+html body #app .shell.apm .ah-t h2{margin:0;font-size:29px;line-height:1.1;font-weight:800;letter-spacing:-.8px;color:#fff}
+html body #app .shell.apm .ah-t p{margin:5px 0 0;font-size:14.5px;color:#ffd5d8}
+html body #app .shell.apm .ah-t i{display:block;width:44px;height:4px;border-radius:4px;background:#ff3d42;margin-top:10px}
+html body #app .shell.apm .mt2{margin:2px 0 14px}html body #app .shell.apm .mt2 h1{font-size:24px}
+html body #app .shell.apm .mt2a,html body #app .shell.apm .pn-k{display:none!important}
+body[data-ptab="vendas"] #app .shell.apm .mt2{display:none}
+html body #app .shell.apm .frase{display:none}
+html body #app .shell.apm #vdk{display:none!important}
+html body #app .shell.apm #plc:not(.fim):not(.alerta){display:none}
+html body #app .shell.apm #vs_c{background:none;border:0;border-radius:0;padding:0;box-shadow:none}
+html body #app .shell.apm #vs_c .pdf{background:none;border:0;box-shadow:none;padding:0;gap:9px;margin:0 0 14px}
+html body #app .shell.apm #vs_c .pdf button{border:0;background:#fff;color:#2a2a38;border-radius:999px;padding:11px 16px;font:700 14.5px Inter,system-ui,sans-serif;box-shadow:0 1px 2px #1b2a4d14,0 8px 18px -12px #1b2a4d55}
+html body #app .shell.apm #vs_c .pdf button em{font-style:normal;color:#e11d2a;margin-left:4px;font-weight:800}
+html body #app .shell.apm #vs_c .pdf button.on{background:linear-gradient(180deg,#ff3d42,#c8102e);color:#fff;box-shadow:0 10px 20px -10px #ff2a35}
+html body #app .shell.apm #vs_c .pdf button.on em{color:#fff}
+html body #app .shell.apm #vs_c .pdf .fs2{border-radius:999px;border:0;background:#fff;padding:11px 14px;font:700 14.5px Inter,system-ui,sans-serif;box-shadow:0 1px 2px #1b2a4d14,0 8px 18px -12px #1b2a4d55}
+html body #app .shell.apm #vdq{height:54px;border-radius:999px!important;border:0!important;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' fill='none' stroke='%236b7280' stroke-width='2.2' stroke-linecap='round' viewBox='0 0 24 24'%3E%3Ccircle cx='11' cy='11' r='7'/%3E%3Cpath d='m20 20-3.5-3.5'/%3E%3C/svg%3E") no-repeat 18px center!important;padding:0 18px 0 50px!important;font-size:16px!important;box-shadow:0 1px 2px #1b2a4d14,0 10px 24px -14px #1b2a4d66!important;margin-bottom:16px!important}
+html body #app .shell.apm #vdl .cl{border:0;border-left:7px solid var(--fc,#94a3c0);border-radius:24px;background:#fff;box-shadow:0 1px 2px #1b2a4d12,0 16px 30px -20px #1b2a4d77;margin:0 0 14px}
+html body #app .shell.apm #vdl .cl-h{background:none;border-bottom:0;padding:16px 44px 4px 16px;gap:14px}
+html body #app .shell.apm #vdl .cl-av{width:56px;height:56px;font-size:23px;background:linear-gradient(145deg,#2f6bff,#1745c8);box-shadow:0 0 0 3px #fff,0 0 0 5px #2f6bff33}
+html body #app .shell.apm #vdl .cl-m b{font-size:18.5px;line-height:1.2;flex-wrap:wrap;gap:6px 8px}
+html body #app .shell.apm #vdl .cl-m small{font-size:14.5px;color:#4d5a75}
+html body #app .shell.apm #vdl .cl-m small.t{font-size:13px;color:#6f7a92}
+html body #app .shell.apm #vdl .cl-m .nw{font-size:11px}
+html body #app .shell.apm #vdl .cl-i{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0;padding:6px 16px 0 86px;font-size:13.5px;font-weight:600;color:#33405e}
+html body #app .shell.apm #vdl .cl-i span{display:inline-flex;align-items:center;gap:5px}
+html body #app .shell.apm #vdl .fi-cs{padding:12px 16px 0 16px}
+html body #app .shell.apm #vdl .fi-c{font-size:13px;padding:5px 12px}
+html body #app .shell.apm #vdl .cl2 .cl-a{display:grid;grid-template-columns:1.25fr 1fr 1.25fr;gap:8px;margin:14px 16px 0;padding-bottom:16px}
+html body #app .shell.apm #vdl .cl2 .cl-a .btn{width:100%;min-width:0;justify-content:center;padding:13px 6px;font-size:14px;border-radius:15px;white-space:nowrap}
+html body #app .shell.apm #vdl .cl2-go{right:14px;top:34px;transform:none}
+body:has(.shell.apm) #demofita{bottom:106px!important}
+@media(max-width:900px){body:has(#app .shell) #demofita{bottom:106px!important}}
+html body #app .shell.apm #vs_c .pdf{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-12px;padding-right:12px}
+html body #app .shell.apm #vs_c .pdf::-webkit-scrollbar{display:none}
+html body #app .shell.apm #vs_c .pdf>*{flex:none}
+html body #app .shell.apm #vdq{font-size:15px!important}
+body:has(.shell.apm) .ap-wab,body:has(.ah-b) .ap-wab{bottom:calc(104px + env(safe-area-inset-bottom,0px))}
+body:has(.shell.apm) #toast{bottom:104px}
+@media(prefers-reduced-motion:reduce){.sd-nav{scroll-behavior:auto}}
+</style>
 </head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -3328,9 +3466,10 @@ function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,150
   PNS='#pn';
   const nav=navLista().map(a=>{const lk=a[0]==='personalizar'&&!ehPrem();return `<button class="nv ${T===a[0]?'on':''}${lk?' lockd':''}" onclick="${lk?'persLock()':`adm('${a[0]}')`}" ${lk?'aria-label="Personalizar (bloqueado: só Premium)"':''}><span class="ic">${a[1]}</span><span class="nlb">${a[2]}</span>${lk?'<span class="nlk" aria-hidden="true">🔒</span>':''}${a[0]==='personalizar'&&!lk&&AC&&AC.msgs_novas>0&&T!=='personalizar'?`<span class="nb" id="pe_nb">${AC.msgs_novas}</span>`:''}${a[0]==='vendas'?'<span class="nb" id="vdbg" hidden></span>':''}${a[0]==='avisos'?'<span class="nb" id="avbg" hidden></span>':''}</button>`}).join('');
   const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',cota:'Cota da Vez',calc:'Calculadora',acessos:'Acessos ao site',sites:'Seus sites e links',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
+  const sl0=(document.querySelector('.shell .sd-nav')||{}).scrollLeft||0;
   $('#app').innerHTML=`<div class="shell${appModo()?' apm':''}"><aside class="sd"><div class="sd-top">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}</b><small>Painel do vendedor</small></div></div><nav class="sd-nav">${nav}</nav><div class="sd-bot"><a class="lk" href="#">↗ Ver meu site</a><button class="lk" onclick="out()">Sair</button><small class="ver">Versão 01/11/2026</small></div></aside>
-  <main class="mn"><div class="frase" id="frase">${fraseH(V&&V.frase_n,0,'fr-t')}</div><div id="plc"></div><header class="mt2"><h1>${tt}</h1><span class="mt2a"><a class="btn sm" href="#" style="text-decoration:none">Ver site</a><button class="btn sm" onclick="out()">Sair</button></span></header><span id="nb" hidden></span><div id="pn"></div></main></div>`;
-  ({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,cota:pCota,calc:pCalc,acessos:pAcessos,sites:pSites,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
+  <main class="mn">${ahH()}<div class="frase" id="frase">${fraseH(V&&V.frase_n,0,'fr-t')}</div><div id="plc"></div><header class="mt2"><h1>${tt}</h1><span class="mt2a"><a class="btn sm" href="#" style="text-decoration:none">Ver site</a><button class="btn sm" onclick="out()">Sair</button></span></header><span id="nb" hidden></span><div id="pn"></div></main></div>`;
+  navAjusta(sl0);({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,cota:pCota,calc:pCalc,acessos:pAcessos,sites:pSites,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
 }
 
 /* ---- prazo do plano (comprado em..., suspensão automática em...) com cronômetro ---- */
@@ -3375,9 +3514,16 @@ const fiTel=t=>{const d=String(t||'').replace(/\D/g,'').replace(/^55(?=\d{10,11}
 function fiChips(x){const s=x._s,k=x.status||'novo',stl=VST[s]||{},pg=vdPagTxt(x),f=faseDe(x),ph=PB[f-1],rasc=s==='rascunho'||(s==='chat'&&!x.completo);
   const st=rasc?(x.concluido==='sim'?'Terminou o chat':'Preenchendo'):(stl[k]||'');
   return`<span class="fi-c" style="--cc:${ph.cor}">${f}. ${esc(ph.nome)}</span>${st?`<span class="fi-c" style="--cc:${rasc?'#d97706':(FICOR[k]||'#64748b')}">${esc(st)}</span>`:''}${pg?`<span class="fi-c" style="--cc:#475569">${esc(pg)}</span>`:''}`}
+/* linha extra do cartão (só aparece no celular/app): telefone, cidade, e-mail, entrada e parcela */
+const vdFone=t=>{let d=String(t||'').replace(/\D/g,'').replace(/^55(?=\d{10,11}$)/,'');return d.length===11?d.replace(/(\d{2})(\d{5})(\d{4})/,'($1) $2-$3'):d.length===10?d.replace(/(\d{2})(\d{4})(\d{4})/,'($1) $2-$3'):String(t||'').trim()};
+const vdMoeda=v=>{const t=String(v==null?'':v).trim();if(!t)return'';if(/^[\d.,\s]+$/.test(t)){const n=vNum(t);if(isFinite(n)&&n>0)return brl(n)}return t};
+function vdInfo(x){const L=[],tl=vdFone(x.telefone),ci=String(x.cidade||'').trim(),uf=String(x.estado||'').trim(),em=String(x.email||'').trim(),en=vdMoeda(x.entrada),pa=vdMoeda(x.parcela);
+  if(tl)L.push('📱 '+esc(tl));if(ci)L.push('📍 '+esc(ci+(uf?'/'+uf:'')));if(em)L.push('✉️ '+esc(em));if(en)L.push('💰 Entrada '+esc(en));if(pa)L.push('🧾 Parcela '+esc(pa));
+  return L.length?`<div class="cl-i">${L.map(t=>`<span>${t}</span>`).join('')}</div>`:''}
 function vdCard(x){
   const s=x._s,nm=x.nome_completo||x.nome||'Cliente',w=wlk(x.telefone),f=faseDe(x),ph=PB[f-1],novo=vdNovo(x),rasc=s==='rascunho'||(s==='chat'&&!x.completo),tl=fiTel(x.telefone);
   return `<article class="cl cl2 ${novo?'is-new':''}" style="--fc:${ph.cor}"><div class="cl-h" role="button" tabindex="0" aria-label="Abrir ficha de ${esc(nm)}" onclick="fiAbre('${s}','${x.id}')" onkeydown="if(event.key==='Enter')fiAbre('${s}','${x.id}')"><div class="cl-av">${esc(nm.trim().charAt(0).toUpperCase())}</div><div class="cl-m"><b>${esc(nm)}${novo?'<span class="nw">novo</span>':''}</b><small>${esc(x.moto_nome||'Moto não informada')}${x.cor?' · '+esc(x.cor):''}</small><small class="t">${esc((x._src||[s]).map(k=>VSRC[k]).join(' + '))} · ${ago(x.created_at)}${rasc?(x.concluido==='sim'?' · <u class="okc">terminou o chat</u>':' · <u>não concluiu o envio</u>'):''}</small></div><span class="cl2-go" aria-hidden="true">›</span></div>
+  ${vdInfo(x)}
   <div class="fi-cs" onclick="fiAbre('${s}','${x.id}')">${fiChips(x)}</div>
   <div class="cl-a">${w?`<a class="btn wa sm" target="_blank" rel="noopener" href="${w}">💬 WhatsApp</a>`:''}${tl?`<a class="btn sm" href="${tl}">📞 Ligar</a>`:''}<button class="btn red sm" onclick="vdMsg('${s}','${x.id}')">✉ Mensagem</button></div></article>`}
 /* ===== FICHA DO CLIENTE: abre ao tocar no cartão, com os dados em grupos e toque para copiar ===== */
@@ -4187,7 +4333,22 @@ function pSites(){const L=stLinks();
     <div class="st-g">${L.eu.map(x=>stCard(x,false)).join('')}</div></section>`}
 async function pAcessos(){VISTAB='visitas';VISDATA=null;$('#pn').innerHTML='<div id="vs_v"></div>';visCarrega()}
 
-const NAV_APP=[['vendas','👥','Clientes'],['acessos','📈','Acessos'],['sites','🔗','Sites'],['cota','🎯','Cota da Vez'],['calc','🧮','Calculadora'],['avisos','🔔','Notificações'],['personalizar','🎨','Personalizar'],['conta','⚙️','Configuração']];
+const NAV_APP=[['vendas','👥','Clientes'],['calc','🧮','Calculadora'],['avisos','🔔','Notificações'],['conta','⚙️','Configurações'],['sites','🔗','Sites'],['acessos','📈','Acessos'],['cota','🎯','Cota da Vez'],['personalizar','🎨','Personalizar']];
+/* ===== topo "Olá" do app/celular, data e hora, sino de avisos e menu da conta ===== */
+function ahData(){const d=new Date(),w=d.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.','');return w.charAt(0).toUpperCase()+w.slice(1)+', '+d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' · '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
+function ahH(){const pn=esc(((V&&V.nome)||'').trim().split(/\s+/)[0]||'vendedor'),lj=(()=>{try{return fLoja()}catch(e){return''}})();
+  return`<div class="ah" id="ah"><button type="button" class="ah-l" onclick="ahMenu()" aria-label="Menu da conta">${av(V.foto_url,'s')}<span><b>${esc(lj||V.nome||'Meu painel')}</b><small>Toque para o menu</small></span></button><span class="ah-d" id="ah_d">${ahData()}</span>${appModo()?`<button type="button" class="ah-b" onclick="adm('avisos')" aria-label="Notificações"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a6 6 0 0 0-6 6v3.4L4.3 15a1 1 0 0 0 .9 1.4h13.6a1 1 0 0 0 .9-1.4L18 11.4V8a6 6 0 0 0-6-6Zm0 20a3 3 0 0 0 2.8-2H9.2A3 3 0 0 0 12 22Z"/></svg><span class="ah-nb" hidden></span></button>`:''}<div class="ah-t"><h2>Olá, ${pn}!</h2><p>Aqui está o seu painel de vendas.</p><i></i></div></div>`}
+function ahMenu(){let p=document.getElementById('ah_pop');if(p){p.remove();return}
+  const h=document.getElementById('ah');if(!h)return;const r=h.querySelector('.ah-l').getBoundingClientRect();
+  p=document.createElement('div');p.id='ah_pop';p.className='ah-pop on';p.style.cssText='left:'+Math.max(10,r.left)+'px;top:'+(r.bottom+8)+'px';
+  p.innerHTML='<button type="button" onclick="ahSite()">↗ Ver meu site</button><button type="button" onclick="out()">⎋ Sair da conta</button>';document.body.appendChild(p)}
+function ahSite(){const a=document.querySelector('.sd-bot a.lk');ahMenu();if(a)a.click()}
+document.addEventListener('click',e=>{const p=document.getElementById('ah_pop');if(p&&!e.target.closest('.ah-l')&&!e.target.closest('.ah-pop'))p.remove()});
+setInterval(()=>{const d=document.getElementById('ah_d');if(d)d.textContent=ahData()},20000);
+/* a barra de baixo rola para o lado: lembra a posição, centraliza a aba ativa e mostra a sombra só enquanto há mais abas */
+function navAjusta(sl){const sd=document.querySelector('.shell .sd'),n=sd&&sd.querySelector('.sd-nav');if(!n)return;n.scrollLeft=sl||0;
+  const on=n.querySelector('.nv.on');if(on){const a=on.offsetLeft-(n.clientWidth-on.offsetWidth)/2;if(Math.abs(n.scrollLeft-a)>2){try{n.scrollTo({left:Math.max(0,a),behavior:sl?'smooth':'auto'})}catch(e){n.scrollLeft=Math.max(0,a)}}}
+  const f=()=>sd.classList.toggle('fim',n.scrollLeft+n.clientWidth>=n.scrollWidth-6);n.addEventListener('scroll',f,{passive:true});f();setTimeout(f,350)}
 const navLista=()=>appModo()?NAV_APP:NAV;
 const AVIC={sorteio:['🎰','#7c3aed','Sorteio'],rascunho:['✍️','#2f6bff','Começou a preencher'],preguicoso:['😴','#f59e0b','Parou de preencher'],chat:['✅','#16a34a','Finalizou'],ficha:['✅','#16a34a','Finalizou'],contrato:['✅','#16a34a','Finalizou'],contato:['💬','#16a34a','Contato'],chat_inicio:['💬','#2f6bff','Começou o chat'],teste:['🔔','#7c3aed','Teste']};
 const avIc=t=>AVIC[t]||['🔔','#64748b','Aviso'];
@@ -4212,7 +4373,7 @@ function avMostra(n){if(!n||n.id==null||AVV.has(+n.id))return;AVV.add(+n.id);
   if(n.tipo==='teste'&&typeof APP_TESTE!=='undefined'&&APP_TESTE){APP_TESTE.fase='chegou';try{appRe()}catch(e){}}
   if(T==='avisos'&&document.getElementById('av_l')){AVLST.unshift(n);avLista()}
   avConta()}
-async function avConta(){const b=document.getElementById('avbg');if(!b||!sb)return;try{const{count}=await sb.from('app_notificacoes').select('id',{count:'exact',head:true}).eq('lida',false);b.textContent=count>99?'99+':count;b.hidden=!count}catch(e){}}
+async function avConta(){const b=document.getElementById('avbg');if(!b||!sb)return;try{const{count}=await sb.from('app_notificacoes').select('id',{count:'exact',head:true}).eq('lida',false);b.textContent=count>99?'99+':count;b.hidden=!count;document.querySelectorAll('.ah-nb').forEach(x=>{x.textContent=count>99?'99+':count;x.hidden=!count})}catch(e){}}
 function avLive(){if(AVCH||!sb||!V||!V.id)return;try{AVCH=sb.channel('avisos-'+V.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'app_notificacoes',filter:'vendedor_id=eq.'+V.id},e=>{const n=e.new;if(n&&Date.now()-Date.parse(n.criado||Date.now())<120000)avMostra(n)}).subscribe()}catch(e){}}
 /* ----- aba Notificações ----- */
 
