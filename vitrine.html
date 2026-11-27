@@ -1610,7 +1610,7 @@ html body #app .shell .sd .nv.on{background:linear-gradient(180deg,#ff3d42,#c810
 html body #app .shell .sd .nv .nb{position:absolute;top:3px;right:12px;margin:0;background:#ff3d42;color:#fff;border:2px solid #14141a;font-size:11px;padding:1px 6px}
 html body #app .shell .sd .nv.on .nb{background:#fff;color:#c8102e;border-color:transparent}
 html body #app .shell .sd .nv .nlk{position:absolute;top:4px;right:12px;margin:0}
-html body #app .shell .mn{padding:0 12px calc(128px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto}
+html body #app .shell .mn{padding:0 12px calc(128px + env(safe-area-inset-bottom,0px));max-width:none;margin:0 auto}
 html body #app .shell .ah{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"l d b" "t t t";gap:12px 10px;align-items:center;margin:0 -12px 16px;padding:calc(16px + env(safe-area-inset-top,0px)) 16px 20px;color:#fff;background:radial-gradient(90% 120% at 100% 0%,#e11d2a66 0%,transparent 60%),radial-gradient(70% 100% at 0% 100%,#7a0d1855 0%,transparent 70%),linear-gradient(135deg,#0b0b10 0%,#17090d 60%,#4a0a12 100%);border-radius:0 0 30px 30px;box-shadow:0 16px 32px -20px #000c;position:relative;z-index:5}
 html body #app .shell .ah-l{grid-area:l;display:flex;align-items:center;gap:11px;min-width:0;background:none;border:0;padding:0;color:#fff;text-align:left;cursor:pointer;font:inherit}
 html body #app .shell .ah-l .ava{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #ffffff55;flex:none;font-size:19px;background:#ffffff1f;display:grid;place-items:center}
@@ -1673,7 +1673,7 @@ html body #app .shell.apm .sd .nv.on{background:linear-gradient(180deg,#ff3d42,#
 html body #app .shell.apm .sd .nv .nb{position:absolute;top:3px;right:12px;margin:0;background:#ff3d42;color:#fff;border:2px solid #14141a;font-size:11px;padding:1px 6px}
 html body #app .shell.apm .sd .nv.on .nb{background:#fff;color:#c8102e;border-color:transparent}
 html body #app .shell.apm .sd .nv .nlk{position:absolute;top:4px;right:12px;margin:0}
-html body #app .shell.apm .mn{padding:0 12px calc(128px + env(safe-area-inset-bottom,0px));max-width:760px;margin:0 auto}
+html body #app .shell.apm .mn{padding:0 12px calc(128px + env(safe-area-inset-bottom,0px));max-width:1000px;margin:0 auto}
 html body #app .shell.apm .ah{display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"l d b" "t t t";gap:12px 10px;align-items:center;margin:0 -12px 16px;padding:calc(16px + env(safe-area-inset-top,0px)) 16px 20px;color:#fff;background:radial-gradient(90% 120% at 100% 0%,#e11d2a66 0%,transparent 60%),radial-gradient(70% 100% at 0% 100%,#7a0d1855 0%,transparent 70%),linear-gradient(135deg,#0b0b10 0%,#17090d 60%,#4a0a12 100%);border-radius:0 0 30px 30px;box-shadow:0 16px 32px -20px #000c;position:relative;z-index:5}
 html body #app .shell.apm .ah-l{grid-area:l;display:flex;align-items:center;gap:11px;min-width:0;background:none;border:0;padding:0;color:#fff;text-align:left;cursor:pointer;font:inherit}
 html body #app .shell.apm .ah-l .ava{width:46px;height:46px;border-radius:50%;object-fit:cover;border:2px solid #ffffff55;flex:none;font-size:19px;background:#ffffff1f;display:grid;place-items:center}
@@ -1716,6 +1716,9 @@ html body #app .shell.apm #vdl .fi-c{font-size:13px;padding:5px 12px}
 html body #app .shell.apm #vdl .cl2 .cl-a{display:grid;grid-template-columns:1.25fr 1fr 1.25fr;gap:8px;margin:14px 16px 0;padding-bottom:16px}
 html body #app .shell.apm #vdl .cl2 .cl-a .btn{width:100%;min-width:0;justify-content:center;padding:13px 6px;font-size:14px;border-radius:15px;white-space:nowrap}
 html body #app .shell.apm #vdl .cl2-go{right:14px;top:34px;transform:none}
+html.az body #app .shell.apm{zoom:var(--az,1)}
+html.az body #app .shell.apm .mn{max-width:none}
+html.az body #app .shell.apm .sd{left:8px;right:8px}
 body:has(.shell.apm) #demofita{bottom:106px!important}
 @media(max-width:900px){body:has(#app .shell) #demofita{bottom:106px!important}}
 html body #app .shell.apm #vs_c .pdf{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin-right:-12px;padding-right:12px}
@@ -3469,7 +3472,7 @@ function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,150
   const sl0=(document.querySelector('.shell .sd-nav')||{}).scrollLeft||0;
   $('#app').innerHTML=`<div class="shell${appModo()?' apm':''}"><aside class="sd"><div class="sd-top">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}</b><small>Painel do vendedor</small></div></div><nav class="sd-nav">${nav}</nav><div class="sd-bot"><a class="lk" href="#">↗ Ver meu site</a><button class="lk" onclick="out()">Sair</button><small class="ver">Versão 01/11/2026</small></div></aside>
   <main class="mn">${ahH()}<div class="frase" id="frase">${fraseH(V&&V.frase_n,0,'fr-t')}</div><div id="plc"></div><header class="mt2"><h1>${tt}</h1><span class="mt2a"><a class="btn sm" href="#" style="text-decoration:none">Ver site</a><button class="btn sm" onclick="out()">Sair</button></span></header><span id="nb" hidden></span><div id="pn"></div></main></div>`;
-  navAjusta(sl0);({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,cota:pCota,calc:pCalc,acessos:pAcessos,sites:pSites,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
+  appAjustaTela();navAjusta(sl0);({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,cota:pCota,calc:pCalc,acessos:pAcessos,sites:pSites,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
 }
 
 /* ---- prazo do plano (comprado em..., suspensão automática em...) com cronômetro ---- */
@@ -4335,6 +4338,12 @@ async function pAcessos(){VISTAB='visitas';VISDATA=null;$('#pn').innerHTML='<div
 
 const NAV_APP=[['vendas','👥','Clientes'],['calc','🧮','Calculadora'],['avisos','🔔','Notificações'],['conta','⚙️','Configurações'],['sites','🔗','Sites'],['acessos','📈','Acessos'],['cota','🎯','Cota da Vez'],['personalizar','🎨','Personalizar']];
 /* ===== topo "Olá" do app/celular, data e hora, sino de avisos e menu da conta ===== */
+/* Chrome do celular no modo "Site para computador" mostra a página com ~980 px de largura numa tela de ~400 px: tudo fica pequeno e centralizado.
+   Aqui o app mede isso e amplia a tela inteira para ocupar a largura do aparelho. */
+function appAjustaTela(){try{const sw=Math.min(screen.width||0,screen.height||0),iw=document.documentElement.clientWidth||innerWidth,ln=document.documentElement;
+  const z=(navigator.maxTouchPoints||0)>0&&sw>0&&sw<700&&iw>sw*1.25?Math.min(3,iw/sw):1;
+  ln.style.setProperty('--az',z.toFixed(3));ln.classList.toggle('az',z>1.01)}catch(e){}}
+addEventListener('resize',()=>{clearTimeout(window.__azT);window.__azT=setTimeout(appAjustaTela,250)});
 function ahData(){const d=new Date(),w=d.toLocaleDateString('pt-BR',{weekday:'short'}).replace('.','');return w.charAt(0).toUpperCase()+w.slice(1)+', '+d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+' · '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}
 function ahH(){const pn=esc(((V&&V.nome)||'').trim().split(/\s+/)[0]||'vendedor'),lj=(()=>{try{return fLoja()}catch(e){return''}})();
   return`<div class="ah" id="ah"><button type="button" class="ah-l" onclick="ahMenu()" aria-label="Menu da conta">${av(V.foto_url,'s')}<span><b>${esc(lj||V.nome||'Meu painel')}</b><small>Toque para o menu</small></span></button><span class="ah-d" id="ah_d">${ahData()}</span>${appModo()?`<button type="button" class="ah-b" onclick="adm('avisos')" aria-label="Notificações"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2a6 6 0 0 0-6 6v3.4L4.3 15a1 1 0 0 0 .9 1.4h13.6a1 1 0 0 0 .9-1.4L18 11.4V8a6 6 0 0 0-6-6Zm0 20a3 3 0 0 0 2.8-2H9.2A3 3 0 0 0 12 22Z"/></svg><span class="ah-nb" hidden></span></button>`:''}<div class="ah-t"><h2>Olá, ${pn}!</h2><p>Aqui está o seu painel de vendas.</p><i></i></div></div>`}
