@@ -2282,8 +2282,8 @@ function bfCor(i){const m=A.find(x=>x.id===BFC.id);if(!m)return;const c=(m.cores
   document.querySelectorAll('#bfm .cor').forEach((b,k)=>{const on=c[k]===BFC.cor;b.classList.toggle('on',on);b.setAttribute('aria-pressed',on)});
   if(BFC.cor){const k=corFoto(m,n);if(k>=0)bfFoto(m,k)}}
 function bfInteresse(){const m=A.find(x=>x.id===BFC.id),o=ofM(m);if(!m||!o)return;const t=bfMsg(m,o);
-  try{segSend('leads',{tipo:'contato',moto_id:m.id,moto_nome:m.nome,detalhes:'Interesse na promoção Black Friday (à vista, '+ofB(o.por).replace(/ /g,' ')+')'+(BFC.cor?' · cor: '+BFC.cor:'')})}catch(e){}
-  const u=wa(t);if(u==='#chat'){bfFecha();try{chatOpen()}catch(e){}return}waOpen(u);toast('Abrindo o WhatsApp do vendedor…')}
+  idnPede(c=>{try{segSend('leads',{tipo:'contato',moto_id:m.id,moto_nome:m.nome,nome:c.nome,telefone:c.telefone,detalhes:'Interesse na promoção Black Friday (à vista, '+ofB(o.por).replace(/ /g,' ')+')'+(BFC.cor?' · cor: '+BFC.cor:'')})}catch(e){}
+    const u=wa(t);if(u==='#chat'){bfFecha();try{chatOpen()}catch(e){}return}waOpen(u);toast('Abrindo o WhatsApp do vendedor…')})}
 function heroOfertas(){const ofs=OFERTAS();if(!ofs.length)return[];const out=[];for(const o of ofs){const m=A.find(x=>!soCon(x)&&(x.fotos||[])[0]&&((x.catalogo_id&&x.catalogo_id===o.catalogo_id)||OFN(x.nome)===OFN(o.nome)));if(m&&!out.includes(m))out.push(m)}return out.slice(0,10)}
 function statP2(mn){const ofp=heroOfertas();if(ofp.length){const mx=Math.max(...ofp.map(m=>(ofM(m)||{desc:0}).desc));if(mx>0)return `<div class="st-of"><b>${ofB(mx)}</b><span>de desconto nas ofertas</span></div>`}return mn?`<div><b data-n="${mn}" data-m="1">${brl(mn)}</b><span>parcela de consórcio a partir de</span></div>`:''}
 function heroFeat(){
@@ -2532,7 +2532,7 @@ function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visT
     ${AVISO_CON()}
     <div class="stk tbbar"><div class="tbs" role="status" aria-live="polite"><small>Parcela escolhida</small><b id="ps_v">-</b></div><button class="btn red" onclick="chatOpen(null,'${m.id}','consorcio')">Simular e preencher meus dados</button></div><button class="btn or" onclick="conWa(1)">QUERO UM REPASSE DE CONSÓRCIO</button><button class="btn red2" onclick="shareM()">📤 Compartilhar</button>`}
   if(v==='fin')b=`<div class="fin"><div><h3>Financiamento</h3><p class="mu">Preencha o formulário abaixo para que o vendedor possa trazer pra você as melhores cotações do mercado.</p></div>${f[0]?`<img ${IMGA(f[0],'det')} alt="${esc(m.nome)}" decoding="async">`:''}</div>
-    ${fld('f_nom','Nome e sobrenome','autocomplete="name"')}${fld('f_tel','Telefone com DDD (WhatsApp)','inputmode="tel" autocomplete="tel-national" placeholder="(00) 00000-0000"','tel')}${fld('f_ema','E-mail','inputmode="email" autocomplete="email" placeholder="nome@email.com"')}${fld('f_cpf','CPF','inputmode="numeric" placeholder="000.000.000-00"','cpf')}${fld('f_nas','Data de nascimento','inputmode="numeric" autocomplete="bday" placeholder="DD/MM/AAAA"','dt')}${fld('f_ent','Valor de entrada (opcional)','inputmode="numeric" placeholder="Deixe em branco se não tiver"','rs')}
+    ${fld('f_nom','Nome e sobrenome','autocomplete="name" value="'+esc(idnGet().nome||'')+'"')}${fld('f_tel','Telefone com DDD (WhatsApp)','inputmode="tel" autocomplete="tel-national" placeholder="(00) 00000-0000" value="'+esc(idnGet().telefone||'')+'"','tel')}${fld('f_ema','E-mail','inputmode="email" autocomplete="email" placeholder="nome@email.com"')}${fld('f_cpf','CPF','inputmode="numeric" placeholder="000.000.000-00"','cpf')}${fld('f_nas','Data de nascimento','inputmode="numeric" autocomplete="bday" placeholder="DD/MM/AAAA"','dt')}${fld('f_ent','Valor de entrada (opcional)','inputmode="numeric" placeholder="Deixe em branco se não tiver"','rs')}
     <label class="l" for="f_hab">Possui habilitação?</label><select id="f_hab" onchange="if(this.value)finSend()"><option value="" selected disabled>Selecione: Sim ou Não</option><option>Sim</option><option>Não</option></select>
     <p class="mu" style="font-size:12px;border-top:1px solid var(--bd);padding-top:12px">Ao preencher ou enviar, você concorda com nossa <a href="#" onclick="priv();return false">Política de Privacidade</a>. O que você digita já fica disponível ao vendedor, para ele poder te ajudar, mesmo que você não conclua o envio.</p>
     <button class="btn wa" onclick="finSend()">Enviar para o vendedor</button>`;
@@ -2545,10 +2545,28 @@ function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visT
 const nav=d=>{const j=(cur+d+L.length)%L.length;openM(j,soCon(L[j])?'con':'det')};
 const closeM=()=>history.state&&history.state.m?history.back():$('#modal').style.display='none';
 async function lead(tipo,x={}){const m=L[cur],r={tipo,moto_id:m.id,moto_nome:m.nome,...x};try{return await segSend('leads',r)}catch(e){return false}}
+/* identificação: nome + celular antes de abrir o WhatsApp (guarda neste aparelho para não pedir de novo) */
+function idnGet(){try{return JSON.parse(localStorage.getItem('idn_v1')||'{}')||{}}catch(e){return{}}}
+function idnOk(o){if(!o)return false;const n=String(o.nome||'').trim(),d=String(o.telefone||'').replace(/\D/g,'');return n.length>=2&&/[a-zà-ú]/i.test(n)&&!/\d/.test(n)&&d.length>=10&&d.length<=11&&!(d.length===11&&d[2]!=='9')}
+function idnFecha(){const el=document.getElementById('idnm');if(el)el.remove();document.removeEventListener('keydown',idnEsc)}
+function idnEsc(e){if(e.key==='Escape')idnFecha()}
+function idnPede(cb){const o=idnGet();if(idnOk(o)){cb(o);return}
+  idnFecha();window._idnCb=cb;
+  if(!document.getElementById('idncss'))document.head.insertAdjacentHTML('beforeend','<style id="idncss">#idnm{position:fixed;inset:0;z-index:2600;background:#0a0a0ec7;display:flex;align-items:center;justify-content:center;padding:14px}#idnm .idc{background:#fff;color:#1a1a1f;border-radius:18px;max-width:400px;width:100%;padding:22px;box-shadow:0 20px 60px #0006;font-family:inherit}#idnm h3{margin:0 0 6px;font-size:19px}#idnm p{margin:0 0 14px;font-size:14px;color:#555;line-height:1.4}#idnm label{display:block;font-size:13px;font-weight:600;margin:10px 0 4px}#idnm input{width:100%;box-sizing:border-box;font-size:16px;padding:12px;border:1px solid #cfcfd6;border-radius:10px;background:#fff;color:#1a1a1f}#idnm input[aria-invalid=true]{border-color:#d33}#idnm .fe{display:block;color:#c22;font-size:12px;min-height:16px;margin-top:3px}#idnm .idb{display:flex;gap:10px;margin-top:14px}#idnm button{flex:1;font-size:15px;font-weight:700;padding:13px;border-radius:12px;border:0;cursor:pointer}#idnm .ok{background:#25d366;color:#06280f}#idnm .no{flex:0 0 auto;background:#eee;color:#333;font-weight:600}</style>');
+  const el=document.createElement('div');el.id='idnm';el.setAttribute('role','dialog');el.setAttribute('aria-modal','true');el.setAttribute('aria-label','Seu nome e celular');
+  el.innerHTML='<div class="idc"><h3>Para o vendedor te atender</h3><p>Diga seu nome e seu celular com DDD. Em seguida abrimos o WhatsApp.</p><label for="idn_n">Seu nome</label><input id="idn_n" autocomplete="name" placeholder="Nome e sobrenome" value="'+esc(o.nome||'')+'"><small class="fe" id="idn_n_e" role="alert"></small><label for="idn_t">Celular com DDD (WhatsApp)</label><input id="idn_t" inputmode="tel" autocomplete="tel-national" placeholder="(00) 00000-0000" oninput="msk(this,\'tel\')" value="'+esc(o.telefone||'')+'"><small class="fe" id="idn_t_e" role="alert"></small><div class="idb"><button type="button" class="no" onclick="idnFecha()">Cancelar</button><button type="button" class="ok" onclick="idnOkClick()">Continuar no WhatsApp</button></div></div>';
+  document.body.appendChild(el);document.addEventListener('keydown',idnEsc);setTimeout(()=>{const i=document.getElementById(o.nome?'idn_t':'idn_n');if(i)i.focus()},50)}
+function idnOkClick(){const n=document.getElementById('idn_n'),t=document.getElementById('idn_t'),o={nome:n.value.trim().replace(/\s+/g,' '),telefone:t.value.trim()};
+  const en=document.getElementById('idn_n_e'),et=document.getElementById('idn_t_e');let bad=null;
+  const nm=o.nome.length<2||/\d/.test(o.nome)||!/[a-zà-ú]/i.test(o.nome);n.setAttribute('aria-invalid',nm);en.textContent=nm?'Digite seu nome.':'';if(nm)bad=n;
+  const d=o.telefone.replace(/\D/g,''),tm=d.length<10||d.length>11||(d.length===11&&d[2]!=='9');t.setAttribute('aria-invalid',tm);et.textContent=tm?'Digite o celular com DDD, por exemplo (00) 90000-0000.':'';if(tm&&!bad)bad=t;
+  if(bad){bad.focus();return}
+  try{localStorage.setItem('idn_v1',JSON.stringify(o))}catch(e){}
+  const cb=window._idnCb;window._idnCb=null;idnFecha();if(cb)cb(o)}
 function conWa(rep){
   const m=L[cur],r=document.querySelector('input[name=pl]:checked'),p=r&&{parcelas:+r.dataset.p,valor:+r.dataset.v,emp:r.dataset.e||''};
   const t=rep?`Olá! Quero um repasse de consórcio da ${hn(m)}.`:p?`Olá! Tenho interesse na ${hn(m)} no plano de ${p.parcelas} parcelas de ${brl(p.valor)}${p.emp?' ('+p.emp.toLowerCase()+')':''}. Gostaria de fazer uma simulação.`:`Olá! Tenho interesse no consórcio da ${hn(m)}. Gostaria de fazer uma simulação.`;
-  lead('consorcio',{detalhes:t});waOpen(wa(t));
+  idnPede(c=>{lead('consorcio',{detalhes:t,nome:c.nome,telefone:c.telefone});waOpen(wa(t))});
 }
 let fsb=0;
 function vitRasc(e){const id=e.target&&e.target.id||'';if(!/^f_(nom|tel|ema|cpf|nas|ent|hab)$/.test(id))return;
@@ -2561,6 +2579,7 @@ function finSend(){
   if(!$('#f_hab').value){$('#f_hab').focus();return toast('Responda se possui habilitação para enviar')}
   const g=i=>$('#'+i).value.trim(),m=L[cur];
   const d={entrada:g('f_ent'),nascimento:g('f_nas'),cpf:g('f_cpf'),nome:g('f_nom'),telefone:g('f_tel'),email:g('f_ema').toLowerCase(),habilitacao:$('#f_hab').value};
+  try{localStorage.setItem('idn_v1',JSON.stringify({nome:d.nome,telefone:d.telefone}))}catch(e){}
   fsb=1;setTimeout(()=>fsb=0,6000);const salvo=lead('financiamento',d).then(ok=>{rascCompleto('financiamento','fin-'+m.id);if(!ok)toast('Seu pedido foi guardado e será reenviado automaticamente.')}).catch(()=>{});
   const t=`Olá! Quero financiar a ${hn(m)}.\nNome: ${d.nome}\nTelefone: ${d.telefone}\nE-mail: ${d.email}\nCPF: ${d.cpf}\nNascimento: ${d.nascimento}\nEntrada: ${d.entrada||'Sem entrada'}\nPossui habilitação: ${d.habilitacao}`;
   /* ao concluir, leva o cliente ao WhatsApp do vendedor sozinho: espera salvar (no máx. 2,5 s) e abre na mesma aba */
