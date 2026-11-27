@@ -39,6 +39,10 @@
       "destination": "https://sitevendedor.vercel.app/:path*"
     },
     {
+      "source": "/divulgador",
+      "destination": "https://sitevendedor.vercel.app/divulgador.html"
+    },
+    {
       "source": "/:code([A-Za-z][A-Za-z0-9_@-]{43,63})",
       "destination": "https://sitevendedor.vercel.app/"
     },
