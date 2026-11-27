@@ -1786,6 +1786,28 @@ html body #app .shell.apm #vdl .cl2 .cl-a .btn{padding:9px 4px;font-size:13px;bo
 html body #app .shell.apm #vdl .cl2-go{top:20px;right:10px;font-size:22px}
 @media(prefers-reduced-motion:reduce){.sd-nav{scroll-behavior:auto}}
 </style>
+<style id="app-card-ini">
+/* ===== Início: card do App do Vendedor (substitui Atualizações) ===== */
+.ini-app .ia-lead{margin:0 0 16px;font-size:clamp(17px,1.4vw,20px);line-height:1.45;color:#16161a}
+.ini-app .ia-bn{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.ini-app .ia-b{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:16px;background:linear-gradient(180deg,#fff5f6,#fff);border:1px solid #f4c9ce}
+.ini-app .ia-b>span{flex:none;width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:24px;background:linear-gradient(135deg,#ff3b4d,#ff7a4d);box-shadow:0 8px 18px -8px #e4172b99}
+.ini-app .ia-b b{display:block;font-size:16px;color:#16161a;line-height:1.25}.ini-app .ia-b small{display:block;margin-top:3px;font-size:14px;line-height:1.35;color:#5d5d68}
+.ini-app .ia-cta{display:flex;align-items:center;justify-content:center;gap:12px;width:100%;min-height:64px;padding:14px 22px;border:0;border-radius:18px;background:linear-gradient(135deg,#ff3b4d,#c80e1f);color:#fff;font:800 clamp(19px,1.7vw,24px) Inter,system-ui,sans-serif;cursor:pointer;box-shadow:0 16px 34px -12px #e4172bcc;animation:iaP 2.4s ease-in-out infinite}
+.ini-app .ia-cta span{font-size:1.25em}.ini-app .ia-cta:active{transform:scale(.98)}
+@keyframes iaP{0%,100%{box-shadow:0 16px 34px -12px #e4172bcc,0 0 0 0 #e4172b55}50%{box-shadow:0 16px 34px -12px #e4172bcc,0 0 0 10px #e4172b00}}
+.ini-app .ia-sub{margin:10px 0 0;text-align:center;font-size:13.5px;color:#6a6a74}
+.ini-app .ia-h{margin:22px 0 10px;font:800 clamp(18px,1.5vw,21px) Inter,system-ui,sans-serif;color:#16161a}
+.ini-app .ia-st{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:none}
+.ini-app .ia-st li{display:flex;gap:14px;align-items:flex-start;padding:14px 16px;border-radius:16px;background:#f7f7fa;border:1px solid #ebebf1;transition:box-shadow .3s,border-color .3s}
+.ini-app .ia-st li.ia-hl{border-color:#e4172b;box-shadow:0 0 0 4px #e4172b30}
+.ini-app .ia-n{flex:none;width:36px;height:36px;border-radius:50%;display:grid;place-items:center;background:#16161a;color:#fff;font:800 17px Inter,sans-serif}
+.ini-app .ia-st li>div>b{display:block;font-size:16.5px;color:#16161a;margin-bottom:3px}.ini-app .ia-st p{margin:4px 0 0;font-size:15px;line-height:1.5;color:#3d3d46}
+.ini-app .ia-st .btn{margin-top:8px}
+.ini-app .ia-fn{margin:14px 0 0;font-size:13.5px;line-height:1.45;color:#6a6a74}
+@media(max-width:640px){.ini-app .ia-bn{grid-template-columns:minmax(0,1fr)}.ini-app .ia-cta{min-height:60px}}
+@media(prefers-reduced-motion:reduce){.ini-app .ia-cta{animation:none}}
+</style>
 </head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -2070,7 +2092,7 @@ function iniPlanoH(){const r=INI.ren;if(!r)return'';
 /* ===== Meta geral da plataforma (vendas por indicação de todos os vendedores): só para supervisores, só a barra 0-100% ===== */
 function iniMetaH(){const m=INI.meta;if(!m||!m.ativo)return'';
   return `<section class="card2 ini-mt"><div class="card2-h"><h3>🎯 Meta da plataforma</h3><small>Progresso geral de vendas por indicação</small></div><div class="pp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${m.pct}" aria-label="Progresso da meta da plataforma"><i style="width:${Math.max(m.pct,m.pct>0?4:0)}%"></i></div><p class="mu" style="margin:0">${m.pct}% da meta</p></section>`}
-function iniRedesenha(){const el=document.getElementById('ini_x');if(el)el.innerHTML=iniPassosH()+iniVotH()+iniAtuH()+iniPlanoH()+iniMetaH()}
+function iniRedesenha(){const el=document.getElementById('ini_x');if(el)el.innerHTML=iniAtuH()+iniPassosH()+iniVotH()+iniPlanoH()+iniMetaH()}
 async function iniVotar(id){const o=((INI.vot||{}).opcoes||[]).find(x=>x.id===id);if(!o||!confirm('Confirmar seu voto em “'+o.titulo+'”?\n\nDepois de votar não é possível alterar.'))return;
   try{const r=await sb.rpc('meu_votar',{p_opcao:id});if(r.error)throw r.error;INI.vot=r.data||INI.vot;iniRedesenha();toast('Voto registrado. Obrigado!')}
   catch(e){toast((e&&e.message)||'Não foi possível votar');try{const r=await sb.rpc('meu_votacao');if(r&&r.data){INI.vot=r.data;iniRedesenha()}}catch(_){}}}
@@ -2157,8 +2179,30 @@ function paEspera(id){clearInterval(UPT);let n=0,pago=false;UPT=setInterval(asyn
 /* ===== v20: Início com mais cor, letras maiores e botões em destaque ===== */
 const iniHd=(ic,t,s,cl)=>`<div class="ini-hd ${cl}"><span class="ini-ic" aria-hidden="true">${ic}</span><div><h3>${t}</h3>${s?`<p>${s}</p>`:''}</div></div>`;
 const VT_IC={site:'🌐',telegram:'✈️',whatsapp:'💬'};
-function iniAtuH(){const L=INI.atu||[],V=INIALL?L:L.slice(0,3);
-  return `<section class="card2 ini-card ini-at">${iniHd('📣','Atualizações','Novidades do seu painel e do seu site','c1')}<div class="ini-bd">${V.length?V.map(a=>`<article class="at-i${a.destaque?' dst':''}"><div class="at-d"><span class="at-dt">📅 ${esc(iniData(a.data))}</span>${a.destaque?'<em>NOVO</em>':''}</div><h4>${esc(a.titulo)}</h4><p>${esc(a.texto).replace(/\n/g,'<br>')}</p></article>`).join(''):'<p class="mu ini-vz">Ainda não há atualizações por aqui.</p>'}${L.length>3?`<button type="button" class="at-m" onclick="INIALL=!INIALL;iniRedesenha()">${INIALL?'▲ Ver menos':'▼ Ver todas as atualizações ('+L.length+')'}</button>`:''}</div></section>`}
+function iniAppInst(){
+  if(APP_BIP){const e=APP_BIP;try{e.prompt();e.userChoice.then(()=>{APP_BIP=null;iniRedesenha()})}catch(x){APP_BIP=null;iniRedesenha()}return}
+  const p=document.getElementById('ia_p1');if(p){try{p.scrollIntoView({behavior:'smooth',block:'center'})}catch(x){}p.classList.remove('ia-hl');void p.offsetWidth;p.classList.add('ia-hl')}
+  toast('Siga o passo 1 para instalar o app.')}
+function iniAppP1(){
+  if(APP_BIP)return`<p>Toque no botão <b>Baixar o app agora</b> acima e confirme em <b>Instalar</b>. Pronto!</p>`;
+  if(appInApp())return`<p>Você abriu dentro de outro aplicativo (Instagram, WhatsApp…). Abra no <b>${appIOS()?'Safari':'Chrome'}</b> para instalar:</p><button type="button" class="btn red" onclick="navigator.clipboard.writeText(location.origin+'/'+SLUG+'/admin').then(()=>toast('Link copiado! Cole no ${appIOS()?'Safari':'Chrome'}.'))">📋 Copiar o link do painel</button>`;
+  if(appIOS())return`<p>No <b>Safari</b>: toque em <b>Compartilhar</b> <span class="ap-k">⬆︎</span> (embaixo da tela) → <b>Adicionar à Tela de Início</b> → <b>Adicionar</b>.</p>`;
+  if(appAndroid())return`<p>No <b>Chrome</b>: toque no menu <span class="ap-k">⋮</span> (canto de cima) → <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</p>`;
+  return`<p>No <b>Chrome</b> ou <b>Edge</b>: clique no ícone de instalar <span class="ap-k">⊕</span> na barra de endereço, ou no menu <span class="ap-k">⋮</span> → <b>Instalar</b>.</p>`}
+function iniAtuH(){
+  const B=[['🔔','Aviso de cliente novo','Notificação na hora, mesmo com o app fechado'],['⚡','Mais agilidade','Abre com um toque, direto nos seus clientes'],['💬','Mensagem pronta','Toque no aviso e o WhatsApp abre com a mensagem para o cliente'],['📞','Contato rápido','Responda primeiro e feche mais vendas']];
+  return `<section class="card2 ini-card ini-app">${iniHd('📲','Instale o App do Vendedor','Grátis · leva menos de 1 minuto','c1')}<div class="ini-bd">
+  <p class="ia-lead">Seu painel no celular, <b>como um aplicativo</b>. Chegou cliente novo? Você fica sabendo na hora.</p>
+  <div class="ia-bn">${B.map(b=>`<div class="ia-b"><span aria-hidden="true">${b[0]}</span><div><b>${b[1]}</b><small>${b[2]}</small></div></div>`).join('')}</div>
+  <button type="button" class="ia-cta" onclick="iniAppInst()"><span aria-hidden="true">📲</span> Baixar o app agora</button>
+  <p class="ia-sub">${appIOS()?'No iPhone a instalação é pelo Safari (veja o passo 1).':'Instala em segundos, sem loja de aplicativos.'}</p>
+  <h4 class="ia-h">Passo a passo</h4>
+  <ol class="ia-st">
+   <li id="ia_p1"><span class="ia-n">1</span><div><b>Instale o app</b>${iniAppP1()}</div></li>
+   <li><span class="ia-n">2</span><div><b>Abra pelo ícone “Meu Painel”</b><p>Ele aparece junto dos seus outros apps. Entre com o seu login.</p></div></li>
+   <li><span class="ia-n">3</span><div><b>Ative os avisos de clientes</b><p>Dentro do app, toque em <b>🔔 Notificações</b> → <b>Ativar avisos de clientes</b> → <b>Permitir</b>. Pronto: cada cliente novo vira uma notificação no seu celular.</p></div></li>
+  </ol>
+  <p class="ia-fn">Apagou o app sem querer? É só baixar de novo aqui: seus dados e clientes continuam na sua conta.</p></div></section>`}
 function iniVotH(){const q=INI.vot||{};
   if(!q.ativa)return''; /* sem votação aberta: o card some do painel */
   const ops=(q.opcoes||[]).map(o=>{const ic=VT_IC[o.id]||'🗳️';return q.votou?`<div class="vt-o${q.minha===o.id?' me':' off'}"><span class="vt-ic" aria-hidden="true">${ic}</span><b>${q.minha===o.id?'✅ ':''}${esc(o.titulo)}</b><small>${esc(o.detalhe||'')}</small>${q.minha===o.id?'<span class="vt-go ok">Seu voto</span>':''}</div>`:`<button type="button" class="vt-o" onclick="iniVotar('${esc(o.id)}')"><span class="vt-ic" aria-hidden="true">${ic}</span><b>${esc(o.titulo)}</b><small>${esc(o.detalhe||'')}</small><span class="vt-go">Escolher esta opção</span></button>`}).join('');
@@ -3741,8 +3785,8 @@ async function ogSalvar(){const b=$('#og_b'),o=ogDados(),card=$('#og_c').checked
    Avisos: 1º dado que o cliente preenche, quando ele termina e se ele parar 3 min sem terminar. */
 const VAPID_PUB='BODYhOCo492gV8j4XwF0MGFDHOskgUKUqwr27CdekRgpDvVY06hzSvnD_INA9DLjhkuerki2AUInmFRZc3PQJlc';
 let APP_BIP=null,APP_ST=null,APP_TESTE=null;
-addEventListener('beforeinstallprompt',e=>{e.preventDefault();APP_BIP=e;appRe()});
-addEventListener('appinstalled',()=>{APP_BIP=null;try{localStorage.setItem('app_inst','1')}catch(e){}toast('App instalado! Abra pelo ícone “Meu Painel”.');appRe()});
+addEventListener('beforeinstallprompt',e=>{e.preventDefault();APP_BIP=e;appRe();try{iniRedesenha()}catch(x){}});
+addEventListener('appinstalled',()=>{APP_BIP=null;try{localStorage.setItem('app_inst','1')}catch(e){}toast('App instalado! Abra pelo ícone “Meu Painel”.');appRe();try{iniRedesenha()}catch(x){}});
 const appIOS=()=>/iphone|ipad|ipod/i.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const appAndroid=()=>/android/i.test(navigator.userAgent);
 const appStand=()=>{try{return matchMedia('(display-mode: standalone)').matches||matchMedia('(display-mode: fullscreen)').matches||navigator.standalone===true}catch(e){return false}};
