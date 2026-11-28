@@ -1808,6 +1808,19 @@ html body #app .shell.apm #vdl .cl2-go{top:20px;right:10px;font-size:22px}
 @media(max-width:640px){.ini-app .ia-bn{grid-template-columns:minmax(0,1fr)}.ini-app .ia-cta{min-height:60px}}
 @media(prefers-reduced-motion:reduce){.ini-app .ia-cta{animation:none}}
 </style>
+<style id="ios-guia">
+.ia-sh{display:inline-flex;vertical-align:middle;color:#0a84ff}.ia-sh svg{width:22px;height:22px}
+.ios-md{position:fixed;inset:0;z-index:9999;display:flex;align-items:flex-end;justify-content:center;background:#000b;backdrop-filter:blur(3px)}
+.ios-bx{width:min(520px,100%);max-height:92vh;overflow:auto;padding:20px 18px calc(20px + env(safe-area-inset-bottom,0px));border-radius:24px 24px 0 0;background:#fff;color:#16161a;box-shadow:0 -20px 60px -20px #000}
+.ios-bx h3{margin:0;font:800 24px Inter,system-ui,sans-serif}.ios-s{margin:4px 0 14px;color:#5d5d68;font-size:15px}
+.ios-bx ol{list-style:none;margin:0 0 16px;padding:0;display:grid;gap:10px}
+.ios-bx li{display:grid;grid-template-columns:auto auto 1fr;gap:12px;align-items:start;padding:14px;border-radius:16px;background:#f7f7fa;border:1px solid #ebebf1}
+.ios-n{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;background:#16161a;color:#fff;font:800 15px Inter,sans-serif}
+.ios-ic{width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:26px;background:#e8f1ff;color:#0a84ff}
+.ios-bx li b{display:block;font-size:16.5px;margin-bottom:3px}.ios-bx li p{margin:0 0 6px;font-size:14.5px;line-height:1.45;color:#3d3d46}
+.ios-bx li p b{display:inline;font-size:inherit;margin:0;color:#16161a}.ios-ok{width:100%;margin-top:4px;padding:16px;border:0;border-radius:16px;background:#e30613;color:#fff;font:800 17px Inter,system-ui,sans-serif;cursor:pointer}.ios-bx .btn{display:inline-block;margin-top:4px;padding:11px 14px;border:0;border-radius:12px;background:#e30613;color:#fff;font:700 14.5px Inter,system-ui,sans-serif}
+@media(max-width:380px){.ios-bx li{grid-template-columns:auto 1fr}.ios-ic{display:none}}
+</style>
 </head>
 <body>
 <div id="app"></div><div id="modal" role="dialog" aria-modal="true" aria-label="Detalhes da moto"></div><div id="toast" role="status" aria-live="polite"></div>
@@ -2179,14 +2192,28 @@ function paEspera(id){clearInterval(UPT);let n=0,pago=false;UPT=setInterval(asyn
 /* ===== v20: Início com mais cor, letras maiores e botões em destaque ===== */
 const iniHd=(ic,t,s,cl)=>`<div class="ini-hd ${cl}"><span class="ini-ic" aria-hidden="true">${ic}</span><div><h3>${t}</h3>${s?`<p>${s}</p>`:''}</div></div>`;
 const VT_IC={site:'🌐',telegram:'✈️',whatsapp:'💬'};
+const IOS_SH='<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 15V3"/><path d="m8 7 4-4 4 4"/><path d="M7 10H6a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-9a1 1 0 0 0-1-1h-1"/></svg>',IOS_PL='<svg viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M12 8v8M8 12h8"/></svg>';
+const iosFora=()=>appInApp()||/CriOS|FxiOS|EdgiOS|OPiOS/i.test(navigator.userAgent);
+function iosFecha(){const m=document.getElementById('ios_md');if(m)m.remove()}
+function iosCopia(){navigator.clipboard.writeText(location.origin+'/'+SLUG+'/admin').then(()=>toast('Link copiado! Abra o Safari e cole na barra de endereço.'),()=>toast('Não consegui copiar. Abra o Safari e digite o endereço do painel.'))}
+function iniIosGuia(){iosFecha();const m=document.createElement('div');m.id='ios_md';m.className='ios-md';m.setAttribute('role','dialog');m.setAttribute('aria-modal','true');m.onclick=e=>{if(e.target===m)iosFecha()};
+  const f=iosFora(),P=[];
+  if(f)P.push(['🧭','Abra no Safari','No iPhone a instalação só funciona pelo <b>Safari</b> (o navegador azul com a bússola). Toque em copiar, abra o Safari e cole o link na barra de endereço.','<button type="button" class="btn red" onclick="iosCopia()">📋 Copiar o link do painel</button>']);
+  P.push([IOS_SH,'Toque em Compartilhar','É o <b>quadradinho com uma seta para cima</b>, na barra de baixo do Safari (no iPad fica no alto). Se a barra sumiu, toque na parte de baixo da tela para ela aparecer.','']);
+  P.push([IOS_PL,'Adicionar à Tela de Início','Deslize o menu para cima, até achar <b>Adicionar à Tela de Início</b> (com um + dentro de um quadrado), e toque nele.','']);
+  P.push(['✅','Toque em Adicionar','Fica no <b>canto de cima, à direita</b>. O ícone <b>Meu Painel</b> aparece na sua tela, junto dos outros apps.','']);
+  P.push(['🔔','Abra pelo ícone e ative os avisos','Entre com o seu login, toque em <b>Notificações</b> e em <b>Ativar avisos</b>. Os avisos só funcionam abrindo pelo ícone (iOS 16.4 ou mais novo).','']);
+  m.innerHTML=`<div class="ios-bx"><h3>Instalar no iPhone</h3><p class="ios-s">Leva menos de 1 minuto. Siga na ordem:</p><ol>${P.map((x,i)=>`<li><span class="ios-n">${i+1}</span><div class="ios-ic" aria-hidden="true">${x[0]}</div><div><b>${x[1]}</b><p>${x[2]}</p>${x[3]}</div></li>`).join('')}</ol><button type="button" class="ia-cta ios-ok" onclick="iosFecha()">Entendi</button></div>`;
+  document.body.appendChild(m)}
 function iniAppInst(){
+  if(appIOS()&&!appStand()){iniIosGuia();return}
   if(APP_BIP){const e=APP_BIP;try{e.prompt();e.userChoice.then(()=>{APP_BIP=null;iniRedesenha()})}catch(x){APP_BIP=null;iniRedesenha()}return}
   const p=document.getElementById('ia_p1');if(p){try{p.scrollIntoView({behavior:'smooth',block:'center'})}catch(x){}p.classList.remove('ia-hl');void p.offsetWidth;p.classList.add('ia-hl')}
   toast('Siga o passo 1 para instalar o app.')}
 function iniAppP1(){
   if(APP_BIP)return`<p>Toque no botão <b>Baixar o app agora</b> acima e confirme em <b>Instalar</b>. Pronto!</p>`;
   if(appInApp())return`<p>Você abriu dentro de outro aplicativo (Instagram, WhatsApp…). Abra no <b>${appIOS()?'Safari':'Chrome'}</b> para instalar:</p><button type="button" class="btn red" onclick="navigator.clipboard.writeText(location.origin+'/'+SLUG+'/admin').then(()=>toast('Link copiado! Cole no ${appIOS()?'Safari':'Chrome'}.'))">📋 Copiar o link do painel</button>`;
-  if(appIOS())return`<p>No <b>Safari</b>: toque em <b>Compartilhar</b> <span class="ap-k">⬆︎</span> (embaixo da tela) → <b>Adicionar à Tela de Início</b> → <b>Adicionar</b>.</p>`;
+  if(appIOS())return`${iosFora()?'<p>⚠️ Para instalar no iPhone, abra este painel no <b>Safari</b>.</p>':''}<p>Toque em <b>Compartilhar</b> <span class="ia-sh">${IOS_SH}</span> (barra de baixo do Safari) → <b>Adicionar à Tela de Início</b> → <b>Adicionar</b>.</p><button type="button" class="btn red" onclick="iniIosGuia()">📖 Ver passo a passo do iPhone</button>`;
   if(appAndroid())return`<p>No <b>Chrome</b>: toque no menu <span class="ap-k">⋮</span> (canto de cima) → <b>Instalar app</b> (ou <b>Adicionar à tela inicial</b>).</p>`;
   return`<p>No <b>Chrome</b> ou <b>Edge</b>: clique no ícone de instalar <span class="ap-k">⊕</span> na barra de endereço, ou no menu <span class="ap-k">⋮</span> → <b>Instalar</b>.</p>`}
 function iniAtuH(){
@@ -2194,8 +2221,8 @@ function iniAtuH(){
   return `<section class="card2 ini-card ini-app">${iniHd('📲','Instale o App do Vendedor','Grátis · leva menos de 1 minuto','c1')}<div class="ini-bd">
   <p class="ia-lead">Seu painel no celular, <b>como um aplicativo</b>. Chegou cliente novo? Você fica sabendo na hora.</p>
   <div class="ia-bn">${B.map(b=>`<div class="ia-b"><span aria-hidden="true">${b[0]}</span><div><b>${b[1]}</b><small>${b[2]}</small></div></div>`).join('')}</div>
-  <button type="button" class="ia-cta" onclick="iniAppInst()"><span aria-hidden="true">📲</span> Baixar o app agora</button>
-  <p class="ia-sub">${appIOS()?'No iPhone a instalação é pelo Safari (veja o passo 1).':'Instala em segundos, sem loja de aplicativos.'}</p>
+  <button type="button" class="ia-cta" onclick="iniAppInst()"><span aria-hidden="true">📲</span> ${appIOS()?'Instalar no iPhone':'Baixar o app agora'}</button>
+  <p class="ia-sub">${appIOS()?'No iPhone não existe o botão “Instalar app”: é pelo Compartilhar do Safari. Toque acima e eu mostro.':'Instala em segundos, sem loja de aplicativos.'}</p>
   <h4 class="ia-h">Passo a passo</h4>
   <ol class="ia-st">
    <li id="ia_p1"><span class="ia-n">1</span><div><b>Instale o app</b>${iniAppP1()}</div></li>
