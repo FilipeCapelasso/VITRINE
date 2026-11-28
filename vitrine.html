@@ -2614,9 +2614,9 @@ const vidsH=()=>{const L2=VPUB();if(!L2.length)return'';
 const EN_MAXV=7,EN_MAXF=8;
 const enOk=x=>!!(x&&(x.f||(x.u&&mp4Ok(x.u))));
 const enCont=L2=>({v:L2.filter(x=>x&&x.u&&!x.f&&mp4Ok(x.u)).length,f:L2.filter(x=>x&&x.f).length});
-const entCard=x=>{const nm=x.t==='c'?'Contemplado(a): '+esc(x.n):'Parabéns, '+esc(x.n)+'!';
+const entCard=x=>{const sn=!String(x.n||'').trim(),nm=sn?(x.t==='c'?'Contemplação realizada 🎉':'Sonho realizado 🏍️'):(x.t==='c'?'Contemplado(a): '+esc(x.n):'Parabéns, '+esc(x.n)+'!');
   if(x.u&&!x.f)return vcard(x.u,nm,esc(x.m||''),x.p);
-  return `<figure class="en"><img ${IMGA(x.f,'card')} alt="${x.t==='c'?'Contemplação de ':'Parabéns, '}${esc(x.n)}" loading="lazy" decoding="async"><figcaption><b>${nm}</b>${x.m?`<span>${esc(x.m)}</span>`:''}</figcaption></figure>`};
+  return `<figure class="en"><img ${IMGA(x.f,'card')} alt="${sn?(x.t==='c'?'Contemplação realizada':'Entrega realizada'):(x.t==='c'?'Contemplação de ':'Parabéns, ')+esc(x.n)}" loading="lazy" decoding="async"><figcaption><b>${nm}</b>${x.m?`<span>${esc(x.m)}</span>`:''}</figcaption></figure>`};
 const enPlayV=v=>{const r=v.play();if(r&&r.catch)r.catch(()=>{})};
 function enFmt(f,v){if(v.videoWidth&&v.videoHeight)f.classList.toggle('land',v.videoWidth>v.videoHeight*1.15)}
 function enLoad(v){if(!v.getAttribute('src')&&v.dataset.src)v.src=v.dataset.src}
