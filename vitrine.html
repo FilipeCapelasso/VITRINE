@@ -2527,7 +2527,8 @@ const ofTagH=m=>{const o=ofM(m);return o?`<span class="of-tag">🔥 ${o.bf?'BLAC
 const ofCardH=m=>{const o=ofM(m);return o?`<span class="ofc"><s>${ofB(o.de)}</s><b>${ofB(o.por)}</b>${o.bf?'<em class="ofv">à vista</em>':''}</span>`:''};
 const ofAvisoH=()=>{const b=ofBF();return b.aviso?`<p class="of-rg">📍 ${esc(b.aviso)}</p>`:''};
 const ofBrindesH=()=>{const l=(ofBF().brindes||[]).filter(Boolean);return l.length?`<div class="of-br"><b>🎁 Brindes da Black Friday</b><ul>${l.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''};
-const ofDetH=m=>{const o=ofM(m);return o?`<div class="dt-of${o.bf?' bf':''}"><span class="dt-of-t">🔥 ${o.bf?'BLACK FRIDAY':'OFERTA'}</span><div class="dt-of-p"><s>De ${ofB(o.de)}</s><b>Por ${ofB(o.por)}</b>${o.bf?'<em class="ofv">à vista</em>':''}</div><div class="dt-of-e">Você economiza <strong>${ofB(o.desc)}</strong> · ${o.pct}% OFF</div>${o.ate?`<small>Válida até ${String(o.ate).split('-').reverse().join('/')}</small>`:''}${o.bf?ofBrindesH()+ofAvisoH()+`<button type="button" class="bf-ver" onclick="bfAbre('${m.id}')">Ver cores e preços por região</button>`:''}</div>`:''};
+const ofBfBar=m=>{const o=ofM(m);if(!o||!o.bf)return '';const br=(ofBF().brindes||[]).filter(Boolean).length;return `<button type="button" class="bf-bar" onclick="bfAbre('${m.id}')"><span class="bf-bt">🔥 BLACK FRIDAY</span><span class="bf-bp"><s>De ${ofB(o.de)}</s><b>${ofB(o.por)}</b><em>à vista</em></span><span class="bf-be">Economize ${ofB(o.desc)} · ${o.pct}% OFF${br?` · 🎁 ${br} brindes`:''}</span><span class="bf-bg">Ver brindes, preços e parcelas no cartão ›</span></button>`};
+const ofDetH=m=>{const o=ofM(m);return o&&!o.bf?`<div class="dt-of${o.bf?' bf':''}"><span class="dt-of-t">🔥 ${o.bf?'BLACK FRIDAY':'OFERTA'}</span><div class="dt-of-p"><s>De ${ofB(o.de)}</s><b>Por ${ofB(o.por)}</b>${o.bf?'<em class="ofv">à vista</em>':''}</div><div class="dt-of-e">Você economiza <strong>${ofB(o.desc)}</strong> · ${o.pct}% OFF</div>${o.ate?`<small>Válida até ${String(o.ate).split('-').reverse().join('/')}</small>`:''}${o.bf?ofBrindesH()+ofAvisoH()+`<button type="button" class="bf-ver" onclick="bfAbre('${m.id}')">Ver cores e preços por região</button>`:''}</div>`:''};
 /* ===== Black Friday (só Acre): card próprio com cores, valor à vista, brindes e preço por região ===== */
 let BFC={id:'',cor:''};
 function bfMsg(m,o){const c=BFC.cor;return 'Olá! Tenho interesse na promoção Black Friday da '+hn(m)+(c?' na cor '+c:'')+', por '+ofB(o.por).replace(/ /g,' ')+' à vista. Pode me passar mais informações?'}
@@ -2541,6 +2542,7 @@ function bfAbre(id){const m=A.find(x=>x.id===id),o=ofM(m);if(!m||!o||!o.bf)retur
   <h3 class="bfn">${esc(m.nome)}${m.modelo?' '+esc(m.modelo):''}</h3>
   ${cores.length?`<div class="bfcs"><b>Cores disponíveis</b><div>${cores.map((n,i)=>`<button type="button" class="cor" aria-pressed="false" onclick="bfCor(${i})"><i style="background:${corHex(n)}"></i>${esc(n)}</button>`).join('')}</div><small class="mu">Toque numa cor para ver a foto e já avisar o vendedor da sua preferência.</small></div>`:''}
   <div class="bfv"><small>Valor promocional à vista</small><div class="bfv-p"><s>De ${ofB(o.de)}</s><b>${ofB(o.por)}</b></div><span class="bfv-e">Você economiza ${ofB(o.desc)} · ${o.pct}% OFF</span></div>
+  ${ccTabH(m)}
   ${br.length?`<div class="bfg"><b>🎁 Brindes</b><ul>${br.map(x=>`<li>${esc(x)}</li>`).join('')}</ul></div>`:''}
   ${(reg.length&&pr.length)?`<div class="bfr"><b>Preço à vista por região</b><table><tbody>${reg.map((r,i)=>pr[i]?`<tr><td>${esc(r)}</td><td>${ofB(pr[i])}</td></tr>`:'').join('')}</tbody></table></div>`:''}
   ${ofAvisoH()}</div><div class="bfk"><button type="button" class="bf-go" id="bfgo" onclick="bfInteresse()">Tenho interesse</button></div></div>`;
@@ -2784,13 +2786,14 @@ function setEmp(k,v){EMP=k;openM(cur,v)}
 function openM(i,v){ cur=i;G=0;const m=L[i],f=m.fotos||[];if(v==='det'){try{visTrack('moto',m.nome)}catch(e){}setTimeout(()=>corInit(m),60)}let b='';
   const how=t=>`<div id="hw" class="hw" style="display:none">${t}</div>`;
   if(v==='det'){const pl=(ambos(m)?m.planos_alt:planosV(m)).filter(x=>x.valor>0),mn=pl.slice().sort((a,c)=>a.valor-c.valor)[0];
-  b=`<div class="dt"><div class="dt-g"><div class="gal"><div class="gw"><div id="gmain">${f[0]?`<img id="gm" ${IMGA(f[0],'det')} onclick="zoom()" alt="${esc(m.nome)} - foto 1 de ${f.length}" decoding="async">`:'<span class="nof" style="display:block;padding:90px 0;text-align:center">Fotos em breve</span>'}</div>${f.length>1?`<button type="button" class="ga l" onclick="gal(-1)" aria-label="Foto anterior">‹</button><button type="button" class="ga r" onclick="gal(1)" aria-label="Próxima foto">›</button><span class="gc" id="gc" aria-hidden="true">1/${f.length}</span>`:''}</div>
+  b=`<div class="dt"><div class="dt-g"><div class="gal"><div class="gw">${ofM(m)&&ofM(m).bf?'<span class="bf-ph">🔥 BLACK FRIDAY</span>':''}<div id="gmain">${f[0]?`<img id="gm" ${IMGA(f[0],'det')} onclick="zoom()" alt="${esc(m.nome)} - foto 1 de ${f.length}" decoding="async">`:'<span class="nof" style="display:block;padding:90px 0;text-align:center">Fotos em breve</span>'}</div>${f.length>1?`<button type="button" class="ga l" onclick="gal(-1)" aria-label="Foto anterior">‹</button><button type="button" class="ga r" onclick="gal(1)" aria-label="Próxima foto">›</button><span class="gc" id="gc" aria-hidden="true">1/${f.length}</span>`:''}</div>
     ${f.length>1||m.video_url?`<div class="th">${f.length>1?f.map((u,k)=>`<img ${IMGA(u,'th')} data-k="${k}" role="button" tabindex="0" alt="Ver foto ${k+1}" class="${k?'':'on'}" onclick="gShow(${k})" loading="lazy" decoding="async">`).join(''):''}${m.video_url?`<button class="vb" onclick="gVid()" aria-label="Vídeo">▶</button>`:''}</div>`:''}</div></div><div class="dt-i">
     ${(m.modelo||m.selo)?`<div class="dt-cat">${esc(m.modelo||'')}${m.selo?`<span class="sb2">${esc(m.selo)}</span>`:''}</div>`:''}
     ${ofDetH(m)}${mn?`<div class="dt-pr"><small>Consórcio a partir de</small><b>${mn.parcelas}x ${brl(mn.valor)}</b><em>${esc(ambos(m)?'Sem emplacamento':empV(m))}</em></div>`:'<div class="dt-pr"><small>Consulte as condições com o vendedor</small></div>'}
-    ${ofM(m)?'':(m.preco>0?`<p class="pv">À vista <b>${brl(m.preco)}</b></p>`:'')}${typeof ccTabH==='function'?ccTabH(m):''}
+    ${ofM(m)?'':(m.preco>0?`<p class="pv">À vista <b>${brl(m.preco)}</b></p><details class="cc-det"><summary>Pagar à vista no cartão</summary>${typeof ccTabH==='function'?ccTabH(m):''}</details>`:'')}
     ${corPick(m)}
     <div class="dt-cta"><button class="btn red" onclick="openM(cur,'con')">Simular consórcio</button><button class="btn red2" onclick="openM(cur,'fin')">Simular financiamento</button></div>
+    ${ofBfBar(m)}
   </div></div>
   ${pl.length?`<div class="dt-sec"><h3>Planos de consórcio</h3>${ambos(m)?ptH(m,false):`${empTog(m,'det')}<div class="dt-pl">${pl.map(x=>`<div><b>${x.parcelas}x</b><span>${brl(x.valor)}</span></div>`).join('')}</div>`}${AVISO_CON()}<p class="mu" style="font-size:12.5px;margin-top:10px">${(!ambos(m)&&empV(m))?esc(empV(m))+' · ':''}${catSelo()} <a href="#" onclick="openM(cur,'con');return false">Simular com um plano →</a></p></div>`:''}
   ${m.descricao?`<div class="dt-sec"><h3>Descrição e ficha técnica</h3><div class="desc">${fmtDesc(m.descricao)}</div></div>`:''}
@@ -5046,6 +5049,16 @@ body[data-ptab="inicio"] .shell .frase{display:none!important}
 .fc-vz{padding:40px 14px;text-align:center;color:#6a6a78}
 .fc-nota{font-size:12.5px;color:#6a6a78;margin:12px 2px 0;line-height:1.5}
 @media(max-width:760px){.fc-g{grid-template-columns:1fr}.fc-hero{padding:18px}.fc-tx{min-width:0;flex:1 1 100%}.fc-big b{font-size:34px}}
+</style><style id="bf-bar">
+.bf-bar{display:grid;gap:5px;width:100%;margin:14px 0 0;padding:13px 16px;text-align:left;cursor:pointer;border:0;border-radius:16px;color:#fff;background:linear-gradient(135deg,#14141c,#3a0d14);box-shadow:0 12px 26px -16px #14141c,inset 0 0 0 1px #ffffff1a;font-family:Inter,system-ui,sans-serif;transition:transform .15s}
+.bf-bar:hover{transform:translateY(-1px)}
+.bf-bt{justify-self:start;background:linear-gradient(135deg,#ffd23f,#ff7a00);color:#14141c;font:800 10.5px Inter,system-ui,sans-serif;letter-spacing:.06em;padding:4px 9px;border-radius:99px}
+.bf-bp{display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}.bf-bp s{color:#c9c9d4;font-size:13px;text-decoration-color:#e4002b}.bf-bp b{font:800 24px/1.1 Sora,Inter,sans-serif}.bf-bp em{font-style:normal;font-size:11px;font-weight:800;color:#ffd23f}
+.bf-be{color:#7bf0b0;font-size:13px}.bf-bg{color:#ffd23f;font-size:13px;font-weight:700}
+.bf-ph{position:absolute;left:10px;top:10px;z-index:6;background:linear-gradient(135deg,#ffd23f,#ff7a00);color:#14141c;font:800 11px Inter,system-ui,sans-serif;letter-spacing:.05em;padding:5px 10px;border-radius:99px;box-shadow:0 8px 18px -8px #0008;pointer-events:none}
+.cc-det{margin:8px 0 0}.cc-det>summary{cursor:pointer;font:700 13px Inter,system-ui,sans-serif;color:#b00d25;padding:6px 0}.cc-det .cc-tab{margin-top:4px}
+.bfc .cc-tab{margin:12px 0}
 </style>
+
 </body>
 </html>
