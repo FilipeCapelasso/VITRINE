@@ -2378,7 +2378,7 @@ async function cdBlob(m,semFoto){const cv=document.createElement('canvas');await
 const cdNome=m=>(SLUG+'-'+(m.nome||'moto')).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'')+'.png';
 async function cdPronto(m){try{return{b:await cdBlob(m),aviso:''}}catch(e){return{b:await cdBlob(m,true),aviso:' (sem a foto da moto: o navegador bloqueou)'}}}
 async function cdBaixa(id){const m=M.find(x=>x.id===id);if(!m)return;toast('Gerando a imagem…');try{const r=await cdPronto(m),u=URL.createObjectURL(r.b),a=document.createElement('a');a.href=u;a.download=cdNome(m);document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),8000);toast('Imagem baixada: '+cdNome(m)+r.aviso)}catch(e){toast('Não consegui gerar a imagem. Tente de novo.')}}
-async function cdEnvia(id){const m=M.find(x=>x.id===id);if(!m)return;try{const r=await cdPronto(m),f=new File([r.b],cdNome(m),{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]}))await navigator.share({files:[f],title:m.nome});else toast('Seu aparelho não permite enviar direto: use o botão Baixar.')}catch(e){if(e&&e.name!=='AbortError')toast('Não consegui enviar. Use o botão Baixar.')}}
+async function cdEnvia(id){const m=M.find(x=>x.id===id);if(!m)return;try{const r=await cdPronto(m),f=new File([r.b],cdNome(m),{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:m.nome});compTrack('comp_moto',m.nome)}else toast('Seu aparelho não permite enviar direto: use o botão Baixar.')}catch(e){if(e&&e.name!=='AbortError')toast('Não consegui enviar. Use o botão Baixar.')}}
 
 
 /* ===== v32: logo global, WhatsApp completo, vídeo "Como funciona" do vendedor ===== */
@@ -3053,8 +3053,8 @@ function fmtDesc(t){return esc(t).split('\n').map(l=>{const x=l.trim();if(!x)ret
 function priv(){return polAbrir()}
 function zoom(){const u=(L[cur].fotos||[])[G];if(!u)return;const d=document.createElement('div');d.className='lb';d.setAttribute('role','dialog');d.setAttribute('aria-label','Foto ampliada');d.innerHTML=`<img ${IMGA(u,'lb')} alt="${esc(L[cur].nome)}">`;d.onclick=()=>d.remove();document.body.appendChild(d)}
 function shareM(){const m=L[cur],u=siteUrl()+'/'+SLUG+'#moto='+m.id;
-  if(navigator.share)navigator.share({title:m.nome,text:m.nome+' - '+V.nome,url:u}).catch(()=>{});
-  else navigator.clipboard.writeText(u).then(()=>toast('Link copiado!'))}
+  if(navigator.share)navigator.share({title:m.nome,text:m.nome+' - '+V.nome,url:u}).then(()=>compTrack('comp_moto',m.nome)).catch(()=>{});
+  else navigator.clipboard.writeText(u).then(()=>{compTrack('comp_moto',m.nome);toast('Link copiado!')})}
 addEventListener('popstate',()=>{document.querySelectorAll('.lb').forEach(x=>x.remove());$('#modal').style.display='none';if(FO&&FO.focus){FO.focus({preventScroll:true});FO=null}});
 addEventListener('keydown',e=>{if(e.key==='Escape'){const l=document.querySelectorAll('.lb');l.length?l[l.length-1].remove():closeM();return}
   const t=e.target;if((e.key==='Enter'||e.key===' ')&&t.matches&&t.matches('[role=button]:not([data-foto])')){e.preventDefault();t.click();return}
@@ -4450,13 +4450,14 @@ function stLinks(){const b=siteUrl()+'/'+SLUG,cdc=fichaUrl(CFG.url_cdc||FICHA_CD
     {k:'adm',ic:'🧭',t:'Seu painel (este aqui)',d:'Clientes, motos, acessos, personalização e configuração do seu site.',u:b+'/admin'},
     {k:'cdca',ic:'📂',t:'Fichas de financiamento recebidas',d:'Lista das fichas CDC que os clientes enviaram, com busca, status e exportação.',u:cdc.replace(/#.*$/,'')+'#admin'},
     {k:'cnha',ic:'📁',t:'Pré-contratos recebidos',d:'Lista dos pré-contratos CNH que os clientes enviaram, com busca, status e exportação.',u:cnh.replace(/#.*$/,'')+'#admin'}]}}
-function stCopia(u,ok){const f=()=>toast(ok||'Link copiado!');try{navigator.clipboard.writeText(u).then(f,()=>prompt('Copie o link:',u))}catch(e){prompt('Copie o link:',u)}}
-function stZap(k){const x=stLinks().cli.find(o=>o.k===k);if(!x)return;waOpen('https://wa.me/?text='+encodeURIComponent(x.msg+'\n'+x.u))}
-async function stShare(k){const x=stLinks().cli.find(o=>o.k===k);if(!x)return;if(navigator.share){try{await navigator.share({title:x.t,text:x.msg,url:x.u});return}catch(e){if(e&&e.name==='AbortError')return}}stCopia(x.msg+'\n'+x.u,'Mensagem com o link copiada!')}
+function compTrack(t,moto){try{if(!sb)return;const[v,s]=visIds();const p={tipo:t,vid:v,ses:s,origem:'direto',disp:matchMedia('(max-width:820px)').matches?'celular':'computador'};if(moto)p.moto=String(moto).slice(0,80);Promise.resolve(sb.rpc('registrar_visita',{p})).catch(()=>{})}catch(e){}}
+function stCopia(u,ok,k){if(k)compTrack('comp_link');const f=()=>toast(ok||'Link copiado!');try{navigator.clipboard.writeText(u).then(f,()=>prompt('Copie o link:',u))}catch(e){prompt('Copie o link:',u)}}
+function stZap(k){const x=stLinks().cli.find(o=>o.k===k);if(!x)return;compTrack('comp_link');waOpen('https://wa.me/?text='+encodeURIComponent(x.msg+'\n'+x.u))}
+async function stShare(k){const x=stLinks().cli.find(o=>o.k===k);if(!x)return;if(navigator.share){try{await navigator.share({title:x.t,text:x.msg,url:x.u});compTrack('comp_link');return}catch(e){if(e&&e.name==='AbortError')return}}stCopia(x.msg+'\n'+x.u,'Mensagem com o link copiada!',x.k)}
 function stCard(x,cli){const sh=cli&&typeof navigator!=='undefined'&&navigator.share;
   return `<article class="st-c"><div class="st-h"><span class="st-i" aria-hidden="true">${x.ic}</span><div><b>${esc(x.t)}</b><p>${esc(x.d)}</p></div></div>
    <div class="st-u"><code>${esc(x.u.replace(/^https?:\/\//,''))}</code></div>
-   <div class="st-a"><button class="btn sm" onclick="stCopia('${esc(x.u)}')">📋 Copiar link</button>${cli?`<button class="btn sm st-wa" onclick="stZap('${x.k}')">💬 Enviar no WhatsApp</button>${sh?`<button class="btn sm" onclick="stShare('${x.k}')">📤 Compartilhar</button>`:''}`:''}<a class="btn sm" href="${esc(x.u)}" target="_blank" rel="noopener">↗ Abrir</a></div></article>`}
+   <div class="st-a"><button class="btn sm" onclick="stCopia('${esc(x.u)}',null,${cli?`'${x.k}'`:'null'})">📋 Copiar link</button>${cli?`<button class="btn sm st-wa" onclick="stZap('${x.k}')">💬 Enviar no WhatsApp</button>${sh?`<button class="btn sm" onclick="stShare('${x.k}')">📤 Compartilhar</button>`:''}`:''}<a class="btn sm" href="${esc(x.u)}" target="_blank" rel="noopener">↗ Abrir</a></div></article>`}
 function pSites(){const L=stLinks();
   $('#pn').innerHTML=`<section class="st-sec st-cli"><div class="st-t"><h3>Para enviar ao cliente</h3><p>Pode divulgar à vontade: no WhatsApp, Instagram, status e grupos. Tudo o que o cliente preencher chega no seu painel e ele é levado direto ao seu WhatsApp.</p></div>
     <div class="st-g">${L.cli.map(x=>stCard(x,true)).join('')}</div></section>

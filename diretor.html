@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#0d0d12">
+<title>Painel do Diretor</title>
+<link rel="icon" href="/app-honda2-192.png">
+<style>
+:root{--bg:#0d0d12;--cd:#16161d;--cd2:#1d1d26;--ln:#2a2a36;--tx:#f3f3f7;--mu:#9a9aab;--r:#e30613;--ok:#2fbf71;--bl:#4d8dff;--am:#f2b134}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;padding-bottom:calc(30px + env(safe-area-inset-bottom,0px))}
+button{font:inherit;color:inherit;cursor:pointer}
+.w{max-width:980px;margin:0 auto;padding:0 14px}
+.top{position:sticky;top:0;z-index:20;background:#0d0d12ee;backdrop-filter:blur(10px);border-bottom:1px solid var(--ln);padding:calc(10px + env(safe-area-inset-top,0px)) 0 10px}
+.top .w{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top h1{font-size:18px;margin:0;font-weight:800;flex:1;min-width:150px}.top h1 small{display:block;font-size:12px;color:var(--mu);font-weight:500}
+.per{display:flex;gap:4px;background:var(--cd);border:1px solid var(--ln);border-radius:12px;padding:3px}
+.per button{border:0;background:none;padding:7px 11px;border-radius:9px;font-size:13px;font-weight:700;color:var(--mu)}
+.per button.on{background:var(--r);color:#fff}
+.rf{border:1px solid var(--ln);background:var(--cd);border-radius:12px;padding:8px 12px;font-weight:700;font-size:13px}
+.tabs{display:flex;gap:8px;overflow:auto;padding:14px 0 4px;scrollbar-width:none}.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;border:1px solid var(--ln);background:var(--cd);padding:9px 15px;border-radius:999px;font-weight:700;font-size:14px;white-space:nowrap}
+.tabs button.on{background:var(--tx);color:#0d0d12;border-color:var(--tx)}
+h2{font-size:17px;margin:22px 0 10px}
+.k{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:620px){.k{grid-template-columns:repeat(4,1fr)}}
+.kp{background:var(--cd);border:1px solid var(--ln);border-radius:16px;padding:13px 14px}
+.kp span{display:block;font-size:12px;color:var(--mu);font-weight:600}.kp b{display:block;font-size:26px;font-weight:800;margin-top:2px;letter-spacing:-.5px}.kp small{color:var(--mu);font-size:11.5px}
+.lj{display:grid;gap:12px}
+@media(min-width:760px){.lj{grid-template-columns:repeat(3,1fr)}}
+.lc{background:linear-gradient(160deg,var(--cd2),var(--cd));border:1px solid var(--ln);border-radius:18px;padding:16px;text-align:left;width:100%}
+.lc h3{margin:0 0 2px;font-size:17px}.lc .ad{font-size:12px;color:var(--mu);margin-bottom:12px}
+.mm{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.mm div{background:#0d0d1288;border-radius:12px;padding:8px 6px;text-align:center}.mm b{display:block;font-size:20px}.mm span{font-size:11px;color:var(--mu)}
+.card{background:var(--cd);border:1px solid var(--ln);border-radius:18px;padding:14px;margin:12px 0}
+.row{display:flex;align-items:center;gap:10px;padding:11px 4px;border-top:1px solid var(--ln);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:left}
+.row:first-child{border-top:0}
+.pos{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;background:var(--cd2);flex:none}
+.p1{background:var(--am);color:#000}.p2{background:#c9ccd6;color:#000}.p3{background:#c98a5a;color:#000}
+.nm{flex:1;min-width:0}.nm b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.nm small{color:var(--mu);font-size:12px}
+.n3{display:flex;gap:12px;text-align:center}.n3 div{min-width:44px}.n3 b{display:block;font-size:16px}.n3 span{font-size:10.5px;color:var(--mu)}
+.bar{height:6px;border-radius:6px;background:var(--cd2);overflow:hidden;margin-top:5px}.bar i{display:block;height:100%;background:var(--r);border-radius:6px}
+.btn{border:0;background:var(--r);color:#fff;border-radius:12px;padding:11px 16px;font-weight:800;font-size:14px}
+.btn.g{background:var(--cd2);border:1px solid var(--ln)}
+.ac{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--cd2);color:var(--mu);font-weight:700}
+.tag.ok{background:#2fbf7122;color:var(--ok)}.tag.am{background:#f2b13422;color:var(--am)}.tag.rd{background:#e3061322;color:#ff6b73}
+.mod{position:fixed;inset:0;z-index:50;background:#000c;display:flex;align-items:flex-end;justify-content:center}
+.mb{background:var(--bg);width:min(760px,100%);max-height:94vh;overflow:auto;border-radius:22px 22px 0 0;padding:16px 14px calc(22px + env(safe-area-inset-bottom,0px));border:1px solid var(--ln)}
+@media(min-width:760px){.mod{align-items:center}.mb{border-radius:22px}}
+.mh{display:flex;align-items:center;gap:10px;margin-bottom:6px}.mh h3{flex:1;margin:0;font-size:19px}.x{border:0;background:var(--cd2);width:36px;height:36px;border-radius:50%;font-size:18px}
+.ch{display:flex;align-items:flex-end;gap:3px;height:70px;margin:8px 0}.ch i{flex:1;background:var(--r);border-radius:3px 3px 0 0;min-height:2px;opacity:.9}
+.tb{width:100%;border-collapse:collapse;font-size:13px}.tb th,.tb td{padding:7px 6px;text-align:right;border-bottom:1px solid var(--ln)}.tb th:first-child,.tb td:first-child{text-align:left}.tb th{color:var(--mu);font-weight:700;font-size:11.5px}
+.cli{display:flex;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--ln)}.cli:first-child{border-top:0}
+.cli a{color:var(--bl);text-decoration:none;font-weight:700}
+.mu{color:var(--mu)}.c{text-align:center;padding:40px 10px}
+.err{max-width:440px;margin:18vh auto;text-align:center;padding:0 20px}.err h1{font-size:22px}
+#rel{background:#fff;color:#111;border-radius:12px;padding:20px;font-size:13.5px}
+#rel h1{font-size:22px;margin:0}#rel h4{margin:16px 0 6px;font-size:15px}#rel .tb th,#rel .tb td{border-color:#ddd}#rel .tb th{color:#555}
+#rel .kk{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(min-width:620px){#rel .kk{grid-template-columns:repeat(4,1fr)}}.ov{overflow-x:auto}.t5 th:nth-child(2),.t5 td:nth-child(2){text-align:left!important}#rel .kk div{border:1px solid #ddd;border-radius:8px;padding:8px}#rel .kk b{display:block;font-size:20px}
+@media print{body{background:#fff;padding:0}body>*:not(#prt){display:none!important}#prt{position:static;display:block}#prt .mod{position:static;background:none;display:block}#prt .mb{max-height:none;border:0;padding:0;background:#fff;width:100%}#prt .noprt{display:none!important}}
+</style>
+</head>
+<body>
+<div id="app"><div class="c mu">Carregando…</div></div>
+<div id="prt"></div>
+<script>
+const SU='https://qrmwgqkiwoenlkfzjazs.supabase.co',KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFybXdncWtpd29lbmxrZnpqYXpzIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA4MDc3OTIsImV4cCI6MjEwNjM4Mzc5Mn0.lhgkQS_WcB55uG0SKk0ngQgpc9oruFRt2H2D8orjNnc';
+const SL=(location.pathname.match(/^\/diretor\/([a-z0-9-]{2,40})\/?$/i)||[])[1]||'';
+const SK='dir_k_'+SL;
+let TOK='';try{const h=new URLSearchParams(location.hash.replace(/^#/,'')).get('k')||'';if(h){localStorage.setItem(SK,h)}TOK=localStorage.getItem(SK)||'';if(location.hash||location.search)history.replaceState(null,'',location.pathname)}catch(e){}
+let D=null,DIAS=30,TAB='geral';const $=s=>document.querySelector(s);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const N=n=>Number(n||0).toLocaleString('pt-BR');
+const PCT=(a,b)=>b>0?(a/b*100).toFixed(1).replace('.',',')+'%':'0%';
+const DT=s=>{if(!s)return'—';const d=new Date(s);return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',timeZone:'America/Rio_Branco'})+' '+d.toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit',timeZone:'America/Rio_Branco'})};
+const PER={1:'últimas 24 h',7:'últimos 7 dias',30:'últimos 30 dias',0:'todo o período'};
+async function rpc(fn,a){const r=await fetch(SU+'/rest/v1/rpc/'+fn,{method:'POST',headers:{apikey:KEY,'Content-Type':'application/json'},body:JSON.stringify(a)});if(!r.ok)throw new Error(r.status===403?'denied':'erro '+r.status);return r.json()}
+function negado(){document.title='Painel do Diretor';$('#app').innerHTML='<div class="err"><h1>Link não autorizado</h1><p class="mu">Este endereço só abre com o link completo enviado a você. Peça um novo link a quem compartilhou.</p></div>'}
+async function carrega(){
+  if(!SL||!TOK)return negado();
+  try{D=await rpc('diretor_painel',{p_slug:SL,p_token:TOK,p_dias:DIAS||null});draw()}
+  catch(e){if(String(e.message)==='denied'){try{localStorage.removeItem(SK)}catch(x){}negado()}else $('#app').innerHTML='<div class="err"><h1>Sem conexão</h1><p class="mu">Não consegui carregar. Tente de novo.</p><button class="btn" onclick="carrega()">Tentar de novo</button></div>'}}
+function grupos(){
+  const out=D.lojas.map(l=>({id:l.id,nome:l.nome,endereco:l.endereco,v:D.vendedores.filter(v=>v.loja_id===l.id)}));
+  const sem=D.vendedores.filter(v=>!v.loja_id&&(v.visitas||v.clientes));
+  if(sem.length)out.push({id:null,nome:'Sem loja definida',endereco:'',v:sem});
+  return out}
+function soma(v){const t={visitas:0,visitantes:0,clientes:0,fichas:0,contratos:0,chat:0,contatos:0,whatsapp:0,moto_views:0,comp:0,vend:v.length,ativos:0};v.forEach(x=>{t.visitas+=x.visitas;t.visitantes+=x.visitantes;t.clientes+=x.clientes;t.fichas+=x.fichas;t.contratos+=x.contratos;t.chat+=x.chat;t.contatos+=x.contatos;t.whatsapp+=x.whatsapp;t.moto_views+=x.moto_views;t.comp+=x.comp_link+x.comp_moto;if(x.visitas||x.clientes)t.ativos++});return t}
+const top5=v=>[...v].sort((a,b)=>b.clientes-a.clientes||b.visitas-a.visitas).filter(x=>x.clientes||x.visitas).slice(0,5);
+function kp(l,v,s){return`<div class="kp"><span>${l}</span><b>${v}</b>${s?`<small>${s}</small>`:''}</div>`}
+function draw(){
+  const G=grupos(),T=soma(D.vendedores.filter(v=>G.some(g=>g.v.includes(v))));
+  const per=`<div class="per">${[[1,'24 h'],[7,'7 dias'],[30,'30 dias'],[0,'Tudo']].map(p=>`<button class="${DIAS===p[0]?'on':''}" onclick="setP(${p[0]})">${p[1]}</button>`).join('')}</div>`;
+  let h=`<div class="top"><div class="w"><h1>Painel do Diretor<small>${esc(PER[DIAS])} · atualizado ${esc(DT(D.gerado))}</small></h1>${per}<button class="rf" onclick="carrega()" aria-label="Atualizar">↻</button></div></div><div class="w"><div class="tabs"><button class="${TAB==='geral'?'on':''}" onclick="setT('geral')">Visão geral</button>${G.map((g,i)=>`<button class="${TAB==='l'+i?'on':''}" onclick="setT('l${i}')">${esc(g.nome)}</button>`).join('')}</div>`;
+  if(TAB==='geral'){
+    h+=`<h2>Resultado das 3 lojas</h2><div class="k">${kp('Visitas ao site',N(T.visitas),N(T.visitantes)+' pessoas')}${kp('Clientes cadastrados',N(T.clientes),PCT(T.clientes,T.visitantes)+' dos visitantes')}${kp('Fichas e contratos',N(T.fichas+T.contratos),N(T.fichas)+' fichas · '+N(T.contratos)+' contratos')}${kp('Cliques no WhatsApp',N(T.whatsapp),N(T.moto_views)+' motos vistas')}</div>`;
+    h+=`<h2>Lojas</h2><div class="lj">${G.map((g,i)=>{const t=soma(g.v);return`<button class="lc" onclick="setT('l${i}')"><h3>${esc(g.nome)}</h3><div class="ad">${esc(g.endereco)}</div><div class="mm"><div><b>${N(t.visitas)}</b><span>visitas</span></div><div><b>${N(t.clientes)}</b><span>clientes</span></div><div><b>${N(t.vend)}</b><span>vendedores</span></div></div></button>`}).join('')}</div>`;
+    h+=`<h2>Compartilhamentos</h2><div class="k">${kp('Links e motos compartilhados',N(T.comp),'enviados pelos vendedores e clientes')}</div><p class="mu" style="font-size:12.5px">Os compartilhamentos só passaram a ser contados agora; antes disso não eram registrados, então o número começa baixo.</p>`;
+    h+=G.map((g,i)=>topCard(g,i)).join('');
+  }else{const i=+TAB.slice(1),g=G[i];if(g)h+=lojaView(g,i)}
+  $('#app').innerHTML=h+'</div>'}
+function topCard(g,i){const t=top5(g.v);return`<div class="card"><div class="mh"><h3 style="font-size:16px">🏆 Top 5 · ${esc(g.nome)}</h3><button class="btn g" onclick="setT('l${i}')">Ver loja</button></div>${t.length?t.map((v,j)=>vrow(v,j,t[0])).join(''):'<p class="mu">Sem movimento no período.</p>'}</div>`}
+function vrow(v,j,max){const m=Math.max(max.clientes,1);return`<button class="row" onclick="abreV('${esc(v.id)}')"><span class="pos ${j<3?'p'+(j+1):''}">${j+1}</span><div class="nm"><b>${esc(v.nome)}</b><small>${N(v.visitas)} visitas · ${N(v.whatsapp)} WhatsApp</small><div class="bar"><i style="width:${Math.round(v.clientes/m*100)}%"></i></div></div><div class="n3"><div><b>${N(v.clientes)}</b><span>clientes</span></div></div></button>`}
+function serie(loja,k){const m={};(D['serie_'+k]||[]).filter(x=>x.loja===loja).forEach(x=>m[x.dia]=x.n);const out=[],n=Math.min(DIAS||30,30);const hoje=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Rio_Branco'}));for(let i=n-1;i>=0;i--){const d=new Date(hoje);d.setDate(d.getDate()-i);const s=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');out.push(m[s]||0)}return out}
+function chart(a){const m=Math.max(...a,1);return`<div class="ch">${a.map(x=>`<i style="height:${Math.round(x/m*100)}%" title="${x}"></i>`).join('')}</div>`}
+function lojaView(g,i){const t=soma(g.v),tp=top5(g.v),all=[...g.v].sort((a,b)=>b.clientes-a.clientes||b.visitas-a.visitas||a.nome.localeCompare(b.nome));
+  return`<div class="mh" style="margin-top:16px"><h2 style="margin:0;flex:1">${esc(g.nome)}</h2><button class="btn" onclick="relatorio(${i})">📄 Gerar relatório</button></div><div class="mu" style="font-size:12.5px">${esc(g.endereco)}</div>
+  <h2>Resultado</h2><div class="k">${kp('Visitas',N(t.visitas),N(t.visitantes)+' pessoas')}${kp('Clientes cadastrados',N(t.clientes),PCT(t.clientes,t.visitantes)+' dos visitantes')}${kp('Fichas · contratos',N(t.fichas)+' · '+N(t.contratos))}${kp('Compartilhamentos',N(t.comp),N(t.whatsapp)+' cliques WhatsApp')}</div>
+  <div class="card"><b>Visitas por dia</b>${chart(serie(g.id,'visitas'))}<b>Clientes novos por dia</b>${chart(serie(g.id,'clientes'))}</div>
+  <div class="card"><h3 style="margin:0 0 6px;font-size:16px">🏆 Top 5 vendedores</h3>${tp.length?tp.map((v,j)=>vrow(v,j,tp[0])).join(''):'<p class="mu">Sem movimento no período.</p>'}</div>
+  <h2>Todos os vendedores (${all.length})</h2><div class="card">${all.map(v=>`<button class="row" onclick="abreV('${esc(v.id)}')"><div class="nm"><b>${esc(v.nome)} ${v.suspenso?'<span class="tag rd">suspenso</span>':''}</b><small>${N(v.visitas)} visitas · ${N(v.fichas)} fichas · ${N(v.contratos)} contratos</small></div><div class="n3"><div><b>${N(v.clientes)}</b><span>clientes</span></div></div></button>`).join('')||'<p class="mu">Nenhum vendedor.</p>'}</div>`}
+function setP(d){DIAS=d;carrega()}function setT(t){TAB=t;draw();scrollTo(0,0)}
+function fecha(){const m=$('#mod');if(m)m.remove()}
+function modal(h){fecha();const m=document.createElement('div');m.className='mod';m.id='mod';m.onclick=e=>{if(e.target===m)fecha()};m.innerHTML=`<div class="mb">${h}</div>`;document.body.appendChild(m)}
+async function abreV(id){const v=D.vendedores.find(x=>x.id===id);if(!v)return;modal(`<div class="mh"><h3>${esc(v.nome)}</h3><button class="x" onclick="fecha()">✕</button></div><p class="mu">Carregando…</p>`);
+  let d;try{d=await rpc('diretor_vendedor',{p_slug:SL,p_token:TOK,p_vendedor:id,p_dias:DIAS||null})}catch(e){modal('<div class="mh"><h3>Erro</h3><button class="x" onclick="fecha()">✕</button></div><p class="mu">Não consegui abrir este vendedor.</p>');return}
+  const lj=(D.lojas.find(l=>l.id===v.loja_id)||{}).nome||'Sem loja';const dias=(()=>{const m={};d.dias.forEach(x=>m[x.dia]=x.n);const out=[];const hoje=new Date(new Date().toLocaleString('en-US',{timeZone:'America/Rio_Branco'}));for(let i=29;i>=0;i--){const x=new Date(hoje);x.setDate(x.getDate()-i);out.push(m[x.getFullYear()+'-'+String(x.getMonth()+1).padStart(2,'0')+'-'+String(x.getDate()).padStart(2,'0')]||0)}return out})();
+  const tel=t=>{const n=String(t||'').replace(/\D/g,'');return n?`<a href="https://wa.me/${n.length<=11?'55'+n:n}" target="_blank" rel="noopener">${esc(t)}</a>`:'<span class="mu">sem telefone</span>'};
+  modal(`<div class="mh"><h3>${esc(v.nome)}<br><small class="mu" style="font-size:12.5px;font-weight:500">${esc(lj)} · ${esc(PER[DIAS])} · site: /${esc(v.slug)}</small></h3><button class="x" onclick="fecha()">✕</button></div>
+  <div class="k">${kp('Visitas',N(v.visitas),N(v.visitantes)+' pessoas')}${kp('Clientes',N(v.clientes),PCT(v.clientes,v.visitantes)+' dos visitantes')}${kp('Fichas · contratos',N(v.fichas)+' · '+N(v.contratos))}${kp('WhatsApp',N(v.whatsapp),N(v.moto_views)+' motos vistas')}</div>
+  <div class="card"><b>Visitas por dia (30 dias)</b>${chart(dias)}<small class="mu">Última visita: ${esc(DT(v.ultima_visita))} · último cliente: ${esc(DT(v.ultimo_cliente))}</small></div>
+  <div class="card"><b>Compartilhamentos: ${N(v.comp_link+v.comp_moto)}</b><div class="mu" style="font-size:13px">${N(v.comp_link)} do link do site · ${N(v.comp_moto)} de motos</div>${d.compartilhamentos.slice(0,8).map(c=>`<div class="cli"><span class="tag">${c.tipo==='comp_link'?'link':'moto'}</span><div class="nm"><b>${esc(c.moto||'Link do site')}</b></div><small class="mu">${esc(DT(c.criado))}</small></div>`).join('')}</div>
+  <div class="card"><b>Motos mais vistas</b>${d.motos.length?d.motos.map(m=>`<div class="cli"><div class="nm"><b>${esc(m.moto)}</b></div><b>${N(m.n)}</b></div>`).join(''):'<p class="mu">Sem dados.</p>'}</div>
+  <div class="card"><b>De onde vêm as visitas</b>${d.origens.length?d.origens.map(m=>`<div class="cli"><div class="nm"><b>${esc(m.origem)}</b></div><b>${N(m.n)}</b></div>`).join(''):'<p class="mu">Sem dados.</p>'}</div>
+  <div class="card"><b>Clientes cadastrados (${d.clientes.length}${d.clientes.length>=300?'+':''})</b>${d.clientes.length?d.clientes.map(c=>`<div class="cli"><div class="nm"><b>${esc(c.nome||'Sem nome')}</b><small>${esc((c.motos||[]).join(', ')||'sem moto')} · ${esc(DT(c.ultimo))}</small></div><div style="text-align:right">${c.contrato?'<span class="tag ok">contrato</span> ':''}${c.ficha?'<span class="tag am">ficha</span> ':''}<div>${tel(c.telefone)}</div></div></div>`).join(''):'<p class="mu">Nenhum cliente no período.</p>'}</div>`)}
+function txtRel(g){const t=soma(g.v),tp=top5(g.v);return`*Relatório ${g.nome}* (${PER[DIAS]})\n\nVisitas: ${N(t.visitas)} (${N(t.visitantes)} pessoas)\nClientes cadastrados: ${N(t.clientes)}\nFichas: ${N(t.fichas)} · Contratos: ${N(t.contratos)}\nCliques no WhatsApp: ${N(t.whatsapp)}\nCompartilhamentos: ${N(t.comp)}\nVendedores com movimento: ${t.ativos} de ${t.vend}\n\n*Top 5 vendedores*\n${tp.map((v,i)=>`${i+1}. ${v.nome}: ${N(v.clientes)} clientes, ${N(v.visitas)} visitas`).join('\n')||'—'}`}
+function relatorio(i){const g=grupos()[i],t=soma(g.v),tp=top5(g.v),all=[...g.v].sort((a,b)=>b.clientes-a.clientes||b.visitas-a.visitas);
+  modal(`<div class="mh noprt"><h3>Relatório · ${esc(g.nome)}</h3><button class="x" onclick="fecha()">✕</button></div><div class="ac noprt"><button class="btn" onclick="imprime()">🖨️ Salvar PDF / imprimir</button><button class="btn g" onclick="copiaRel(${i})">📋 Copiar resumo</button><button class="btn g" onclick="zapRel(${i})">💬 Enviar no WhatsApp</button></div>
+  <div id="rel"><h1>Relatório da loja ${esc(g.nome)}</h1><div style="color:#555">${esc(PER[DIAS])} · gerado em ${esc(DT(D.gerado))}<br>${esc(g.endereco)}</div>
+  <h4>Resultado</h4><div class="kk"><div><b>${N(t.visitas)}</b>visitas</div><div><b>${N(t.clientes)}</b>clientes cadastrados</div><div><b>${N(t.fichas)} · ${N(t.contratos)}</b>fichas · contratos</div><div><b>${N(t.comp)}</b>compartilhamentos</div></div>
+  <p>${N(t.visitantes)} pessoas visitaram os sites dos vendedores; ${PCT(t.clientes,t.visitantes)} viraram cliente cadastrado. Foram ${N(t.whatsapp)} cliques no WhatsApp e ${N(t.moto_views)} visualizações de motos. ${t.ativos} de ${t.vend} vendedores tiveram movimento.</p>
+  <h4>Top 5 vendedores</h4><div class="ov"><table class="tb t5"><tr><th>#</th><th>Vendedor</th><th>Clientes</th><th>Visitas</th></tr>${tp.map((v,j)=>`<tr><td>${j+1}</td><td>${esc(v.nome)}</td><td>${N(v.clientes)}</td><td>${N(v.visitas)}</td></tr>`).join('')}</table></div>
+  <h4>Todos os vendedores</h4><div class="ov"><table class="tb"><tr><th>Vendedor</th><th>Visitas</th><th>Clientes</th><th>Fichas</th><th>Contratos</th><th>WhatsApp</th><th>Comp.</th></tr>${all.map(v=>`<tr><td>${esc(v.nome)}</td><td>${N(v.visitas)}</td><td>${N(v.clientes)}</td><td>${N(v.fichas)}</td><td>${N(v.contratos)}</td><td>${N(v.whatsapp)}</td><td>${N(v.comp_link+v.comp_moto)}</td></tr>`).join('')}</table></div></div>`);}
+function imprime(){const m=$('#mod');$('#prt').appendChild(m);window.print();setTimeout(()=>{document.body.appendChild(m)},300)}
+function copiaRel(i){const t=txtRel(grupos()[i]);try{navigator.clipboard.writeText(t).then(()=>alert('Resumo copiado!'))}catch(e){prompt('Copie:',t)}}
+function zapRel(i){window.open('https://wa.me/?text='+encodeURIComponent(txtRel(grupos()[i])),'_blank','noopener')}
+carrega();
+</script>
+</body>
+</html>
