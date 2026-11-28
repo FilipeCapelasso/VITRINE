@@ -2105,18 +2105,17 @@ function iniPlanoH(){const r=INI.ren;if(!r)return'';
 /* ===== Meta geral da plataforma (vendas por indicação de todos os vendedores): só para supervisores, só a barra 0-100% ===== */
 function iniMetaH(){const m=INI.meta;if(!m||!m.ativo)return'';
   return `<section class="card2 ini-mt"><div class="card2-h"><h3>🎯 Meta da plataforma</h3><small>Progresso geral de vendas por indicação</small></div><div class="pp-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${m.pct}" aria-label="Progresso da meta da plataforma"><i style="width:${Math.max(m.pct,m.pct>0?4:0)}%"></i></div><p class="mu" style="margin:0">${m.pct}% da meta</p></section>`}
-function iniRedesenha(){const el=document.getElementById('ini_x');if(el)el.innerHTML=iniAtuH()+iniPassosH()+iniVotH()+iniPlanoH()+iniMetaH()}
+function iniRedesenha(){const el=document.getElementById('ini_x');if(el)el.innerHTML=iniPassosH()+iniVotH()+iniAtuH()+iniExpH()+iniPlanoH()+iniMetaH()}
 async function iniVotar(id){const o=((INI.vot||{}).opcoes||[]).find(x=>x.id===id);if(!o||!confirm('Confirmar seu voto em “'+o.titulo+'”?\n\nDepois de votar não é possível alterar.'))return;
   try{const r=await sb.rpc('meu_votar',{p_opcao:id});if(r.error)throw r.error;INI.vot=r.data||INI.vot;iniRedesenha();toast('Voto registrado. Obrigado!')}
   catch(e){toast((e&&e.message)||'Não foi possível votar');try{const r=await sb.rpc('meu_votacao');if(r&&r.data){INI.vot=r.data;iniRedesenha()}}catch(_){}}}
 async function pInicio(){ $('#pn').innerHTML='<div class="sk" style="height:150px;border-radius:18px"></div><div class="sk" style="height:90px;border-radius:18px;margin-top:14px"></div>'; await vdLoad();if(T!=='inicio')return;
   const q=async(n)=>{try{const r=await sb.rpc(n);return(r&&!r.error)?r.data:null}catch(e){return null}};
-  const [atu,vot,ren,rec,meta]=await Promise.all([q('meu_atualizacoes'),q('meu_votacao'),q('meu_renovar_orcamento'),q('meu_mensal_status'),q('sup_meta_indicacao')]);if(T!=='inicio')return;
-  setTimeout(exLoad,80);
-  INI={atu:Array.isArray(atu)?atu:[],vot:vot||{ativa:false},ren:ren||null,rec:rec||null,meta:meta||null};
+  const [atu,vot,ren,rec,meta,exr]=await Promise.all([q('meu_atualizacoes'),q('meu_votacao'),q('meu_renovar_orcamento'),q('meu_mensal_status'),q('sup_meta_indicacao'),q('exp_ranking')]);if(T!=='inicio')return;
+  INI={atu:Array.isArray(atu)?atu:[],vot:vot||{ativa:false},ren:ren||null,rec:rec||null,meta:meta||null,exp:exr||null};
   const hr=new Date().getHours(),sd=hr<12?'Bom dia':hr<18?'Boa tarde':'Boa noite',novos=VD.filter(vdNovo),hoje=VD.filter(o=>new Date(o.created_at).toDateString()===new Date().toDateString()).length;
   const atend=VD.filter(o=>['atendimento','em_analise','contrato_enviado'].includes(o.status)).length,at=M.filter(m=>m.ativo).length,link=siteUrl()+'/'+SLUG,nn=novos.length;
-  $('#pn').innerHTML=`<section class="ex-b" id="exp_box"><div class="sk" style="height:220px;border-radius:16px"></div></section><section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2><p>${nn?`Você tem <b>${nn} cliente${nn>1?'s':''} novo${nn>1?'s':''}</b> esperando retorno. Responder rápido faz toda a diferença na venda.`:'Tudo em dia por aqui. Aproveite para fazer follow-up e divulgar o seu site.'}</p></div> <div class="hero2-a"><button class="btn hero-bt" onclick="VF='${nn?'novos':'todos'}';VFASE=0;adm('vendas')">${nn?'Ver clientes novos':'Ver clientes'}</button></div></section>${renAvisoH()}<div id="ini_x">${iniPassosH()}${iniVotH()}${iniAtuH()}${iniPlanoH()}${iniMetaH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
+  $('#pn').innerHTML=`<section class="hero2"><div><h2>${sd}, ${esc((V.nome||'').trim().split(' ')[0])}! 👋</h2></div></section>${renAvisoH()}<div id="ini_x">${iniPassosH()}${iniVotH()}${iniAtuH()}${iniExpH()}${iniPlanoH()}${iniMetaH()}</div><section class="card2"><div class="card2-h"><h3>Atalhos</h3></div><div class="at at-ini"><button class="btn" onclick="passoLink('${esc(link)}')">🔗 Copiar link do meu site</button><button class="btn" onclick="adm('motos');edit()">+ Nova moto</button><button class="btn" onclick="CTAB='perfil';adm('conta')">👤 Meu perfil</button></div><p class="mu" style="font-size:12.5px;word-break:break-all;margin:10px 0 0">${esc(link)}</p></section>`}
 /* --- renovar o plano (Pix) --- */
 let RNM=2;
 async function renovaAbre(n){if(typeof n==='number')RNM=Math.min(24,Math.max(2,n));else{document.querySelectorAll('.lkm:not(#upm)').forEach(x=>x.remove());upModal('<div class="lki">🔄</div><h3>Renovar plano</h3><p>Calculando…</p>')}
@@ -4518,32 +4517,33 @@ async function avConta(){const b=document.getElementById('avbg');if(!b||!sb)retu
 function avLive(){if(AVCH||!sb||!V||!V.id)return;try{AVCH=sb.channel('avisos-'+V.id).on('postgres_changes',{event:'INSERT',schema:'public',table:'app_notificacoes',filter:'vendedor_id=eq.'+V.id},e=>{const n=e.new;if(n&&Date.now()-Date.parse(n.criado||Date.now())<120000)avMostra(n)}).subscribe()}catch(e){}}
 /* ----- aba Notificações ----- */
 
-/* v54: aviso Expansão */
-const EXP_ATIVO=false; /* desligado por enquanto (concurso entre vendedores); troque para true para voltar */
-async function exLoad(){const el=document.getElementById('exp_box');if(!EXP_ATIVO){if(el)el.remove();return}if(!el||!sb)return;
-  let d=null;try{const r=await sb.rpc('exp_ranking');d=r&&r.data}catch(e){}
-  if(!d||!d.slug){el.remove();return}
-  const lk='https://www.sitevendedor.com/ind/'+encodeURIComponent(d.slug),pr=[['🥇','1º lugar','R$ 300'],['🥈','2º lugar','R$ 100'],['🥉','3º lugar','2 meses grátis do plano']];
-  const top=d.top||[];
-  el.innerHTML=`<span class="ex-tag">⚠️ ATENÇÃO · GANHE ATÉ 300 REAIS NO PIX</span><h3>O sistema está em expansão!</h3><p>Indique o Site Vendedor para outros vendedores. Cada pessoa que <b>pagar pelo seu link</b> conta para você, e os 3 que mais indicarem ganham prêmio.</p>
-  <div class="ex-lb">Seu link de indicação</div>
-  <div class="ex-lk"><span id="ex_lk" data-c="${esc(lk)}">${esc(lk.replace('https://',''))}</span></div>
-  <div class="ex-bts"><button type="button" class="ex-cp" onclick="exCopia()">📋 Copiar link</button><a class="ex-wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent('Conheça o Site Vendedor Honda: seu site de vendas com painel e clientes no celular. '+lk)}">💬 Enviar no WhatsApp</a></div>
-  <div class="ex-n"><span>Vendedores que compraram pelo seu link:</span><b>${+d.meu_total||0}</b></div>
-  ${d.meu_pos?`<div class="ex-pos">Você está em <b>${d.meu_pos}º lugar</b> no ranking</div>`:''}
-  <div class="ex-pd">${pr.map((x,i)=>{const t=top[i];return `<div class="ex-r${t&&t.eu?' eu':''}"><i>${x[0]}</i><div><b>${t?esc(t.nome)+(t.eu?' (você)':''):'Vaga aberta'}</b><small>${x[1]} · ${x[2]}</small></div><em>${t?+t.total:0}</em></div>`}).join('')}</div>
-  <p class="ex-fn">Conta só quem concluiu o pagamento pelo seu link. Empate: vence quem chegou primeiro.</p>`}
-function exCopia(){const i=document.getElementById('ex_lk');if(!i)return;const t=i.dataset.c,fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.cssText='position:fixed;opacity:0';document.body.appendChild(x);x.select();try{document.execCommand('copy');toast('Link copiado')}catch(e){toast('Não consegui copiar. Segure o link para copiar.')}x.remove()};(navigator.clipboard?navigator.clipboard.writeText(t).then(()=>toast('Link copiado'),fb):fb())}
+/* v58: evento Expansão (indicação + compartilhamentos), no Início logo depois do "Passo a passo" */
+const EXP_PR=[['🥇','1º lugar','R$ 400','g'],['🥈','2º lugar','R$ 200','s'],['🥉','3º lugar','2 meses grátis','b']];
+const exLink=d=>'https://www.sitevendedor.com/ind/'+encodeURIComponent((d&&d.slug)||SLUG);
+const exMsg=d=>'Conheça o Site Vendedor Honda: o seu site de vendas, com painel e clientes direto no celular. '+exLink(d);
+function iniExpH(){const d=INI&&INI.exp;if(!d||!d.slug)return'';
+  const meta=+d.meta||60,tot=Math.min(+d.total||0,meta),pct=Math.min(100,Math.round(tot*100/meta)),fim=!!d.encerrado,top=d.top||[],lk=exLink(d),sh=!!navigator.share;
+  const pd=EXP_PR.map((x,i)=>{const t=top[i];return `<div class="ex-r ex-${x[3]}${t&&t.eu?' eu':''}"><i aria-hidden="true">${x[0]}</i><b class="ex-v">${x[2]}</b><span class="ex-p">${x[1]}</span><span class="ex-nm">${t?esc(t.nome)+(t.eu?' (você)':''):'Vaga aberta'}</span><em>${t?(+t.total)+(+t.total===1?' venda':' vendas'):'0 vendas'}</em></div>`}).join('');
+  const bar=`<div class="ex-pg"><div class="ex-pgt"><span>Vendedores que já pagaram pelos links</span><b>${tot} <small>de ${meta}</small></b></div><div class="ex-bar" role="progressbar" aria-valuemin="0" aria-valuemax="${meta}" aria-valuenow="${tot}" aria-label="Vendedores que pagaram pelos links de indicação"><i style="width:${Math.max(pct,tot>0?4:0)}%"></i></div><small>${fim?'🏁 Meta atingida: o evento está encerrado e o pódio acima é o resultado final.':`Faltam <b>${meta-tot}</b> ${meta-tot===1?'venda':'vendas'} para o evento acabar. Cada pagamento de qualquer plano conta.`}</small></div>`;
+  const acao=fim?`<p class="ex-end">🎉 Obrigado a todos que divulgaram! Os prêmios serão combinados diretamente com os vencedores.</p>`:`<div class="ex-lb">Seu link de indicação</div><div class="ex-lk"><span id="ex_lk" data-c="${esc(lk)}">${esc(lk.replace('https://',''))}</span></div>
+    <div class="ex-bts${sh?' tres':''}"><button type="button" class="ex-cp" onclick="exCopia()">📋 Copiar link</button><a class="ex-wa" target="_blank" rel="noopener" href="https://wa.me/?text=${encodeURIComponent(exMsg(d))}" onclick="exTrack('whatsapp')">💬 Enviar no WhatsApp</a>${sh?`<button type="button" class="ex-sh" onclick="exShare()">📤 Compartilhar</button>`:''}</div>`;
+  const st=`<div class="ex-st"><div><b id="ex_cm">${+d.meus_comp||0}</b><span>Envios do seu link</span></div><div><b>${+d.meu_total||0}</b><span>Compras pelo seu link</span></div><div><b>${d.meu_pos?d.meu_pos+'º':'—'}</b><span>Sua posição</span></div></div>`;
+  return `<section class="card2 ini-card ini-ex${fim?' fim':''}" id="exp_box">${iniHd('🏆',fim?'Evento Expansão encerrado':'Evento Expansão',fim?'Resultado final':'Compartilhe o seu link e concorra a prêmios','c5')}<div class="ini-bd">
+  <p class="ex-lead">Indique o Site Vendedor para outros vendedores. Cada pessoa que <b>pagar qualquer plano pelo seu link</b> conta para você, e os <b>3 que mais venderem</b> ganham:</p>
+  <div class="ex-pd">${pd}</div>${bar}${acao}${st}
+  <p class="ex-fn">Conta só pagamento aprovado de pessoa nova, em qualquer plano (mensal, 6 meses ou meses escolhidos). O evento só termina quando <b>${meta} vendedores</b> pagarem pelos links de todos os participantes somados. Empate: vence quem chegou primeiro.</p></div></section>`}
+async function exTrack(c){try{const r=await sb.rpc('exp_compartilhei',{p_canal:c});const x=r&&r.data;if(x&&x.meus_comp!=null){if(INI&&INI.exp)INI.exp.meus_comp=x.meus_comp;const e=document.getElementById('ex_cm');if(e)e.textContent=x.meus_comp}}catch(e){}}
+function exCopia(){const i=document.getElementById('ex_lk');if(!i)return;const t=i.dataset.c,ok=()=>{toast('Link copiado');exTrack('copiar')},fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.cssText='position:fixed;opacity:0';document.body.appendChild(x);x.select();let g=false;try{g=document.execCommand('copy')}catch(e){}x.remove();if(g)ok();else toast('Não consegui copiar. Segure o link para copiar.')};(navigator.clipboard?navigator.clipboard.writeText(t).then(ok,fb):fb())}
+async function exShare(){const d=INI&&INI.exp;if(!d||!navigator.share)return;try{await navigator.share({title:'Site Vendedor Honda',text:exMsg(d).replace(exLink(d),'').trim(),url:exLink(d)});exTrack('compartilhar')}catch(e){}}
 
 async function pAvisos(){
   const on=await (async()=>{try{const s=await appSubAtual();return !!s&&Notification.permission==='granted'}catch(e){return false}})();
-  $('#pn').innerHTML=`<section class="ex-b" id="exp_box"><div class="sk" style="height:220px;border-radius:16px"></div></section><section class="card2 av-top">${on?`<div class="av-on"><span class="av-dot"></span><div><b>Avisos ativos neste aparelho</b><small>Você é avisado quando o cliente começa, termina ou para de preencher.</small></div></div>`:`<div class="av-off"><div><b>🔕 Este aparelho ainda não recebe avisos com o app fechado</b><small>Com o painel aberto você já vê os avisos aqui. Para receber no celular a qualquer hora, ative:</small></div><button class="btn red" onclick="CTAB='app';adm('conta')">Ativar avisos</button></div>`}
+  $('#pn').innerHTML=`<section class="card2 av-top">${on?`<div class="av-on"><span class="av-dot"></span><div><b>Avisos ativos neste aparelho</b><small>Você é avisado quando o cliente começa, termina ou para de preencher.</small></div></div>`:`<div class="av-off"><div><b>🔕 Este aparelho ainda não recebe avisos com o app fechado</b><small>Com o painel aberto você já vê os avisos aqui. Para receber no celular a qualquer hora, ative:</small></div><button class="btn red" onclick="CTAB='app';adm('conta')">Ativar avisos</button></div>`}
   <div class="av-acts"><button class="btn" onclick="avTeste()">🔔 Testar aviso</button><button class="btn" onclick="avLidas()">✓ Marcar todas como lidas</button><button class="btn av-limpa" onclick="avLimpar()">🗑 Apagar tudo</button></div></section>
   <div class="av-f">${[['todas','Todas'],['nao','Não lidas'],['rascunho','✍️ Começou'],['fim','✅ Finalizou'],['preguicoso','😴 Parou']].map(a=>`<button class="${AVF===a[0]?'on':''}" onclick="AVF='${a[0]}';avLista()">${a[1]}</button>`).join('')}</div>
   <div id="av_l" class="av-l"><div class="sk" style="height:76px;border-radius:16px"></div><div class="sk" style="height:76px;border-radius:16px;margin-top:10px"></div></div>
   <details class="card2 av-pf" id="av_pf"><summary>⚙️ Quais avisos receber</summary><div id="av_pfx"><p class="mu">Carregando…</p></div></details>`;
   const r=await sb.from('app_notificacoes').select('id,tipo,titulo,corpo,dados,lida,criado').order('id',{ascending:false}).limit(150);
-  exLoad();
   if(T!=='avisos')return;AVLST=(r&&r.data)||[];AVLST.forEach(n=>AVV.add(+n.id));avLista();avPrefs();
   try{if(navigator.clearAppBadge)navigator.clearAppBadge()}catch(e){}
   setTimeout(async()=>{if(T!=='avisos')return;try{await sb.rpc('app_marcar_lidas',{p_ids:null})}catch(e){}avConta()},2500)}
@@ -4966,25 +4966,40 @@ html body.fpr .sheet:not(.ch):not(.chbd) .avs{color:#d8c192;font-style:italic;op
 .cv-av{background:#fff7e6;border:1px solid #ffe0a3;border-radius:12px;padding:10px 12px;color:#6b4a00}
 @media(max-width:620px){.cv-hero{padding:18px}.cv-res{min-width:0;flex:1 1 100%}.cv-res b{font-size:32px}.cv-fm{grid-template-columns:1fr}.cv-ck{padding-bottom:0}.cv-o,.cv-c{padding:10px;gap:10px}.cv-cn{min-width:56px}.cv-cn b{font-size:20px}.cv-ca .btn{flex:1 1 auto}.card2-h{flex-wrap:wrap;gap:8px}}
 
-/* v54: aviso Expansão (indicação + ranking) */
+/* v58: evento Expansão (card no Início, depois do Passo a passo) */
 body[data-ptab="inicio"] .shell .frase{display:none!important}
-.ex-b{position:relative;overflow:hidden;border-radius:20px;padding:18px 16px 16px;margin:0 0 14px;color:#fff;background:linear-gradient(135deg,#7a0016 0%,#c4001f 55%,#e4002b 100%);box-shadow:0 10px 30px #c4001f40;border:1px solid #ffffff2e}
-.ex-b:before{content:"";position:absolute;right:-60px;top:-60px;width:200px;height:200px;border-radius:50%;background:radial-gradient(#ffffff2a,transparent 70%);pointer-events:none}
-.ex-tag{display:inline-block;max-width:100%;line-height:1.35;font-weight:900;font-size:12px;letter-spacing:.08em;background:#fff;color:#c4001f;border-radius:99px;padding:4px 11px}
-.ex-b h3{margin:10px 0 6px;font-size:21px;line-height:1.2;color:#fff}.ex-b p{margin:0 0 10px;font-size:14.5px;line-height:1.5;color:#ffecee}
-.ex-lb{font-size:12px;font-weight:800;letter-spacing:.04em;color:#ffd9dd;margin:6px 0 4px}
-.ex-lk{background:#00000040;border:1px dashed #ffffff7a;border-radius:14px;padding:13px 14px;margin:0 0 8px}
-.ex-lk span{display:block;color:#fff;font-weight:800;font-size:15.5px;line-height:1.3;overflow-wrap:anywhere;user-select:all}
-.ex-bts{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
-.ex-bts>*{border:0;border-radius:12px;padding:12px 8px;font-weight:800;font-size:14px;text-align:center;text-decoration:none;cursor:pointer}
-.ex-cp{background:#fff;color:#c4001f}.ex-wa{background:#25d366;color:#05301a}
-.ex-n{display:flex;align-items:center;justify-content:space-between;gap:12px;background:#ffffff24;border:1px solid #ffffff33;border-radius:14px;padding:12px 16px;margin:0 0 8px}
-.ex-n span{font-size:14.5px;font-weight:700;color:#fff;line-height:1.3}.ex-n b{font-size:38px;line-height:1;color:#fff}
-.ex-pos{font-size:13.5px;color:#ffecee;margin:0 2px 8px}.ex-pos b{color:#ffd45a}
-.ex-pd{display:grid;gap:8px;margin:10px 0 12px}
-.ex-r{display:grid;grid-template-columns:44px 1fr auto;align-items:center;gap:10px;background:#fff;color:#1a1a22;border-radius:14px;padding:10px 12px}
-.ex-r.eu{outline:3px solid #ffd45a}.ex-r i{font-style:normal;font-size:26px;text-align:center}.ex-r b{display:block;font-size:15px}.ex-r small{color:#6a6a78;font-size:12.5px}.ex-r em{font-style:normal;font-weight:900;font-size:20px;color:#c4001f}
-.ex-fn{margin:0;font-size:12px;color:#ffd9dd}
+body[data-ptab="inicio"] #plc{display:none!important}
+.ini-hd.c5{background:linear-gradient(135deg,#160709 0%,#7a0016 55%,#e4002b 100%)}
+.ini-ex .ex-lead{margin:0 0 16px;font-size:clamp(16px,1.3vw,19px);line-height:1.5;color:#16161a}
+.ini-ex .ex-pd{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.ini-ex .ex-r{position:relative;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;padding:16px 12px 14px;border-radius:18px;border:1px solid #ebebf1;background:#f7f7fa}
+.ini-ex .ex-r i{font-style:normal;font-size:38px;line-height:1.1}
+.ini-ex .ex-v{font:900 clamp(22px,2.2vw,30px)/1.1 Inter,system-ui,sans-serif;color:#16161a;margin-top:4px}
+.ini-ex .ex-p{font-weight:800;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:#6a6a78}
+.ini-ex .ex-nm{margin-top:8px;font-weight:800;font-size:15px;color:#16161a;overflow-wrap:anywhere}
+.ini-ex .ex-r em{font-style:normal;font-size:13px;color:#6a6a78}
+.ini-ex .ex-g{background:linear-gradient(180deg,#fff7d6,#fff);border-color:#f2d36b;box-shadow:0 12px 26px -18px #c99a00}
+.ini-ex .ex-s{background:linear-gradient(180deg,#f1f3f8,#fff);border-color:#cfd5e2}
+.ini-ex .ex-b{background:linear-gradient(180deg,#fdeede,#fff);border-color:#efc79d}
+.ini-ex .ex-r.eu{outline:3px solid #e4002b;outline-offset:-1px}
+.ini-ex .ex-pg{background:#16161a;color:#fff;border-radius:18px;padding:16px 18px;margin:0 0 18px}
+.ini-ex .ex-pgt{display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.ini-ex .ex-pgt span{font-weight:700;font-size:15px;color:#ffd9dd}.ini-ex .ex-pgt b{font-size:30px;line-height:1;color:#fff}.ini-ex .ex-pgt small{font-size:15px;font-weight:700;color:#ffffffb3}
+.ini-ex .ex-bar{height:14px;border-radius:99px;background:#ffffff26;overflow:hidden}
+.ini-ex .ex-bar i{display:block;height:100%;border-radius:99px;background:linear-gradient(90deg,#ffd45a,#ff6a3d,#e4002b);transition:width .6s}
+.ini-ex .ex-pg>small{display:block;margin-top:10px;font-size:13.5px;line-height:1.45;color:#ffd9dd}.ini-ex .ex-pg>small b{color:#ffd45a}
+.ini-ex .ex-lb{font-size:12.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:#6a6a78;margin:0 0 6px}
+.ini-ex .ex-lk{background:#fff5f6;border:1.5px dashed #e4002b88;border-radius:14px;padding:14px 16px;margin:0 0 10px}
+.ini-ex .ex-lk span{display:block;color:#b1001f;font-weight:800;font-size:clamp(15px,1.3vw,18px);line-height:1.3;overflow-wrap:anywhere;user-select:all}
+.ini-ex .ex-bts{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:0 0 16px}.ini-ex .ex-bts.tres{grid-template-columns:repeat(3,1fr)}
+.ini-ex .ex-bts>*{border:0;border-radius:14px;padding:14px 10px;font:800 15px Inter,system-ui,sans-serif;text-align:center;text-decoration:none;cursor:pointer}
+.ini-ex .ex-cp{background:#16161a;color:#fff}.ini-ex .ex-wa{background:#25d366;color:#05301a}.ini-ex .ex-sh{background:linear-gradient(135deg,#ff3b4d,#c80e1f);color:#fff}
+.ini-ex .ex-st{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:0 0 14px}
+.ini-ex .ex-st>div{background:#f7f7fa;border:1px solid #ebebf1;border-radius:16px;padding:12px 8px;text-align:center}
+.ini-ex .ex-st b{display:block;font-size:clamp(24px,2.4vw,32px);line-height:1.1;color:#c4001f}.ini-ex .ex-st span{display:block;margin-top:4px;font-size:12.5px;font-weight:700;color:#4a4a58}
+.ini-ex .ex-end{margin:0 0 16px;padding:14px 16px;border-radius:14px;background:#effaf3;border:1px solid #bfe8cd;color:#14532d;font-weight:700;line-height:1.5}
+.ini-ex .ex-fn{margin:0;font-size:13px;line-height:1.5;color:#6a6a78}
+@media(max-width:700px){.ini-ex .ex-st>div{padding:10px 4px}.ini-ex .ex-st span{font-size:11px;overflow-wrap:anywhere}.ini-ex .ex-pd{grid-template-columns:1fr}.ini-ex .ex-r{flex-direction:row;flex-wrap:wrap;justify-content:flex-start;text-align:left;gap:4px 12px;padding:12px 14px}.ini-ex .ex-r i{font-size:32px}.ini-ex .ex-v{margin:0}.ini-ex .ex-nm{margin:0;width:100%}.ini-ex .ex-bts,.ini-ex .ex-bts.tres{grid-template-columns:1fr}}
 
 
 /* v57: calculadora de proposta — 3 abas (Calculadora / CDC x Consórcio / Comparar planos) */
