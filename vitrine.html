@@ -1907,13 +1907,16 @@ function aplicaCustom(c){
   try{
     if(!c||typeof c!=='object'||Array.isArray(c))return;
     /* ISOLAMENTO: tema que declara ser de OUTRO endereço nunca é aplicado */ if(c._slug&&String(c._slug).toLowerCase()!==String(SLUG||'').toLowerCase())return; CUST=c;
-    if(/^#[0-9a-f]{6}$/i.test(c.cor||'')){const r=document.documentElement;const ca=corAjusta(c.cor);r.style.setProperty('--r',ca);if(ca!==c.cor)r.style.setProperty('--r-escolhida',c.cor);r.classList.add('tm');if(!corVerm(c.cor))r.classList.add('ho-nvm')}
+    if(/^#[0-9a-f]{6}$/i.test(c.cor||'')){const r=document.documentElement;const ca=corAjusta(c.cor);r.style.setProperty('--r',ca);if(ca!==c.cor)r.style.setProperty('--r-escolhida',c.cor);r.classList.add('tm');hnCor(c.cor);if(!corVerm(c.cor))r.classList.add('ho-nvm')}
     const R=document.documentElement.classList;if(['reto','suave','redondo'].includes(c.cantos))R.add('cn-'+c.cantos);if(c.fonte==='elegante')R.add('fn-el');if(c.fonte==='arredondada')R.add('fn-ar');if(c.estilo_topo==='cor')R.add('tp-cor');if(c.botoes==='degrade')R.add('bt-gr');if(c.botoes==='contorno')R.add('bt-ct');if(c.fundo==='suave')R.add('fd-su');if(c.fundo==='creme')R.add('fd-cr');if(c.cards==='compacto')R.add('cs-co');if(c.cards==='grande')R.add('cs-gr');if(c.animacoes==='nao')R.add('an-off');if(c.efeito_botao==='brilho')R.add('ef-bt-brilho');if(c.efeito_botao==='pulso')R.add('ef-bt-pulso');if(c.efeito_cartao==='levantar')R.add('ef-cd-levantar');if(c.efeito_cartao==='brilho')R.add('ef-cd-brilho');if(c.entrada==='subir'||c.entrada==='aparecer'){R.add('en-'+c.entrada);efEntrada()}if(c.moldura==='anel')R.add('mo-anel');if(c.moldura==='gradiente')R.add('mo-gradiente');(Array.isArray(c.ocultar)?c.ocultar:[]).forEach(k=>{if(['videos','entregas','porque','loja','duvidas'].includes(k))R.add('ho-'+k)});
     if(c.css){const s=document.createElement('style');s.id='cust-css';s.textContent=cssLimpo(c.css);document.head.appendChild(s)}
     if(c._previa){const m=document.createElement('meta');m.name='robots';m.content='noindex';document.head.appendChild(m)}
   }catch(e){}}
 const CUSTV=(k,d)=>{const v=CUST&&CUST[k];return typeof v==='string'&&v.trim()?v.trim():d};
-const custReset=()=>{const r=document.documentElement;r.style.removeProperty('--r');r.style.removeProperty('--r-escolhida');[...r.classList].forEach(c=>{if(c==='tm'||c==='an-off'||/^(cn|fn|tp|ho|bt|fd|cs|ef|en|mo)-/.test(c)||c==='tp-cor')r.classList.remove(c)});const s=document.getElementById('cust-css');if(s)s.remove();CUST={}};
+/* v61: Honda branca em fundo avermelhado (padrão); vermelha só se a cor do vendedor for azul/verde/ciano (matiz 90°–270°) com saturação */
+const hnCor=hx=>{const R=document.documentElement.classList,m=/^#([0-9a-f]{6})$/i.exec(hx||'');let br=true;if(m){const [r,g,b]=[0,2,4].map(i=>parseInt(m[1].substr(i,2),16)/255),mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;if(d>.15){let h=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;if(h>=90&&h<=270)br=false}}R.toggle('hn-br',br)};
+hnCor();
+const custReset=()=>{hnCor();const r=document.documentElement;r.style.removeProperty('--r');r.style.removeProperty('--r-escolhida');[...r.classList].forEach(c=>{if(c==='tm'||c==='an-off'||/^(cn|fn|tp|ho|bt|fd|cs|ef|en|mo)-/.test(c)||c==='tp-cor')r.classList.remove(c)});const s=document.getElementById('cust-css');if(s)s.remove();CUST={}};
 const faixaH=()=>{try{const f=CUST&&CUST.faixa;if(!f||f.ativo===false||!f.texto)return'';const t=esc(f.texto);return f.link&&/^https?:\/\//i.test(f.link)?`<a class="fx" href="${esc(f.link)}" target="_blank" rel="noopener noreferrer">${t}</a>`:`<div class="fx">${t}</div>`}catch(e){return''}};
 const blocoC=k=>{try{const t=CUST&&CUST[k];return t?`<div class="cx cx-${k}" data-cx="${k}">${htmlLimpo(t)}</div>`:''}catch(e){return''}};
 const prevC=()=>CUST&&CUST._previa?'<div class="cx-prev">🎨 PRÉ-VISUALIZAÇÃO do rascunho — só quem tem este link vê isto</div>':'';
@@ -2423,7 +2426,7 @@ function marcaH(){const f=LOGO_F();
   if(FORA()&&(logoOk()||(V.concessionaria||'').trim())){const c=(V.concessionaria||'').trim();return `<span class="hlg hlg-fora${LIM()}" role="img" aria-label="${esc(c||'Concessionária')}">${logoOk()?`<span class="hlg-bx"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>`:''}${c?`<span class="hlg-t">${esc(c)}</span>`:''}</span>`}
   if(logoOk())return `<span class="hlg hlg-${f}" role="img" aria-label="Grupo Star"><img src="${esc(LOGO_U())}" alt="" decoding="async" onerror="marcaFalha(this)"></span>`;
   return `<span class="hlg hlg-escuro" role="img" aria-label="Grupo Star">${marcaPadrao()}</span>`}
-function hondaSvg(){return `<svg class="hn-s" viewBox="${HONDA_VB}" role="img" aria-label="Honda" focusable="false"><defs><linearGradient id="hnG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff3a4d"/><stop offset=".5" stop-color="#e4172b"/><stop offset="1" stop-color="#a30e1c"/></linearGradient></defs><path fill="url(#hnG)" fill-rule="evenodd" d="${HONDA_D}"/></svg>`}
+function hondaSvg(){return `<svg class="hn-s" shape-rendering="geometricPrecision" viewBox="${HONDA_VB}" role="img" aria-label="Honda" focusable="false"><defs><linearGradient id="hnG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff3a4d"/><stop offset=".5" stop-color="#e4172b"/><stop offset="1" stop-color="#a30e1c"/></linearGradient></defs><path fill="url(#hnG)" fill-rule="evenodd" d="${HONDA_D}"/></svg>`}
 function hondaH(){const u=CFG&&CFG.logo_honda,im=/^https?:\/\//i.test(u||'');return `<div class="hn" role="img" aria-label="Honda">${im?`<img class="hn-i" src="${esc(u)}" alt="Honda" decoding="async" onerror="this.outerHTML=hondaSvg()">`:hondaSvg()}</div>`}
 function heroDir(){const x=heroFeat();return x?`<div class="hfx">${x}</div>${hondaH()}`:''}
 function luzesH(){return '<div class="hlz" aria-hidden="true">'+['l1','l2','l3','l4','r1','r2','r3','r4'].map(c=>`<i class="${c}"></i>`).join('')+'</div>'}
@@ -4792,6 +4795,13 @@ html.tp-cor .hn{background:none!important;border:0!important;box-shadow:none!imp
 html.tp-cor .hn-s{filter:none!important}
 html.tp-cor .hn-s path{fill:#fff!important}
 html.tp-cor .hn-i{filter:brightness(0) invert(1)!important}
+/* v61: símbolo e nome da Honda BRANCOS (sem fundo redondo atrás) sempre que o fundo é vermelho/rosa/laranja/roxo (mistura com o vermelho da marca). Só fica vermelho em fundo azul/verde/ciano/neutro (classe hn-br ausente) */
+html.hn-br .hn::before,html.hn-br .hn::after{display:none!important}
+html.hn-br .hn{background:none!important;border:0!important;box-shadow:none!important;overflow:visible!important}
+html.hn-br .hn-s{filter:drop-shadow(0 4px 14px #0000004d)!important}
+html.hn-br .hn-s path{fill:#fff!important}
+html.hn-br .hn-i{filter:brightness(0) invert(1) drop-shadow(0 4px 14px #0000004d)!important}
+.hn-s,.hn-i{shape-rendering:geometricPrecision;image-rendering:auto;-webkit-font-smoothing:antialiased}
 </style><style id="v51">/*v51-botoes-hero: Fale comigo em cima, redes sociais embaixo*/
 .ctas{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:12px;width:100%;max-width:520px}
 .ctas>.cta.w{flex:none;width:100%;white-space:nowrap}
