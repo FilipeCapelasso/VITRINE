@@ -2672,10 +2672,48 @@ function enSlow(){document.querySelectorAll('.en-w').forEach(w=>{const s=w.query
   w._ap=reset=>{if(reset)pausa=0;const on=ligado(),b=w.querySelector('.en-ap');s.classList.toggle('slow',on);if(b){b.setAttribute('aria-pressed',on?'false':'true');b.setAttribute('aria-label',on?'Pausar a rolagem automática':'Ligar a rolagem automática');b.title=b.getAttribute('aria-label');b.textContent=on?'⏸':'▶'}if(on&&vis){last=0;requestAnimationFrame(tick)}};
   if(window.IntersectionObserver)new IntersectionObserver(es=>{const agora=es[0].isIntersecting;if(agora&&!vis){para(2000)}vis=agora;if(vis&&ligado()){last=0;requestAnimationFrame(tick)}},{threshold:.35}).observe(w);else{vis=true;para(2000);if(ligado())requestAnimationFrame(tick)}
   w._ap()})} function enNav(btn,d){const s=btn.parentElement.querySelector('.en-s');if(s)s.scrollBy({left:d*Math.max(260,s.clientWidth*.8),behavior:'smooth'})}
-const entH=()=>{const all=(CF().entregas||[]).filter(enOk),en=enOrd(all.filter(x=>x.t!=='c')),ct=enOrd(all.filter(x=>x.t==='c'));let h='';
-  if(en.length)h+=`<section class="ent" id="entregas"><div class="sec"><div><span class="eyb ey2">CLIENTES FELIZES</span><h2>Mais um sonho realizado</h2><p class="mu" style="margin:4px 0 0;font-size:14px">Quem já saiu de moto nova com a gente.</p></div></div><div class="en-w"><div class="en-s">${en.map(entCard).join('')}</div><button type="button" class="en-nv l" aria-label="Anterior" onclick="enNav(this,-1)">‹</button><button type="button" class="en-nv r" aria-label="Próximo" onclick="enNav(this,1)">›</button></div></section>`;
-  if(ct.length)h+=`<section class="ent" id="contemplacoes"><div class="sec"><div><span class="eyb ey2">REGISTROS DE CONTEMPLAÇÃO</span><h2>Conquistas compartilhadas</h2><p class="mu" style="margin:4px 0 0;font-size:14px">Confira os registros compartilhados.</p></div></div><div class="en-w"><div class="en-s">${ct.map(entCard).join('')}</div><button type="button" class="en-nv l" aria-label="Anterior" onclick="enNav(this,-1)">‹</button><button type="button" class="en-nv r" aria-label="Próximo" onclick="enNav(this,1)">›</button></div></section>`;
-  return h};
+/* ===== v63: quadro "Clientes felizes": vídeos primeiro; depois sai com animação e entram as fotos, cada uma no formato da própria foto ===== */
+const enNmH=x=>String(x.n||'').trim()?(x.t==='c'?'Contemplado(a): '+esc(x.n):'Parabéns, '+esc(x.n)+'!'):(x.t==='c'?'Contemplação realizada 🎉':'Sonho realizado 🏍️');
+const enAr=x=>{const w=+x.w,h=+x.h;return w>0&&h>0?Math.max(.5,Math.min(2.2,w/h)):0};
+const fqCard=(x,i)=>{const ar=enAr(x),sn=!String(x.n||'').trim();
+  return `<figure class="fq-i${ar?'':' nar'}" style="--ar:${ar||.8};--i:${i}" data-f="${esc(x.f)}"><img ${IMGA(x.f,'card')} alt="${sn?(x.t==='c'?'Contemplação realizada':'Entrega realizada'):(x.t==='c'?'Contemplação de ':'Parabéns, ')+esc(x.n)}" loading="lazy" decoding="async" onload="fqFit(this)"><button type="button" class="fq-z" aria-label="Ampliar foto" onclick="fqOpen(this)"></button><figcaption><b>${enNmH(x)}</b>${x.m?`<span>${esc(x.m)}</span>`:''}</figcaption></figure>`};
+function fqFit(im){const f=im.closest('.fq-i');if(!f||!f.classList.contains('nar')||!im.naturalWidth)return;f.classList.remove('nar');f.style.setProperty('--ar',Math.max(.5,Math.min(2.2,im.naturalWidth/im.naturalHeight)).toFixed(3))}
+function fqOpen(b){const g=b.closest('.fq'),its=[...g.querySelectorAll('.fq-i')];let i=its.indexOf(b.closest('.fq-i'));
+  const old=document.getElementById('fqm');if(old)old.remove();
+  const o=document.createElement('div');o.id='fqm';o.className='fqm';o.setAttribute('role','dialog');o.setAttribute('aria-modal','true');o.setAttribute('aria-label','Foto ampliada');
+  o.innerHTML='<button type="button" class="fqm-x" aria-label="Fechar">✕</button><button type="button" class="fqm-p" aria-label="Foto anterior">‹</button><figure><img alt=""><figcaption></figcaption></figure><button type="button" class="fqm-n" aria-label="Próxima foto">›</button>';
+  const im=o.querySelector('img'),cp=o.querySelector('figcaption'),ov=document.body.style.overflow;
+  const show=k=>{i=(k+its.length)%its.length;const f=its[i],c=f.querySelector('figcaption');im.src=f.dataset.f;im.alt=f.querySelector('img').alt;cp.innerHTML=c?c.innerHTML:'';o.classList.toggle('one',its.length<2)};
+  const fecha=()=>{o.remove();document.removeEventListener('keydown',kd);document.body.style.overflow=ov};
+  const kd=e=>{if(e.key==='Escape')fecha();else if(e.key==='ArrowLeft')show(i-1);else if(e.key==='ArrowRight')show(i+1)};
+  o.onclick=e=>{if(e.target===o||e.target.closest('.fqm-x'))fecha();else if(e.target.closest('.fqm-p'))show(i-1);else if(e.target.closest('.fqm-n'))show(i+1)};
+  let x0=null;o.addEventListener('touchstart',e=>{x0=e.touches[0].clientX},{passive:true});o.addEventListener('touchend',e=>{if(x0==null)return;const d=e.changedTouches[0].clientX-x0;x0=null;if(Math.abs(d)>50)show(i+(d<0?1:-1))},{passive:true});
+  document.addEventListener('keydown',kd);document.body.style.overflow='hidden';document.body.appendChild(o);show(i);o.querySelector('.fqm-x').focus()}
+const qdSec=(L,id,eyb,tit,sub)=>{const vs=L.filter(x=>x.u&&!x.f),fs=L.filter(x=>x.f);if(!vs.length&&!fs.length)return'';
+  const head=`<div class="sec"><div><span class="eyb ey2">${eyb}</span><h2>${tit}</h2><p class="mu" style="margin:4px 0 0;font-size:14px">${sub}</p></div></div>`;
+  const vH=`<div class="en-w"><div class="en-s">${vs.map(entCard).join('')}</div><button type="button" class="en-nv l" aria-label="Anterior" onclick="enNav(this,-1)">‹</button><button type="button" class="en-nv r" aria-label="Próximo" onclick="enNav(this,1)">›</button></div>`;
+  const fH=`<div class="fq${vs.length?'':' solo'}">${fs.map(fqCard).join('')}</div>`;
+  if(vs.length&&fs.length)return `<section class="ent qd" id="${id}" data-fase="v" data-t="${Math.min(24000,9000+2500*vs.length)}">${head}<div class="qd-tabs" role="tablist" aria-label="Ver vídeos ou fotos"><button type="button" role="tab" class="on" aria-selected="true" data-f="v" onclick="qdTab(this)">🎬 Vídeos <small>${vs.length}</small></button><button type="button" role="tab" aria-selected="false" data-f="f" onclick="qdTab(this)">📸 Fotos <small>${fs.length}</small></button></div><div class="qd-st"><div class="qd-p qd-v">${vH}</div><div class="qd-p qd-f" hidden>${fH}</div></div></section>`;
+  return `<section class="ent" id="${id}">${head}${vs.length?vH:fH}</section>`};
+const qdReduz=()=>matchMedia('(prefers-reduced-motion:reduce)').matches||document.documentElement.classList.contains('an-off');
+function qdGo(sec,to){const from=sec.dataset.fase;if(from===to||sec._busy)return;
+  const st=sec.querySelector('.qd-st'),pv=sec.querySelector('.qd-v'),pf=sec.querySelector('.qd-f'),A=to==='f'?pv:pf,B=to==='f'?pf:pv;
+  A.querySelectorAll('.en-mp').forEach(f=>{const v=f.querySelector('video');try{if(v)v.pause()}catch(e){}f.classList.remove('playing')});
+  sec.dataset.fase=to;sec.querySelectorAll('.qd-tabs button').forEach(b=>{const on=b.dataset.f===to;b.classList.toggle('on',on);b.setAttribute('aria-selected',on?'true':'false')});
+  if(qdReduz()){A.hidden=true;B.hidden=false;B.classList.add('in');return}
+  sec._busy=1;st.style.height=A.offsetHeight+'px';st.classList.add('mv');A.classList.add('qd-out');
+  setTimeout(()=>{A.hidden=true;A.classList.remove('qd-out','in');B.classList.remove('in');B.hidden=false;void B.offsetHeight;st.style.height=B.offsetHeight+'px';B.classList.add('in');
+    setTimeout(()=>{st.style.height='';st.classList.remove('mv');sec._busy=0},760)},520)}
+function qdTab(b){const sec=b.closest('.qd');sec._man=1;qdGo(sec,b.dataset.f)}
+function qdInit(){const reduz=qdReduz();
+  document.querySelectorAll('.qd').forEach(sec=>{if(sec._qd)return;sec._qd=1;sec.querySelectorAll('.qd-f img[loading=lazy]').forEach(i=>{i.loading='eager'});
+    let tm=0,vis=false;const ms=+sec.dataset.t||12000,stop=()=>{clearTimeout(tm);tm=0};
+    const arma=()=>{stop();if(sec._man||sec.dataset.fase!=='v'||!vis)return;tm=setTimeout(function chk(){if(sec._man||!vis||sec.dataset.fase!=='v')return;if(document.getElementById('vm')||sec.querySelector('.en-mp.playing')){tm=setTimeout(chk,4000);return}qdGo(sec,'f')},ms)};
+    sec.addEventListener('click',()=>{sec._man=1;stop()});sec.addEventListener('focusin',()=>{sec._man=1;stop()});sec.querySelector('.qd-v').addEventListener('pointerdown',()=>{sec._man=1;stop()},{passive:true});
+    if(window.IntersectionObserver)new IntersectionObserver(es=>{vis=es[0].isIntersecting;vis?arma():stop()},{threshold:.5}).observe(sec)});
+  if(window.IntersectionObserver&&!reduz)document.querySelectorAll('.fq.solo').forEach(g=>{g.classList.add('rv');new IntersectionObserver((es,io)=>{if(es[0].isIntersecting){g.classList.add('in');io.disconnect()}},{threshold:.15}).observe(g)})}
+const entH=()=>{const all=(CF().entregas||[]).filter(enOk);
+  return qdSec(all.filter(x=>x.t!=='c'),'entregas','CLIENTES FELIZES','Mais um sonho realizado','Quem já saiu de moto nova com a gente.')+qdSec(all.filter(x=>x.t==='c'),'contemplacoes','REGISTROS DE CONTEMPLAÇÃO','Conquistas compartilhadas','Confira os registros compartilhados.')};
 const porqueH=()=>`<section class="why" id="porque"><div class="sec"><div><span class="eyb ey2">POR QUE COMIGO</span><h2>Compre com tranquilidade</h2></div></div><div class="why-g">${[['🤝','Atendimento direto','Você fala com quem vai cuidar da sua compra, do começo ao fim.'],['📊','Simulação sem compromisso','Veja as parcelas de consórcio e de financiamento antes de decidir.'],['📑','Ajuda com a documentação','Eu te oriento em cada etapa para tudo ser simples e rápido.'],['🏍️','Consórcio e financiamento','Compare as duas opções com números reais e escolha a melhor.']].map(a=>`<div class="why-c"><i aria-hidden="true">${a[0]}</i><b>${a[1]}</b><p>${a[2]}</p></div>`).join('')}</div></section>`;
 function rvInit(){if(!window.IntersectionObserver||matchMedia('(prefers-reduced-motion:reduce)').matches)return;
   const els=[...document.querySelectorAll('.tr,.pfr,.why-c,.en,.faq details,.loja,.ent .sec,.why .sec')];if(!els.length)return;document.documentElement.classList.add('rvon');
@@ -2704,7 +2742,7 @@ function home(){
   ${MB()}${prevC()}<footer class="foot2"><b>${esc(V.nome)}</b><br>${tel()}${V.instagram?' · @'+esc(V.instagram):''}${CF().horario?`<br>Atendimento: ${esc(CF().horario)}`:''}${CF().endereco?`<br>${esc(CF().endereco)}`:''}
   <div class="fl"><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cdc||FICHA_CDC_URL,'cdc')}">Ficha CDC<small>Financiamento</small></a><a class="fp" target="_blank" rel="noopener" href="${fichaUrl(CFG.url_cnh||FICHA_CNH_URL,'cnh')}">Ficha CNH<small>Consórcio</small></a></div><p class="disc2 frs">${fraseH(V&&V.frase_n,15,'fr-f')}${catSelo()}</p><div class="ful"><a target="_blank" rel="noopener" href="https://consorcionacionalhonda.com.br/atendimento/pagamento/sobre-o-pagamento">Como pagar com segurança ↗</a><a target="_blank" rel="noopener" href="https://www.bcb.gov.br/meubc/faqs/p/cuidados-na-hora-de-contratar-uma-operacao-de-credito">Cuidados ao contratar crédito ↗</a><a href="#" onclick="priv();return false">Política de Privacidade</a></div><div class="criar-w"><a class="criar" target="_blank" rel="noopener" href="${esc(CFG.url_comercial||'https://sitevendedorhonda.vercel.app/')}">Crie seu site vendedor</a></div></footer>
   ${bxd?'':`<div class="bw"><a class="bubble" target="_blank" rel="noopener" href="${wa('Olá! Vim pelo seu site.')}" onclick="return chatOpen(event)">${av(V.foto_url)}Estou online. Fale agora!</a><button class="bx" aria-label="Fechar" onclick="try{sessionStorage.setItem('bx',1)}catch(e){}this.closest('.bw').remove()">×</button></div>`}`;
-  lista(1);cnt();seo();heroInit();tnavInit();rvInit();enObs();enSlow();enPre();
+  lista(1);cnt();seo();heroInit();tnavInit();rvInit();enObs();enSlow();qdInit();enPre();
 }
 function ytId(u){const r=/(?:youtu\.be\/|v=|shorts\/|embed\/)([\w-]{11})/.exec(u||'');return r&&r[1]}
 function vid(u){if(!u)return'';{const k=vKind(u),e=['ig','fb','tt'].includes(k)?vEmb(u):'';if(e)return `<iframe class="vid${k==='fb'?'':' vid-v'}" src="${e}" title="Vídeo" allow="autoplay; encrypted-media; picture-in-picture; fullscreen; clipboard-write" allowfullscreen scrolling="no" loading="lazy" referrerpolicy="origin-when-cross-origin"></iframe>`}const vm=/vimeo\.com\/(?:video\/)?(\d+)/.exec(u);if(vm)return `<iframe class="vid" src="https://player.vimeo.com/video/${vm[1]}" allow="autoplay; fullscreen" allowfullscreen></iframe>`;const y=ytId(u);return y?`<iframe class="vid" src="https://www.youtube.com/embed/${y}" allowfullscreen></iframe>`:`<video class="vid" controls playsinline src="${esc(u)}"></video>`}
@@ -3739,28 +3777,33 @@ async function pvMove(i,d){const L2=[...(CF().videos||[])],j=i+d;if(j<0||j>=L2.l
 function pEntregas(){
   if(!('config' in V)){$(PNS).innerHTML='<p class="mu">Para publicar vídeos de clientes, rode o SQL único (coluna config) no Supabase e recarregue a página.</p>';return}
   const L2=(CF().entregas||[]),ct=enCont(L2);
-  $(PNS).innerHTML=`<h3 style="margin-top:0">Mais um sonho realizado</h3><p class="mu">Vídeos de clientes (entrega da moto ou contemplação). Eles aparecem no seu site como prova social. Só publique com a autorização do cliente. Você pode escolher <b>vários vídeos de uma vez</b>: todos entram com os mesmos dados preenchidos abaixo, mesmo repetindo a moto.</p>
-  <div class="fm-grid"><div class="fld span2"><label class="l" for="en_t">Tipo do registro</label><select id="en_t"><option value="e">Entrega da moto</option><option value="c">Contemplação</option></select></div><div class="fld"><label class="l" for="en_n">Nome do cliente</label><input id="en_n" maxlength="40" placeholder="Ex.: Rodson"></div><div class="fld"><label class="l" for="en_m">Moto entregue</label><input id="en_m" maxlength="50" placeholder="Ex.: CG 160 Titan"></div></div>
-  <label class="chk" style="margin:6px 0 14px"><input type="checkbox" id="en_ok"><span>Tenho a autorização do cliente para publicar o vídeo no meu site</span></label>
-  <div class="pv-act"><label class="upl">🎬 Enviar vídeo(s) (MP4, até 50 MB cada)<input type="file" accept="video/mp4,video/webm" onchange="enAddVideo(this)" multiple hidden></label></div>
-  <div class="pv-dica"><b>Como os vídeos aparecem no site</b><br>Baixe o vídeo (do Instagram ou do celular) e envie o arquivo aqui, em <b>MP4</b> (até 50 MB). Pode selecionar vários arquivos de uma vez, em sequência. No site ele aparece com uma <b>capa</b>, numa fila que rola devagar. Quando o cliente <b>passa o mouse</b> (ou segura o dedo), o vídeo <b>começa a rodar</b>. Ao <b>clicar</b>, abre em <b>tela maior</b>.</div>
-  <p class="en-cont">${ct.f?`<b>Fotos publicadas antes:</b> ${ct.f} <small class="mu">(não é mais possível enviar fotos novas, só vídeos)</small> · `:''}<b>Vídeos no site:</b> ${vTot()}/${LIMV()}</p>
-  <div class="en-adm">${L2.map((e,i)=>{const leg=e.u&&!e.f&&!mp4Ok(e.u);return `<div class="en-it${leg?' off':''}">${e.f?`<img ${IMGA(e.f,'th')} alt="">`:`<span class="en-vi" aria-hidden="true">🎬</span>`}<div><b>${esc(e.n)}</b><small>${e.t==='c'?'Contemplação':'Entrega'} · ${leg?'link antigo: não aparece mais no site (remova e envie o arquivo do vídeo)':(e.u&&!e.f?'Vídeo · ':'')+esc(e.m||'')}</small></div><button type="button" class="btn sm" onclick="enDel(${i})">Remover</button></div>`}).join('')||((CF().videos||[]).length?'':'<p class="mu" style="margin-top:14px">Nenhum registro publicado ainda.</p>')}</div>${(CF().videos||[]).length?`<h4 class="en-h4">Vídeos na seção “Assista e conheça” <small>(${(CF().videos||[]).length})</small></h4><p class="mu" style="margin:0 0 8px">Estes vídeos aparecem no seu site. Você pode ocultar, mudar a ordem ou remover.</p><div class="pv-adm">${pvRowsH(CF().videos||[])}</div>`:''}`}
+  $(PNS).innerHTML=`<h3 style="margin-top:0">Mais um sonho realizado</h3><p class="mu">Fotos e vídeos de clientes (entrega da moto ou contemplação). Eles aparecem no seu site como prova social. Só publique com a autorização do cliente. Você pode escolher <b>várias fotos, vários vídeos ou os dois misturados, de uma vez</b>: todos entram na ordem escolhida, com os dados preenchidos abaixo (nome e moto são opcionais).</p>
+  <div class="fm-grid"><div class="fld span2"><label class="l" for="en_t">Tipo do registro</label><select id="en_t"><option value="e">Entrega da moto</option><option value="c">Contemplação</option></select></div><div class="fld"><label class="l" for="en_n">Nome do cliente <small>(opcional)</small></label><input id="en_n" maxlength="40" placeholder="Ex.: Rodson"></div><div class="fld"><label class="l" for="en_m">Moto entregue <small>(opcional)</small></label><input id="en_m" maxlength="50" placeholder="Ex.: CG 160 Titan"></div></div>
+  <label class="chk" style="margin:6px 0 14px"><input type="checkbox" id="en_ok"><span>Tenho a autorização do cliente para publicar as fotos e vídeos no meu site</span></label>
+  <div class="pv-act"><label class="upl">📷🎬 Enviar fotos e vídeos (vários de uma vez)<input type="file" accept="image/*,video/mp4,video/webm" onchange="enAddMidia(this)" multiple hidden></label></div>
+  <div class="pv-dica"><b>Como aparece no site</b><br>Quando há vídeos e fotos, os <b>vídeos aparecem primeiro</b>; depois eles saem com uma animação e entram as <b>fotos</b>, cada uma no formato da própria foto (também dá para trocar pelas abas “Vídeos” e “Fotos”). Clicando numa foto ela abre em tela maior. <b>Fotos:</b> JPG, PNG ou WebP. <b>Vídeos:</b> Baixe o vídeo (do Instagram ou do celular) e envie o arquivo aqui, em <b>MP4</b> (até 50 MB). Pode selecionar vários arquivos de uma vez, em sequência. No site ele aparece com uma <b>capa</b>, numa fila que rola devagar. Quando o cliente <b>passa o mouse</b> (ou segura o dedo), o vídeo <b>começa a rodar</b>. Ao <b>clicar</b>, abre em <b>tela maior</b>.</div>
+  <p class="en-cont"><b>Fotos no site:</b> ${ct.f}/${LIMF()} · <b>Vídeos no site:</b> ${vTot()}/${LIMV()}</p>
+  <div class="en-adm">${L2.map((e,i)=>{const leg=e.u&&!e.f&&!mp4Ok(e.u);return `<div class="en-it${leg?' off':''}">${e.f?`<img ${IMGA(e.f,'th')} alt="">`:`<span class="en-vi" aria-hidden="true">🎬</span>`}<div><b>${esc(e.n)||'<i>Sem nome</i>'}</b><small>${e.t==='c'?'Contemplação':'Entrega'} · ${leg?'link antigo: não aparece mais no site (remova e envie o arquivo do vídeo)':(e.u&&!e.f?'Vídeo · ':'')+esc(e.m||'')}</small></div><button type="button" class="btn sm" onclick="enDel(${i})">Remover</button></div>`}).join('')||((CF().videos||[]).length?'':'<p class="mu" style="margin-top:14px">Nenhum registro publicado ainda.</p>')}</div>${(CF().videos||[]).length?`<h4 class="en-h4">Vídeos na seção “Assista e conheça” <small>(${(CF().videos||[]).length})</small></h4><p class="mu" style="margin:0 0 8px">Estes vídeos aparecem no seu site. Você pode ocultar, mudar a ordem ou remover.</p><div class="pv-adm">${pvRowsH(CF().videos||[])}</div>`:''}`}
 async function enSave(L2){const config={...CF(),entregas:L2};const{error}=await sb.from('vendedores').update({config}).eq('id',V.id);if(error)throw error;V.config=config}
-async function enAddVideo(el){const fs=el.files?Array.from(el.files):[];if(!fs.length)return;const n=($('#en_n').value||'').trim(),m=($('#en_m').value||'').trim(),t=($('#en_t')&&$('#en_t').value==='c')?'c':'e';
-  if(!n){el.value='';return toast('Informe o nome do cliente')}if(!$('#en_ok').checked){el.value='';return toast('Confirme que você tem a autorização do cliente')}
-  for(const f of fs){if(!/^video\/(mp4|webm)$/i.test(f.type||'')&&!/\.(mp4|webm)$/i.test(f.name)){el.value='';return toast('Envie o vídeo em MP4 ou WebM')}if(f.size>50*1024*1024){el.value='';return toast('O vídeo "'+f.name+'" passa de 50 MB: reduza o tamanho do arquivo e envie de novo')}}
-  let L2=[...(CF().entregas||[])],okN=0;
+async function enAddMidia(el){const fs=el.files?Array.from(el.files):[];if(!fs.length)return;const n=($('#en_n').value||'').trim(),m=($('#en_m').value||'').trim(),t=($('#en_t')&&$('#en_t').value==='c')?'c':'e';
+  if(!$('#en_ok').checked){el.value='';return toast('Confirme que você tem a autorização do cliente')}
+  const isV=f=>/^video\/(mp4|webm)$/i.test(f.type||'')||/\.(mp4|webm)$/i.test(f.name),isI=f=>/^image\//i.test(f.type||'')||/\.(jpe?g|png|webp|heic|heif)$/i.test(f.name);
+  for(const f of fs){if(!isV(f)&&!isI(f)){el.value='';return toast('"'+f.name+'" não é foto nem vídeo. Use JPG, PNG, WebP (fotos) ou MP4 (vídeos)')}if(isV(f)&&f.size>50*1024*1024){el.value='';return toast('O vídeo "'+f.name+'" passa de 50 MB: reduza o tamanho do arquivo e envie de novo')}}
+  const old=[...(CF().entregas||[])],novos=[];let okV=0,okF=0,erro=0,lim='';
   try{
-    for(const f of fs){
-      if(vTot()>=LIMV()){toast(limMsg('vídeos',LIMV()));break}
-      toast(`Enviando vídeo${fs.length>1?' '+(okN+1)+'/'+fs.length:''}...`);
-      const r=await upVideo(f),u=r.u;
-      L2=[{u,...(r.p?{p:r.p}:{}),n,m,t},...L2];
-      await enSave(L2);okN++
+    for(let k=0;k<fs.length;k++){const f=fs[k],v=isV(f);
+      if(v&&vTot()>=LIMV()){lim=limMsg('vídeos',LIMV());break}
+      if(!v&&enCont(CF().entregas||[]).f>=LIMF()){lim=limMsg('fotos',LIMF());break}
+      toast(`Enviando ${v?'vídeo':'foto'} ${k+1}/${fs.length}...`);
+      try{
+        if(v){const r=await upVideo(f);novos.push({u:r.u,...(r.p?{p:r.p}:{}),n,m,t});okV++}
+        else{let w=0,h=0;try{const bm=await createImageBitmap(f);w=bm.width;h=bm.height;if(bm.close)bm.close()}catch(e){}
+          const u=await up(f);novos.push({f:u,...(w&&h?{w,h}:{}),n,m,t});okF++}
+        await enSave([...novos,...old])
+      }catch(e){erro++;toast('Não consegui enviar "'+f.name+'": '+(e&&e.message||e))}
     }
-    pEntregas();
-    if(okN)toast(okN>1?okN+' vídeos publicados no seu site!':'Vídeo publicado no seu site!')
+    el.value='';pEntregas();
+    const tot=okV+okF;if(tot)toast((tot>1?tot+' itens publicados':(okV?'Vídeo publicado':'Foto publicada'))+' no seu site!'+(lim?' '+lim:'')+(erro?' ('+erro+' com erro)':''));else if(lim)toast(lim)
   }catch(e){el.value='';pEntregas();toast('Erro: '+(e&&e.message||e))}}
 async function enDel(i){if(!confirm('Remover esta publicação do site?'))return;const L2=[...(CF().entregas||[])];L2.splice(i,1);try{await enSave(L2);pEntregas();toast('Removido')}catch(e){toast('Erro: '+(e&&e.message||e))}}
 
@@ -4801,6 +4844,41 @@ html.hn-br .hn{background:none!important;border:0!important;box-shadow:none!impo
 html.hn-br .hn-s{filter:drop-shadow(0 4px 14px #0000004d)!important}
 html.hn-br .hn-s path{fill:#fff!important}
 html.hn-br .hn-i{filter:brightness(0) invert(1) drop-shadow(0 4px 14px #0000004d)!important}
+/* v63: Clientes felizes — fotos no formato de cada foto, quadro com vídeos → fotos, lightbox */
+.fq{display:flex;flex-wrap:wrap;gap:14px;justify-content:center;padding:6px 2px 10px}
+.fq-i{position:relative;margin:0;min-width:0;flex:calc(var(--ar)*100) 1 calc(var(--ar)*200px);max-width:calc(var(--ar)*470px);aspect-ratio:var(--ar);border-radius:22px;overflow:hidden;background:linear-gradient(135deg,#1b1b23,#2a2a36);box-shadow:0 26px 44px -28px #000b,0 0 0 1px #0000000f;isolation:isolate}
+.fq-i img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block;transition:transform .9s cubic-bezier(.2,.8,.2,1),filter .5s}
+.fq-i:hover img{transform:scale(1.05)}
+.fq-i:after{content:"";position:absolute;inset:0;border-radius:inherit;box-shadow:inset 0 0 0 1px #ffffff26,inset 0 -90px 70px -50px #000a;pointer-events:none;z-index:1}
+.fq-z{position:absolute;inset:0;width:100%;height:100%;border:0;background:transparent;cursor:zoom-in;z-index:2;padding:0}
+.fq-z:focus-visible{outline:3px solid #fff;outline-offset:-5px}
+.fq-i figcaption{position:absolute;left:0;right:0;bottom:0;z-index:3;padding:34px 16px 14px;display:flex;flex-direction:column;align-items:flex-start;gap:6px;color:#fff;pointer-events:none}
+.fq-i figcaption b{font-size:clamp(14px,1.3vw,17px);letter-spacing:-.01em;text-shadow:0 2px 10px #0009;line-height:1.2}
+.fq-i figcaption span{background:#ffffff26;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);border:1px solid #ffffff3a;border-radius:99px;padding:3px 11px;font-size:12px;font-weight:600}
+.fq.rv:not(.in) .fq-i{opacity:0}
+.fq.rv.in .fq-i,.qd-f.in .fq-i{animation:fqIn .75s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(min(var(--i),9)*85ms)}
+.qd-f:not(.in) .fq-i{opacity:0}
+@keyframes fqIn{from{opacity:0;transform:translateY(26px) scale(.93)}}
+.qd-tabs{display:flex;gap:4px;margin:2px auto 18px;padding:4px;width:max-content;max-width:100%;background:#ffffffd9;border:1px solid #0000000f;border-radius:99px;box-shadow:0 10px 26px -16px #0004}
+.qd-tabs button{appearance:none;border:0;background:transparent;font:700 14px Inter,system-ui,sans-serif;color:#4b4b57;padding:9px 18px;border-radius:99px;cursor:pointer;transition:background .35s,color .35s,transform .2s}
+.qd-tabs button small{font-size:11.5px;opacity:.7;margin-left:3px}
+.qd-tabs button.on{background:linear-gradient(135deg,var(--rh,var(--r)),var(--r));color:#fff;box-shadow:0 8px 18px -8px var(--r)}
+.qd-tabs button:not(.on):hover{background:#0000000a}
+.qd-st{position:relative;transition:height .6s cubic-bezier(.2,.8,.2,1)}.qd-st.mv{overflow:hidden}
+.qd-p[hidden]{display:none!important}
+.qd-p.qd-out{animation:qdOut .52s cubic-bezier(.4,0,.6,1) both;pointer-events:none}
+@keyframes qdOut{to{opacity:0;transform:scale(.94) translateY(10px);filter:blur(8px)}}
+.qd-v.in{animation:qdIn .6s cubic-bezier(.2,.8,.2,1) both}
+@keyframes qdIn{from{opacity:0;transform:translateY(14px)}}
+.fqm{position:fixed;inset:0;z-index:9999;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:8px;padding:18px;background:#08080cf0;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);animation:qdIn .3s both}
+.fqm figure{margin:0;display:flex;flex-direction:column;align-items:center;gap:12px;min-width:0}
+.fqm img{max-width:100%;max-height:80vh;object-fit:contain;border-radius:16px;box-shadow:0 30px 80px -20px #000}
+.fqm figcaption{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;color:#fff;font-size:15px}.fqm figcaption b{font-size:17px}
+.fqm figcaption span{background:#ffffff1f;border:1px solid #ffffff33;border-radius:99px;padding:4px 12px;font-size:13px}
+.fqm button{appearance:none;border:0;border-radius:50%;width:46px;height:46px;background:#ffffff1f;color:#fff;font-size:26px;line-height:1;cursor:pointer;transition:background .2s}.fqm button:hover{background:#ffffff40}
+.fqm .fqm-x{position:absolute;top:14px;right:14px;font-size:18px;z-index:2}.fqm.one .fqm-p,.fqm.one .fqm-n{visibility:hidden}
+@media(max-width:600px){.fq{gap:10px}.fq-i{border-radius:18px;flex-basis:calc(var(--ar)*150px)}.fqm{grid-template-columns:minmax(0,1fr);padding:12px}.fqm .fqm-p,.fqm .fqm-n{position:absolute;top:50%;translate:0 -50%;width:40px;height:40px;background:#0008}.fqm .fqm-p{left:8px}.fqm .fqm-n{right:8px}}
+
 .hn-s,.hn-i{shape-rendering:geometricPrecision;image-rendering:auto;-webkit-font-smoothing:antialiased}
 </style><style id="v51">/*v51-botoes-hero: Fale comigo em cima, redes sociais embaixo*/
 .ctas{flex-direction:column;flex-wrap:nowrap;align-items:stretch;gap:12px;width:100%;max-width:520px}
