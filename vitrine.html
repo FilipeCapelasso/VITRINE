@@ -3594,15 +3594,15 @@ function adm(t){ if(!window.__appAuto){window.__appAuto=1;setTimeout(appAuto,150
   if(T==='resumo'||T==='playbook')T='inicio';
   if(T==='pedidos'||T==='leads')T='vendas';
   if(T==='site'||T==='perfil'){CTAB=T==='site'?'textos':'perfil';T='conta'}
-  if(appModo()&&!['vendas','acessos','sites','cota','calc','avisos','personalizar','conta'].includes(T))T='vendas';
+  if(appModo()&&!['vendas','acessos','sites','cota','indicacao','avisos','personalizar','conta'].includes(T))T='vendas';
   if(!appModo()&&T==='avisos')T='inicio';
   PNS='#pn';
   const nav=navLista().map(a=>{const lk=a[0]==='personalizar'&&!ehPrem();return `<button class="nv ${T===a[0]?'on':''}${lk?' lockd':''}" onclick="${lk?'persLock()':`adm('${a[0]}')`}" ${lk?'aria-label="Personalizar (bloqueado: só Premium)"':''}><span class="ic">${a[1]}</span><span class="nlb">${a[2]}</span>${lk?'<span class="nlk" aria-hidden="true">🔒</span>':''}${a[0]==='personalizar'&&!lk&&AC&&AC.msgs_novas>0&&T!=='personalizar'?`<span class="nb" id="pe_nb">${AC.msgs_novas}</span>`:''}${a[0]==='vendas'?'<span class="nb" id="vdbg" hidden></span>':''}${a[0]==='avisos'?'<span class="nb" id="avbg" hidden></span>':''}</button>`}).join('');
-  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',cota:'Cota da Vez',calc:'Calculadora',acessos:'Acessos ao site',sites:'Seus sites e links',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
+  const tt={inicio:'Início',vendas:'Clientes',playbook:'Playbook de vendas',motos:'Minhas motos',cota:'Cota da Vez',calc:'Calculadora',indicacao:'Indicação',acessos:'Acessos ao site',sites:'Seus sites e links',conta:'Configuração',personalizar:'Personalizar meu site',avisos:'Notificações'}[T];
   const sl0=(document.querySelector('.shell .sd-nav')||{}).scrollLeft||0;
   $('#app').innerHTML=`<div class="shell${appModo()?' apm':''}"><aside class="sd"><div class="sd-top">${av(V.foto_url,'s')}<div><b>${esc(V.nome)}</b><small>Painel do vendedor</small></div></div><nav class="sd-nav">${nav}</nav><div class="sd-bot"><a class="lk" href="#">↗ Ver meu site</a><button class="lk" onclick="out()">Sair</button><small class="ver">Versão 01/11/2026</small></div></aside>
   <main class="mn">${ahH()}<div class="frase" id="frase">${fraseH(V&&V.frase_n,0,'fr-t')}</div><div id="plc"></div><header class="mt2"><h1>${tt}</h1><span class="mt2a"><a class="btn sm" href="#" style="text-decoration:none">Ver site</a><button class="btn sm" onclick="out()">Sair</button></span></header><span id="nb" hidden></span><div id="pn"></div></main></div>`;
-  appAjustaTela();navAjusta(sl0);({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,cota:pCota,calc:pCalc,acessos:pAcessos,sites:pSites,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
+  appAjustaTela();navAjusta(sl0);({inicio:pInicio,vendas:pVendas,playbook:pPlaybook,motos:pMotos,cota:pCota,calc:pCalc,indicacao:pIndicacao,acessos:pAcessos,sites:pSites,conta:pConta,personalizar:pPers,avisos:pAvisos})[T]();if(AC===null){AC={};acessoCarrega().then(()=>{if(document.querySelector('.shell'))adm(T)})}vdLive();vdPaint();nbSync();rt();meuPlano();avLive();avConta();
 }
 
 /* ---- prazo do plano (comprado em..., suspensão automática em...) com cronômetro ---- */
@@ -4467,7 +4467,7 @@ function pSites(){const L=stLinks();
     <div class="st-g">${L.eu.map(x=>stCard(x,false)).join('')}</div></section>`}
 async function pAcessos(){VISTAB='visitas';VISDATA=null;$('#pn').innerHTML='<div id="vs_v"></div>';visCarrega()}
 
-const NAV_APP=[['vendas','👥','Clientes'],['calc','🧮','Calculadora'],['avisos','🔔','Notificações'],['conta','⚙️','Configurações'],['sites','🔗','Sites'],['acessos','📈','Acessos'],['cota','🎯','Cota da Vez'],['personalizar','🎨','Personalizar']];
+const NAV_APP=[['vendas','👥','Clientes'],['indicacao','💰','Indicação'],['avisos','🔔','Notificações'],['conta','⚙️','Configurações'],['sites','🔗','Sites'],['acessos','📈','Acessos'],['cota','🎯','Cota da Vez'],['personalizar','🎨','Personalizar']];
 /* ===== topo "Olá" do app/celular, data e hora, sino de avisos e menu da conta ===== */
 /* Chrome do celular no modo "Site para computador" mostra a página com ~980 px de largura numa tela de ~400 px: tudo fica pequeno e centralizado.
    Aqui o app mede isso e amplia a tela inteira para ocupar a largura do aparelho. */
@@ -4532,6 +4532,7 @@ function iniExpH(){const d=INI&&INI.exp;if(!d||!d.slug)return'';
   <p class="ex-lead">Indique o Site Vendedor para outros vendedores. Cada pessoa que <b>pagar qualquer plano pelo seu link</b> conta para você, e os <b>3 que mais indicarem</b> ganham:</p>
   <div class="ex-pd">${pd}</div>${bar}${acao}${st}
   <p class="ex-fn">Conta só pagamento aprovado de pessoa nova, em qualquer plano (mensal, 6 meses ou meses escolhidos). O evento termina quando o progresso chega a <b>100%</b>. Empate: vence quem chegou primeiro.</p></div></section>`}
+async function pIndicacao(){$('#pn').innerHTML='<div class="sk" style="height:320px;border-radius:18px"></div>';let d=null;try{const r=await sb.rpc('exp_ranking');d=r&&!r.error?r.data:null}catch(e){}if(T!=='indicacao')return;if(typeof INI!=='object'||!INI)INI={};INI.exp=d;$('#pn').innerHTML=d&&d.slug?iniExpH():'<section class="card2"><p class="mu">O evento de indicação não está disponível para a sua conta.</p></section>'}
 async function exTrack(c){try{const r=await sb.rpc('exp_compartilhei',{p_canal:c});const x=r&&r.data;if(x&&x.meus_comp!=null){if(INI&&INI.exp)INI.exp.meus_comp=x.meus_comp;const e=document.getElementById('ex_cm');if(e)e.textContent=x.meus_comp}}catch(e){}}
 function exCopia(){const i=document.getElementById('ex_lk');if(!i)return;const t=i.dataset.c,ok=()=>{toast('Link copiado');exTrack('copiar')},fb=()=>{const x=document.createElement('textarea');x.value=t;x.style.cssText='position:fixed;opacity:0';document.body.appendChild(x);x.select();let g=false;try{g=document.execCommand('copy')}catch(e){}x.remove();if(g)ok();else toast('Não consegui copiar. Segure o link para copiar.')};(navigator.clipboard?navigator.clipboard.writeText(t).then(ok,fb):fb())}
 async function exShare(){const d=INI&&INI.exp;if(!d||!navigator.share)return;try{await navigator.share({title:'Site Vendedor Honda',text:exMsg(d).replace(exLink(d),'').trim(),url:exLink(d)});exTrack('compartilhar')}catch(e){}}
