@@ -57,12 +57,12 @@ html,body{margin:0;background:#080b12}body:has(#R.lt){background:#f6f5f3}
 .sb{display:flex;height:6px;border-radius:99px;overflow:hidden;background:var(--tab);gap:2px;margin-top:4px}.sb i{display:block;height:100%;min-width:3px}
 .sl{display:flex;gap:10px;flex-wrap:wrap;font-size:11.5px;color:var(--mu)}.sl span::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-right:5px}
 /* cartões */
-.g1,.g2{display:grid;gap:14px;margin:0 0 14px}.g1{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr)}.g2{grid-template-columns:repeat(3,minmax(0,1fr))}
+.g1,.g2{display:grid;gap:14px;margin:0 0 14px}.g1{grid-template-columns:minmax(0,1.9fr) minmax(0,1fr)}.g2{grid-template-columns:minmax(0,.85fr) minmax(0,1.6fr) minmax(0,.85fr)}
 .card{min-width:0;padding:clamp(16px,1.5vw,24px);border-radius:20px;background:var(--card);border:1px solid var(--ln2);box-shadow:var(--sh);margin:0 0 14px}.g1 .card,.g2 .card{margin:0}
 .ax{position:relative;display:grid;grid-template-columns:36px minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;padding:10px 6px;border:0;border-bottom:1px solid var(--ln2);background:transparent;color:var(--tx);text-align:left;border-radius:0}
 .ax:last-child{border-bottom:0}.ax:hover{background:#ff3b4e0f}.ax.axn{box-shadow:inset 3px 0 0 var(--ac)}
 .axi{width:36px!important;min-width:36px;height:36px;border-radius:12px;display:grid;place-items:center;background:#ff3b4e1f;font-size:17px}
-.axt{display:flex;flex-direction:column;min-width:0;text-align:left}.axt b{display:block;font:700 14px Inter,sans-serif;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.axt small{display:block;color:var(--mu);font:400 12.5px Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.axt{display:flex;flex-direction:column;align-items:flex-start;justify-self:stretch;width:100%;min-width:0;text-align:left}.axt b,.axt small{max-width:100%;text-align:left}.axt b{display:block;font:700 14px Inter,sans-serif;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.axt small{display:block;color:var(--mu);font:400 12.5px Inter,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .ax time{font:400 12px Inter,sans-serif;color:var(--mu);white-space:nowrap}
 .axl{border:0;background:transparent;color:#ff3b4e!important;font:700 13.5px Inter,sans-serif;cursor:pointer;padding:6px 2px;white-space:nowrap;box-shadow:none}.axl:hover{text-decoration:underline}
 .atl .ax{padding-left:10px}
@@ -233,7 +233,7 @@ function hero(T){return`<section class="hero"><div class="ht"><h2>Painel do Dire
 async function atCarrega(){try{AT=await rpc('diretor_atividades',{p_slug:SL,p_token:TOK,p_limit:60})}catch(e){if(!AT)AT=[]}document.querySelectorAll('[data-at]').forEach(e=>{e.outerHTML=ativCard(e.getAttribute('data-at'))})}
 function atLista(l){const a=(AT||[]).filter(x=>!l||String(x.loja_id)===String(l));return a}
 function atAgo(s){const m=Math.max(0,Math.round((Date.now()-new Date(s))/6e4));return m<1?'agora':m<60?m+' min':m<1440?Math.floor(m/60)+' h':Math.floor(m/1440)+' d'}
-function atLinha(x){const nw=Date.now()-new Date(x.criado)<36e5;return`<div class="ax${nw?' axn':''}"><span class="axi">${x.tipo==='rascunho'?'✍️':'📥'}</span><span class="axt"><b>${esc(x.titulo.replace(/^\S+\s/,''))}</b><small>${esc(String(x.corpo||'').replace(/\n+/g,' · '))}</small></span><time>${esc(atAgo(x.criado))}</time></div>`}
+function atLinha(x){const nw=Date.now()-new Date(x.criado)<36e5;return`<div class="ax${nw?' axn':''}"><span class="axi">${x.tipo==='rascunho'?'✍️':'📥'}</span><span class="axt"><b>${esc(x.titulo)}</b><small>${esc(String(x.corpo||'').replace(/\n+/g,' '))}</small></span><time>${esc(atAgo(x.criado))}</time></div>`}
 function ativCard(l){const g=l?grupos().find(x=>String(x.id)===String(l)):null,a=atLista(l);const corpo=AT===null?'<p class="vz">Carregando…</p>':a.length?a.slice(0,6).map(atLinha).join(''):'<p class="vz">Nenhuma atividade registrada ainda.</p>';
   return`<section class="card" data-at="${esc(l||'')}"><div class="ch-h"><div><h3>Atividades recentes</h3><small>${g?esc(g.nome)+' · ':''}últimos avisos</small></div>${a.length>6?`<button class="axl" onclick="atTodas('${esc(l||'')}')">Ver todas</button>`:''}</div>${corpo}</section>`}
 function atTodas(l){const g=l?grupos().find(x=>String(x.id)===String(l)):null,a=atLista(l);modal(`<div class="mh"><div><b>Atividades recentes</b><small>${g?esc(g.nome)+' · ':''}${a.length} avisos</small></div><button class="x" onclick="fecha()" aria-label="Fechar">✕</button></div><div class="atl">${a.map(atLinha).join('')||'<p class="vz">Nada por enquanto.</p>'}</div>`)}
